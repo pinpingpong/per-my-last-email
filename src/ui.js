@@ -142,7 +142,7 @@ function showTitle() {
         <button class="btn ${saved && saved.phase !== 'ending' ? '' : 'primary'}" id="new">New game</button>
       </div>
       ${gallery()}
-      <p class="muted small">A work of satire. All characters and companies are fictional.</p>
+      <p class="muted small">${esc(D.flavor.version || '')} · A work of satire. All characters and companies are fictional.</p>
     </section>`);
   $('#new').onclick = () => { S = E.newGame(D.balance); save(); route(); };
   if ($('#continue')) $('#continue').onclick = () => { S = saved; route(); };

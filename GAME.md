@@ -139,7 +139,7 @@ Playtest loop 2026-11-24 (5 rounds): fixed spine with `order`, secret-vent (10 s
 - **Minigame:** `src/minigames/<name>.js` exporting `play(root) -> Promise<{won}>`, register in `src/minigames/index.js`, add to `MODULES` in `tools/build_single.py`, attach to a choice with `minigame: {id, win:{result, effects}, lose:{...}}`.
 - **Ending:** add to `data/endings.json` (+ `endsGame` on a choice or logic in `finishSeason`). Extra flavour via `_lines`.
 - **Balance:** `node tools/simulate.mjs 2000` (random / smart / selfCare policies).
-- **Ship:** `python3 tools/build_single.py` -> `dist/per-my-last-email.html`.
+- **Ship:** `python3 tools/build_single.py` -> `dist/per-my-last-email.html` (offline file) + `dist/web/index.html`; deploy: `cd dist/web && vercel deploy --prod` -> https://per-my-last-email-sigma.vercel.app
 
 Done 2026-11-24: strikes + Strike Ten, epilogue phase, call-as-climax (`opensCase`), `variants`, favourite bonus, `endsGame`, ending lines, `tools/simulate.mjs`.
 Open: conditional result text (4), minigames (5), Managed Out never reached in sims (performance never hits 0).

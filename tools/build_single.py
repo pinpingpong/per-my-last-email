@@ -42,4 +42,7 @@ html = html.replace('<script type="module" src="src/ui.js"></script>', boot)
 out = ROOT / "dist" / "per-my-last-email.html"
 out.parent.mkdir(exist_ok=True)
 out.write_text(html, encoding="utf-8")
+web = ROOT / "dist" / "web" / "index.html"  # deploy target (Vercel serves dist/web)
+web.parent.mkdir(exist_ok=True)
+web.write_text(html, encoding="utf-8")
 print(f"{out.relative_to(ROOT)}  {out.stat().st_size // 1024} KB, {len(events)} events, {len(assets)} images")
