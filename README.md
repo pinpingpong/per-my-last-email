@@ -28,6 +28,6 @@ node tools/simulate.mjs 2000       # balance report
 python3 tools/build_single.py      # build dist/
 ```
 
-Design notes, story structure and roadmap: [GAME.md](GAME.md).
+Design notes, story structure and roadmap: [GAME.md](GAME.md). Dev journey with screenshots per stage: [docs/JOURNEY.md](docs/JOURNEY.md).
 
 Built with Claude Code.
