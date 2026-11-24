@@ -33,7 +33,14 @@ True ending: Veronica on garden leave, then out. Marcus becomes your manager and
 Running gags: everyone misnames the company (Celestia, Celestical); Gordon's "What is the bigger problem?"; the CEO's "the lift goes down as well as up".
 
 ## Roadmap (future expansions)
-- **v2 (agreed 2026-11-25):** make 'Come, toilet' a fixed week-1 beat so every player meets Escape to Nebula; add a 'Minigames' button on the title screen for direct replay.
+- **Current public build = "v1 · Early Access"** (keep the v1 label; it's on the live site and portfolio).
+- **v2 = "proper game" release (agreed 2026-11-25).** Done when:
+  1. First-run tutorial; 'Come, toilet' fixed in week 1 so every player meets Escape to Nebula.
+  2. 2-3 minigames (Lift Escape, Evidence Snap) + Minigames button on the title screen.
+  3. Real trade-offs: helping Marcus costs you sanity/performance; smart policy Exposed < ~70%.
+  4. Game feel: sound effects, card animations, Veronica portrait reactions.
+  5. 5-10 human playtesters + feedback pass.
+  6. Portfolio upgrade: "Balancing with simulation" section + ending-distribution chart (before/after tuning), "Game" type label, "Play the game" button, "How I built it with AI" section.
 - **Season 2: "After Veronica"** (`data/events/season2.json`, not in `index.json` yet): Marcus is the manager, the team thrives, and company-level absurdity takes over: return-to-office mandate ('Have you considered living closer?'), reorg, layoffs, resignations, the group chat outliving the company.
 - Office politics: alliances, credit wars, skip-level lunches.
 - Performance review season: calibration meetings, bell curve, rating negotiations.
