@@ -41,6 +41,8 @@ Running gags: everyone misnames the company (Celestia, Celestical); Gordon's "Wh
   4. Game feel: sound effects, card animations, Veronica portrait reactions.
   5. 5-10 human playtesters + feedback pass.
   6. Portfolio upgrade: "Balancing with simulation" section + ending-distribution chart (before/after tuning), "Game" type label, "Play the game" button, "How I built it with AI" section.
+- **v3 "RPG-lite" (idea 2026-11-25):** one walkable top-down map of floor 23 (desk, pantry, Nebula, toilets, lift) between events; walk to an NPC to trigger their card, cards become dialogue. Seed: `src/minigames/toilet-dodge.js` (movement, collision, sight cone). Likely move to Phaser 3 + Tiled maps; art via Kenney / paid pixel packs. Reuse all story data, flags, endings, validator, simulator.
+- **v4 full RPG (only if v3 is fun):** day cycle 9am-6pm (+9:47pm calls), Veronica roams with a live sight cone, evidence as inventory items, per-character trust instead of one allies number.
 - **Season 2: "After Veronica"** (`data/events/season2.json`, not in `index.json` yet): Marcus is the manager, the team thrives, and company-level absurdity takes over: return-to-office mandate ('Have you considered living closer?'), reorg, layoffs, resignations, the group chat outliving the company.
 - Office politics: alliances, credit wars, skip-level lunches.
 - Performance review season: calibration meetings, bell curve, rating negotiations.
