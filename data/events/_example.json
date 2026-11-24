@@ -1,0 +1,32 @@
+[
+  {
+    "id": "credit-stolen-townhall",
+    "weeks": [1, 4],
+    "weight": 3,
+    "once": true,
+    "speaker": "veronica",
+    "text": "At the town hall, Veronica presents your dashboard as 'a little something my team pulled together under my direction'. Your name is not on the slide. The CEO calls it 'game-changing'.",
+    "choices": [
+      {
+        "label": "Email her a 'quick recap' afterwards",
+        "result": "'Great to see the dashboard I built land so well! Attaching v1 from 3 March for reference.' Timestamped. Polite. Lethal.",
+        "effects": { "sanity": -2, "reputation": 2 },
+        "addEvidence": { "id": "dashboard-recap-email", "label": "Recap email proving you built the dashboard", "type": "written", "strength": 3 },
+        "setFlags": ["credit-stolen"]
+      },
+      {
+        "label": "Interrupt: 'Actually, I built that'",
+        "result": "Forty faces turn. Veronica smiles. 'Love the energy! Let's take this offline.' You are now 'not a team player'.",
+        "effects": { "sanity": 5, "reputation": -8 },
+        "setFlags": ["credit-stolen", "public-clash"]
+      },
+      {
+        "label": "Say nothing, eat the free croissant",
+        "result": "The croissant is stale. So is your career.",
+        "effects": { "sanity": -6 },
+        "addEvidence": { "id": "townhall-memory", "label": "You remember the town hall slide", "type": "recalled", "strength": 1 },
+        "setFlags": ["credit-stolen"]
+      }
+    ]
+  }
+]

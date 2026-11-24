@@ -1,0 +1,2020 @@
+[
+  {
+    "id": "after-hours-call",
+    "weeks": [
+      1,
+      12
+    ],
+    "weight": 3,
+    "scene": "night",
+    "speaker": "veronica",
+    "text": "9:47pm. You are in pyjamas. Your phone lights up: Veronica. You know from experience that 'quick chat' means somewhere between two and three hours.",
+    "choices": [
+      {
+        "label": "Pick up. It's easier this way.",
+        "result": "Two hours and forty minutes. Topics covered: her ex-colleague, her nail technician, and why the team 'lacks ownership'. Zero work decisions made.",
+        "effects": {
+          "sanity": -12,
+          "performance": -2
+        }
+      },
+      {
+        "label": "Text back: 'Saw your call! Let's sync at 10am tomorrow?'",
+        "result": "A boundary, in writing, with a timestamp. She replies 'k'. The 'k' is doing a lot of work.",
+        "effects": {
+          "sanity": 4,
+          "reputation": -1
+        },
+        "addEvidence": {
+          "id": "after-hours-boundary",
+          "label": "Text setting a boundary on 9:47pm calls",
+          "type": "written",
+          "strength": 2
+        },
+        "setFlags": [
+          "set-boundary"
+        ]
+      },
+      {
+        "label": "Pick up, then 'my battery is at 2%'",
+        "result": "You hang up at minute 14. Your battery is at 87%. You will carry this lie to your grave.",
+        "effects": {
+          "sanity": -4
+        }
+      }
+    ]
+  },
+  {
+    "id": "toilet-buddy",
+    "weeks": [
+      1,
+      10
+    ],
+    "weight": 3,
+    "scene": "restroom",
+    "speaker": "veronica",
+    "text": "You are 20 minutes from a deadline. Veronica appears at your desk, hooks her arm through yours and says 'Come, toilet.' It is not a question. It has never been a question. The whole floor has seen you two walk off arm in arm so often they think you're best friends.",
+    "choices": [
+      {
+        "label": "Go. Resistance is futile.",
+        "result": "The meeting continues through a cubicle wall. You learn about her weekend in surround sound. The deadline whooshes past.",
+        "effects": {
+          "sanity": -6,
+          "performance": -5
+        }
+      },
+      {
+        "label": "'Can't, deadline at 3. Grab coffee after?'",
+        "result": "She stares for a full second. 'Wah, so busy now.' You hit the deadline. You will hear about 'attitude' later.",
+        "effects": {
+          "performance": 4,
+          "reputation": -2,
+          "sanity": 2
+        },
+        "setFlags": [
+          "said-no"
+        ]
+      },
+      {
+        "label": "Put on headphones and pretend not to hear",
+        "result": "She taps your shoulder. Then your monitor. Then your soul. You go.",
+        "effects": {
+          "sanity": -8
+        }
+      },
+      {
+        "label": "Make a run for meeting room Nebula",
+        "result": "",
+        "effects": {},
+        "minigame": {
+          "id": "toilet-dodge",
+          "win": {
+            "result": "You make it to Nebula and book it for '30 min focus time'. You hit your deadline. She asks the intern to go to the toilet with her instead.",
+            "effects": {
+              "sanity": 6,
+              "performance": 4
+            }
+          },
+          "lose": {
+            "result": "'THERE you are.' Arm hooked. Toilet. Deadline missed. She tells everyone you were 'hiding from work'.",
+            "effects": {
+              "sanity": -8,
+              "performance": -5,
+              "reputation": -1
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "dinner-and-drive",
+    "weeks": [
+      2,
+      9
+    ],
+    "weight": 2,
+    "scene": "dinner",
+    "speaker": "veronica",
+    "text": "'Dinner tonight. My treat. Then I'll drive you home.' You had plans. Your plans were a quiet bowl of noodles and nobody talking to you.",
+    "choices": [
+      {
+        "label": "Go. Order the most expensive thing.",
+        "result": "The lobster is excellent. The 90-minute drive home, during which she reviews your 'growth areas', is not.",
+        "effects": {
+          "sanity": -9,
+          "reputation": 1
+        }
+      },
+      {
+        "label": "'Already have dinner plans, sorry!'",
+        "result": "True, technically. Your plans are with a bowl of noodles. The noodles do not micromanage you.",
+        "effects": {
+          "sanity": 5,
+          "reputation": -2
+        },
+        "setFlags": [
+          "said-no"
+        ]
+      },
+      {
+        "label": "Go, but say you'll take the MRT home",
+        "result": "You escape at the dessert course. 'Next time I'll drive, ok?' It is not a question.",
+        "effects": {
+          "sanity": -4
+        }
+      }
+    ]
+  },
+  {
+    "id": "new-lead-arrives",
+    "weeks": [
+      2,
+      2
+    ],
+    "always": true,
+    "scene": "office",
+    "speaker": "marcus",
+    "text": "A new hire joins: Marcus, coming in as a Lead. Kai referred him and is visibly proud. Marcus reports to Derek, same as Veronica. He's friendly, competent and brought kueh for the team on day one. Veronica's smile does not reach her eyes.",
+    "choices": [
+      {
+        "label": "Welcome him and show him around",
+        "result": "Marcus is grateful. Veronica watches you two from across the floor like a nature documentary.",
+        "effects": {
+          "reputation": 2,
+          "sanity": 1
+        },
+        "setFlags": [
+          "marcus-joined",
+          "marcus-friend"
+        ]
+      },
+      {
+        "label": "Keep a polite distance. Read the room.",
+        "result": "Safe. Quiet. The kueh is very good though.",
+        "effects": {
+          "sanity": 1
+        },
+        "setFlags": [
+          "marcus-joined"
+        ]
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "wfh-jibe",
+    "weeks": [
+      3,
+      3
+    ],
+    "scene": "office",
+    "speaker": "veronica",
+    "requires": {
+      "flags": [
+        "marcus-joined"
+      ]
+    },
+    "text": "Marcus works from home in the mornings to care for his sick mum, then comes in after lunch. As he arrives, Veronica says loudly: 'Wah, some people treat WFH like a staycation ah.'",
+    "choices": [
+      {
+        "label": "Check in with Marcus privately later",
+        "result": "'Thanks. Derek approved the arrangement, but she keeps bringing it up.' He looks tired. You now know the arrangement was approved.",
+        "effects": {
+          "allies": 1,
+          "sanity": -1,
+          "strikes": 1
+        },
+        "setFlags": [
+          "marcus-confided"
+        ]
+      },
+      {
+        "label": "Note the date and what she said",
+        "result": "Notes app, dated, exact words. It feels petty. It is not petty. It is a pattern.",
+        "addEvidence": {
+          "id": "wfh-jibe-note",
+          "label": "Your dated note of the 'WFH staycation' comment",
+          "type": "written",
+          "strength": 2
+        },
+        "effects": {
+          "strikes": 1
+        }
+      },
+      {
+        "label": "Laugh awkwardly with everyone else",
+        "result": "Everyone laughs a bit. Nobody looks at Marcus. You feel like you swallowed a stapler.",
+        "effects": {
+          "sanity": -5,
+          "reputation": 1,
+          "strikes": 2
+        }
+      }
+    ],
+    "always": true,
+    "order": 1
+  },
+  {
+    "id": "leave-escalation",
+    "weeks": [
+      4,
+      4
+    ],
+    "scene": "office",
+    "speaker": "veronica",
+    "requires": {
+      "flags": [
+        "marcus-joined"
+      ]
+    },
+    "text": "Marcus takes two weeks of leave, approved in writing by HR and Derek before he even joined. Veronica emails Derek's boss, cc Derek: 'Concerned about leave abuse. May need to escalate to Compliance as a governance breach.' She forwards it to you 'for visibility'.",
+    "choices": [
+      {
+        "label": "Save the email somewhere safe",
+        "result": "Saved. She sent you, in writing, her threat to report an approved leave as a Compliance breach. She did your job for you.",
+        "addEvidence": {
+          "id": "compliance-threat-email",
+          "label": "Veronica's email threatening a Compliance escalation over approved leave",
+          "type": "written",
+          "strength": 3
+        },
+        "next": "bigger-problem-reply",
+        "effects": {
+          "strikes": 1
+        }
+      },
+      {
+        "label": "Reply-all: 'I believe this leave was pre-approved?'",
+        "result": "Brave. True. Career-limiting. Derek's boss now knows your name, for better or worse.",
+        "effects": {
+          "reputation": 3,
+          "sanity": -6,
+          "performance": -3,
+          "strikes": 1
+        },
+        "addEvidence": {
+          "id": "compliance-threat-email",
+          "label": "Veronica's email threatening a Compliance escalation over approved leave",
+          "type": "written",
+          "strength": 3
+        },
+        "setFlags": [
+          "spoke-up-early"
+        ],
+        "next": "bigger-problem-reply"
+      },
+      {
+        "label": "Delete it. Not your business.",
+        "result": "Gone. Out of sight, out of mind. Until week 12, when you will really wish you had it.",
+        "effects": {
+          "sanity": 2,
+          "strikes": 2
+        }
+      }
+    ],
+    "always": true,
+    "order": 1
+  },
+  {
+    "id": "the-promotion",
+    "weeks": [
+      4,
+      4
+    ],
+    "always": true,
+    "scene": "townhall",
+    "speaker": "veronica",
+    "text": "All-hands announcement: Veronica is promoted to Team Lead. Effective Monday, she is your manager. Her first act is renaming the team channel to #veronica-and-team.",
+    "choices": [
+      {
+        "label": "Clap. Smile. Die a little inside.",
+        "result": "You clap. Somewhere, your sanity files a resignation letter.",
+        "effects": {
+          "sanity": -6
+        },
+        "setFlags": [
+          "v-is-manager"
+        ]
+      },
+      {
+        "label": "Update your LinkedIn to 'Open to Work' (hidden)",
+        "result": "LinkedIn assures you recruiters can't see it. You choose to believe LinkedIn.",
+        "effects": {
+          "sanity": 2
+        },
+        "setFlags": [
+          "v-is-manager",
+          "job-hunting"
+        ]
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "status-spreadsheet",
+    "weeks": [
+      5,
+      11
+    ],
+    "weight": 2,
+    "scene": "office",
+    "speaker": "veronica",
+    "requires": {
+      "flags": [
+        "v-is-manager"
+      ]
+    },
+    "text": "New process: everyone updates a status tracker every hour. There is a column for 'Time spent updating tracker'. She reviews it at 11pm.",
+    "choices": [
+      {
+        "label": "Comply, meticulously",
+        "result": "18% of your week is now spent describing your week. Your actual work is 'in progress'. Forever.",
+        "effects": {
+          "performance": -10,
+          "sanity": -4
+        }
+      },
+      {
+        "label": "Ask Derek if this is a department-wide process",
+        "result": "Derek: 'First I've heard of it.' He doesn't do anything yet. But he's heard of it.",
+        "effects": {
+          "reputation": 1
+        },
+        "setFlags": [
+          "derek-aware"
+        ]
+      },
+      {
+        "label": "Update it with brutal honesty",
+        "result": "'10:00-11:00: updated tracker.' She calls it 'malicious compliance'. She is not wrong.",
+        "effects": {
+          "sanity": 4,
+          "reputation": -3
+        }
+      }
+    ]
+  },
+  {
+    "id": "stats-ritual",
+    "weeks": [
+      3,
+      3
+    ],
+    "always": true,
+    "scene": "office",
+    "speaker": "veronica",
+    "text": "Veronica volunteers the team, unasked, to post key stats manually in the leadership group chat. Three times a day: 10am, 2pm, 6pm. Sharp. Her draft message opens with 'Good morning Margaret!' and a sun emoji. Margaret is the CFO.",
+    "choices": [
+      {
+        "label": "'I can automate it with a scheduled query'",
+        "result": "'No. Leaders like the personal touch.' The personal touch is a human copy-pasting numbers from a dashboard the leaders already have access to.",
+        "effects": {
+          "reputation": 1,
+          "sanity": -2
+        },
+        "setFlags": [
+          "stats-ritual"
+        ]
+      },
+      {
+        "label": "Volunteer to post them yourself",
+        "result": "Favourite behaviour. You now have three alarms a day. Your lunch is scheduled around 2pm. Your life is scheduled around 6pm.",
+        "effects": {
+          "performance": 2,
+          "sanity": -5
+        },
+        "setFlags": [
+          "stats-ritual"
+        ]
+      },
+      {
+        "label": "Say nothing",
+        "result": "She posts the first one herself. Margaret replies with a thumbs up. Veronica screenshots the thumbs up and posts it in the team chat.",
+        "effects": {
+          "sanity": -1
+        },
+        "setFlags": [
+          "stats-ritual"
+        ]
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "stats-handover",
+    "weeks": [
+      6,
+      6
+    ],
+    "always": true,
+    "scene": "office",
+    "speaker": "veronica",
+    "requires": {
+      "flags": [
+        "stats-ritual",
+        "marcus-joined",
+        "v-is-manager"
+      ]
+    },
+    "text": "Veronica reassigns the 10-2-6 stats posting to Marcus. 'As a Lead, he should have visibility with leadership.' Said with a smile. Marcus does mornings from home on his approved arrangement, so 10am is the busiest moment of his day.",
+    "choices": [
+      {
+        "label": "Set up reminders and a template for Marcus",
+        "result": "Calendar alerts at 9:55, 1:55 and 5:55, plus a pre-filled message. Marcus: 'You're a lifesaver.' It helps. It doesn't help enough.",
+        "effects": {
+          "allies": 1,
+          "sanity": -1,
+          "strikes": 1
+        },
+        "setFlags": [
+          "helped-marcus"
+        ]
+      },
+      {
+        "label": "Offer to keep doing it yourself",
+        "result": "'No no. Marcus should do it.' Very firm. Very quick. Kai and Jordan exchange a look. You understand, too late, that this is not about stats.",
+        "effects": {
+          "sanity": -2,
+          "strikes": 1
+        },
+        "setFlags": [
+          "saw-setup"
+        ]
+      },
+      {
+        "label": "Stay out of it",
+        "result": "Not your task, not your problem. That's what you tell yourself.",
+        "effects": {
+          "sanity": 1,
+          "strikes": 2
+        }
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "the-scolding",
+    "weeks": [
+      7,
+      7
+    ],
+    "always": true,
+    "scene": "nebula",
+    "speaker": "veronica",
+    "requires": {
+      "flags": [
+        "marcus-joined",
+        "v-is-manager"
+      ]
+    },
+    "text": "6:15pm. The 6pm stats update still isn't in the leadership chat. Marcus posts it, fifteen minutes late, again. Next morning's team meeting, everyone present, Derek included, Veronica turns on Marcus: the late updates, his WFH, his leave, his 'commitment'. In front of everyone. It goes on for twenty minutes. Nobody moves. Marcus stares at the table.",
+    "choices": [
+      {
+        "label": "Write down what's said, with the time and who's there",
+        "result": "You type under the table. Names, times, exact phrases. Your hands are shaking. Your notes are not.",
+        "effects": {
+          "sanity": -6,
+          "strikes": 2
+        },
+        "addEvidence": {
+          "id": "scolding-notes",
+          "label": "Your notes from the meeting: time, attendees, exact words",
+          "type": "written",
+          "strength": 3
+        },
+        "setFlags": [
+          "witnessed-scolding"
+        ],
+        "next": "guilt-pact"
+      },
+      {
+        "label": "Interrupt: 'Can we take this offline?'",
+        "result": "Using her own phrase against her. The room exhales. She turns to you: 'Oh, now YOU have opinions?' Worth it. Mostly.",
+        "effects": {
+          "sanity": -8,
+          "reputation": 6,
+          "strikes": 2
+        },
+        "addEvidence": {
+          "id": "scolding-witnessed",
+          "label": "Everyone saw you try to stop the scolding",
+          "type": "witnessed",
+          "strength": 2
+        },
+        "setFlags": [
+          "witnessed-scolding",
+          "spoke-up-early"
+        ],
+        "next": "guilt-pact"
+      },
+      {
+        "label": "Freeze. Stare at your laptop.",
+        "result": "Twenty minutes is a long time to read the same email. You don't remember a single word of it.",
+        "effects": {
+          "sanity": -10,
+          "strikes": 3
+        },
+        "addEvidence": {
+          "id": "scolding-memory",
+          "label": "You remember the scolding, roughly",
+          "type": "recalled",
+          "strength": 1
+        },
+        "setFlags": [
+          "witnessed-scolding",
+          "froze"
+        ],
+        "next": "guilt-pact"
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "guilt-pact",
+    "weeks": [
+      1,
+      12
+    ],
+    "weight": 0,
+    "scene": "pantry",
+    "speaker": "whisper",
+    "text": "You can't sleep. You keep replaying the meeting: Marcus staring at the table, twenty minutes, and nobody, including you, saying a word. Not guilt for something you did. Guilt for something you didn't. Next morning Jordan finds you in the pantry: 'We just sat there.' Your 2-on-1 lunch with Derek is next week.",
+    "choices": [
+      {
+        "label": "'Let's tell Derek at lunch. Together.'",
+        "result": "A pact, sealed over three-in-one coffee. Two witnesses are harder to dismiss than one.",
+        "effects": {
+          "allies": 1,
+          "sanity": 3
+        },
+        "setFlags": [
+          "pact"
+        ],
+        "next": "jordan-dinner"
+      },
+      {
+        "label": "'Let's write down what we both saw, today'",
+        "result": "You compare notes while it's fresh. Two accounts, same details, same day. HR people dream of this.",
+        "effects": {
+          "allies": 1
+        },
+        "addEvidence": {
+          "id": "joint-account",
+          "label": "Joint written account with Jordan, same day",
+          "type": "written",
+          "strength": 3
+        },
+        "setFlags": [
+          "pact"
+        ],
+        "next": "jordan-dinner"
+      },
+      {
+        "label": "'Not our fight. Let's keep our heads down.'",
+        "result": "Jordan nods slowly. The coffee tastes like regret, and also like three-in-one.",
+        "effects": {
+          "sanity": -4
+        },
+        "next": "jordan-dinner"
+      }
+    ]
+  },
+  {
+    "id": "jordan-dinner",
+    "weeks": [
+      1,
+      12
+    ],
+    "weight": 0,
+    "scene": "dinner",
+    "speaker": "whisper",
+    "text": "Plot twist. Two days before your carefully planned lunch, Jordan bumps into Derek leaving the office. One 'eh, makan?' later, they're at a hawker centre, and Jordan tells him everything. Over chicken rice.",
+    "choices": [
+      {
+        "label": "'Jordan. We had a PLAN.'",
+        "result": "'He asked how the team was! What was I supposed to say, fine?' Fair. The plan was a 14-slide deck. Jordan's version was one plate of chicken rice. Jordan's version worked.",
+        "effects": {
+          "sanity": 5
+        },
+        "setFlags": [
+          "derek-told"
+        ],
+        "next": "confirmation-call"
+      },
+      {
+        "label": "Ask Jordan exactly what Derek said",
+        "result": "'He went quiet. Then he said he'd talk to the others.' The others means you. Your phone suddenly feels heavier.",
+        "effects": {
+          "sanity": 2,
+          "allies": 0
+        },
+        "setFlags": [
+          "derek-told"
+        ],
+        "next": "confirmation-call"
+      }
+    ]
+  },
+  {
+    "id": "confirmation-call",
+    "weeks": [
+      1,
+      12
+    ],
+    "weight": 0,
+    "scene": "office",
+    "speaker": "manager",
+    "text": "Next morning, Derek calls you. 'Jordan told me about the meeting with Marcus. I need you to be straight with me. What happened?' No email, no form, no paper trail. Just your point of view, on the phone. This is the moment.",
+    "choices": [
+      {
+        "label": "Tell him everything you saw",
+        "result": "You walk him through it: dates, words, who was in the room. He listens without interrupting. Your account matches Jordan's to the minute. At the end, a long pause. 'Thank you. That's what I needed.' No email. No attachments. Just your word, and it's enough.",
+        "effects": {
+          "allies": 1,
+          "reputation": 4,
+          "sanity": -3
+        },
+        "setFlags": [
+          "testified"
+        ],
+        "next": "the-dig",
+        "opensCase": true
+      },
+      {
+        "label": "Confirm it, but keep it vague",
+        "result": "'It was... a lot.' Derek sighs. He believes you, but 'a lot' doesn't fit on an HR form.",
+        "effects": {
+          "sanity": -2,
+          "strikes": 1
+        },
+        "addEvidence": {
+          "id": "vague-confirmation",
+          "label": "You vaguely confirmed to Derek",
+          "type": "recalled",
+          "strength": 1
+        },
+        "next": "the-dig"
+      },
+      {
+        "label": "'I didn't really notice anything'",
+        "result": "Derek pauses. 'Okay.' The call ends. Marcus will never know you had this chance. You will.",
+        "effects": {
+          "sanity": -12,
+          "reputation": -4,
+          "strikes": 3
+        },
+        "setFlags": [
+          "denied"
+        ],
+        "next": "the-dig"
+      }
+    ],
+    "variants": [
+      {
+        "if": {
+          "flags": [
+            "favourite"
+          ]
+        },
+        "text": "Next morning, Derek calls you. He sounds careful. 'I'll be honest, I always thought you and Veronica were close. You two are always walking off together. So I need you to be straight with me. What happened with Marcus?' If her favourite says it happened, it happened. This is the moment."
+      }
+    ]
+  },
+  {
+    "id": "the-dig",
+    "weeks": [
+      1,
+      12
+    ],
+    "weight": 0,
+    "scene": "restroom",
+    "speaker": "veronica",
+    "text": "Veronica saw Derek call you. 'Come, toilet.' At the sinks, too casually: 'Derek called you ah? What did he want? Was it about me?'",
+    "choices": [
+      {
+        "label": "'Just project stuff. You know Derek.'",
+        "result": "She studies your face in the mirror. You think about nothing. You are a blank Excel sheet. She lets it go. For now.",
+        "effects": {
+          "sanity": -5
+        }
+      },
+      {
+        "label": "'He asked me to keep it confidential.'",
+        "result": "Honest, and it shuts the door. Her face does seven things at once. Then she leaves without washing her hands.",
+        "effects": {
+          "sanity": -3,
+          "reputation": 2
+        },
+        "addEvidence": {
+          "id": "dig-attempt",
+          "label": "Veronica tried to extract details of Derek's call",
+          "type": "recalled",
+          "strength": 1
+        }
+      },
+      {
+        "label": "Tell her about the call",
+        "result": "Her eyes narrow. For the rest of the quarter you are put on 'special projects', which turns out to mean filing.",
+        "effects": {
+          "sanity": -10,
+          "performance": -15,
+          "strikes": 2
+        },
+        "setFlags": [
+          "leaked"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bigger-problem-reply",
+    "weeks": [
+      1,
+      12
+    ],
+    "weight": 0,
+    "scene": "office",
+    "speaker": "bigboss",
+    "text": "Gordon replies-all to Veronica's Compliance email. One line: 'WHAT IS THE BIGGER PROBLEM WE ARE TRYING TO SOLVE HERE?' Veronica replies with a 9-page attachment. Gordon does not reply again.",
+    "choices": [
+      {
+        "label": "Forward it to Jordan with no comment",
+        "result": "Jordan replies with a single skull emoji. Communication is 90% non-verbal.",
+        "effects": {
+          "sanity": 5
+        }
+      },
+      {
+        "label": "Print it. Frame it.",
+        "result": "It sits on your desk next to a cactus. Nobody asks. Everybody reads it.",
+        "effects": {
+          "sanity": 4,
+          "reputation": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "bigger-problem-csv",
+    "weeks": [
+      1,
+      12
+    ],
+    "weight": 3,
+    "scene": "office",
+    "speaker": "bigboss",
+    "text": "A stakeholder pings: 'Can you pull a quick CSV of last month's numbers?' Gordon's voice echoes in your head: 'WHAT ARE YOU TRYING TO SOLVE HERE? WHAT IS THE BIGGER PROBLEM?'",
+    "choices": [
+      {
+        "label": "Ask: 'What's the bigger problem here?'",
+        "result": "Forty messages later, the bigger problem is that their boss asked for the CSV. Their boss's boss asked their boss. Nobody knows why. You send the CSV.",
+        "effects": {
+          "sanity": -3,
+          "performance": 3
+        }
+      },
+      {
+        "label": "Just send the CSV",
+        "result": "Done in 4 minutes. Gordon finds out at the weekly sync. 'Did you ask about the BIGGER PROBLEM?' You did not.",
+        "effects": {
+          "performance": 2,
+          "reputation": -2
+        }
+      },
+      {
+        "label": "Build a full dashboard instead",
+        "result": "Three weeks, twelve charts, one filter nobody uses. The stakeholder still exports it to CSV. The circle of life.",
+        "effects": {
+          "performance": -4,
+          "sanity": -4,
+          "reputation": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": "dashboard-wrong",
+    "weeks": [
+      2,
+      12
+    ],
+    "weight": 2,
+    "scene": "office",
+    "speaker": "veronica",
+    "text": "Veronica forwards a stakeholder complaint, cc Derek: 'The dashboard is WRONG. Please fix urgently.' You check. The dashboard is right. The source system is wrong. It has been wrong since 2019.",
+    "choices": [
+      {
+        "label": "Reply with a clear data lineage explanation",
+        "result": "Tables, timestamps, the exact upstream bug. Derek replies 'thanks, clear'. Veronica replies 'noted'. In her language, 'noted' means 'I will remember this'.",
+        "effects": {
+          "performance": 5,
+          "sanity": -2
+        },
+        "addEvidence": {
+          "id": "dashboard-blame-email",
+          "label": "Email thread: blamed for an upstream data issue",
+          "type": "written",
+          "strength": 2
+        }
+      },
+      {
+        "label": "Quietly patch it in the dashboard",
+        "result": "You add a CASE WHEN that will outlive everyone in this building. Future you will find it and weep.",
+        "effects": {
+          "performance": 2,
+          "sanity": -3
+        }
+      }
+    ]
+  },
+  {
+    "id": "divide-and-conquer",
+    "weeks": [
+      6,
+      6
+    ],
+    "scene": "pantry",
+    "speaker": "kai",
+    "requires": {
+      "flags": [
+        "marcus-joined"
+      ]
+    },
+    "text": "Kai pulls you into the pantry, rattled. Veronica just took Kai for a 'quick coffee' and said: 'Don't trust Marcus. He's not a good friend. Be careful of him.' Kai referred Marcus for this job.",
+    "choices": [
+      {
+        "label": "'Write down exactly what she said. Now.'",
+        "result": "Kai types it into a note with today's date, word for word. 'She really thought I'd turn on the guy I referred?' Divide and conquer only works if nobody compares notes.",
+        "effects": {
+          "allies": 1,
+          "sanity": -1,
+          "strikes": 0
+        },
+        "addEvidence": {
+          "id": "kai-turn-attempt",
+          "label": "Kai's dated note: Veronica told Kai not to trust Marcus",
+          "type": "written",
+          "strength": 2
+        },
+        "setFlags": [
+          "kai-ally"
+        ]
+      },
+      {
+        "label": "'You should give Marcus a heads-up'",
+        "result": "Marcus listens, then laughs quietly. 'Thanks. I figured.' The three of you start a group chat that evening. It is named after a meeting room. It will outlive this company.",
+        "effects": {
+          "allies": 1,
+          "reputation": 2,
+          "sanity": 3,
+          "strikes": 0
+        },
+        "setFlags": [
+          "kai-ally",
+          "group-chat"
+        ]
+      },
+      {
+        "label": "'Hmm. Maybe she has a point?'",
+        "result": "Kai stares at you like you've just suggested pineapple on nasi lemak. The pantry gets very quiet. The kettle clicks off.",
+        "effects": {
+          "reputation": -5,
+          "sanity": -3,
+          "strikes": 2
+        },
+        "setFlags": [
+          "doubted-marcus"
+        ]
+      }
+    ],
+    "always": true,
+    "order": 2
+  },
+  {
+    "id": "hot-desk-war",
+    "weeks": [
+      1,
+      12
+    ],
+    "weight": 2,
+    "scene": "office",
+    "speaker": "veronica",
+    "text": "Hot-desking day. The Growth team arrived at 7:45am and choped the row your team usually sits in. Veronica video-calls their manager, from three desks away, and shares her screen: an Excel seating plan. Colour-coded. With a legend. 'As you can see, rows C to E are historically ours.'",
+    "choices": [
+      {
+        "label": "'It's fine, I'll sit by the window'",
+        "result": "'No. It's the PRINCIPLE.' She adds a new tab to the spreadsheet called 'Escalation'. You sit by the window anyway. The view is great. You enjoy it in silence.",
+        "effects": {
+          "sanity": -3,
+          "performance": 1
+        }
+      },
+      {
+        "label": "Mouth 'sorry' to the Growth team",
+        "result": "Their whole row nods at you. You have just made eleven friends in a department you've never worked with. Cross-functional collaboration, achieved.",
+        "effects": {
+          "reputation": 3,
+          "sanity": 1
+        }
+      },
+      {
+        "label": "Offer to 'optimise' her seating plan",
+        "result": "You add a VLOOKUP, conditional formatting and a pivot table of seat occupancy by team. She loves it. She presents it at the next ops meeting as her own work. Of course she does.",
+        "effects": {
+          "performance": 2,
+          "reputation": -3,
+          "sanity": -2
+        },
+        "addEvidence": {
+          "id": "seating-plan-credit",
+          "label": "Email: your seating-plan analysis presented as hers",
+          "type": "written",
+          "strength": 2
+        }
+      },
+      {
+        "label": "Take your laptop to the pantry for the day",
+        "result": "Productive day. Good coffee. Zero spreadsheets about chairs. You consider making the pantry your permanent desk.",
+        "effects": {
+          "sanity": 4,
+          "reputation": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "aircon-only-lunch",
+    "weeks": [
+      1,
+      12
+    ],
+    "weight": 2,
+    "scene": "dinner",
+    "speaker": "veronica",
+    "text": "Team lunch. Someone suggests the hawker centre downstairs: $5 chicken rice, 3-minute walk. Veronica: 'Aircon places only. I don't sweat.' The only aircon option is a mall salad bar. $24 per bowl. Before drinks.",
+    "choices": [
+      {
+        "label": "Go along. Order the cheapest leaves.",
+        "result": "$24 of leaves and one sad cherry tomato. Lunch conversation is about her new car's air purifier. You are hungry again by 3pm.",
+        "effects": {
+          "sanity": -4,
+          "reputation": 1
+        }
+      },
+      {
+        "label": "'I'll da bao from the hawker and join you'",
+        "result": "You arrive with chicken rice in a plastic bag. The smell fills the salad bar. Kai and Jordan look at your bag with naked longing.",
+        "effects": {
+          "sanity": 3,
+          "reputation": -1
+        }
+      },
+      {
+        "label": "Suggest a food court with aircon",
+        "result": "Compromise! Aircon AND $6 food. Veronica says the food court is 'too noisy'. She means 'not my idea'. You go to the salad bar.",
+        "effects": {
+          "sanity": -2,
+          "reputation": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "stakeholder-screaming-call",
+    "weeks": [
+      2,
+      2
+    ],
+    "always": true,
+    "scene": "office",
+    "speaker": "veronica",
+    "text": "Your second week. Veronica adds you to a call 'to observe'. Two stakeholders from Product and Ops are already there. Within four minutes, all three adults are screaming at each other. You are the only one with your camera on.",
+    "choices": [
+      {
+        "label": "Stay muted and take notes",
+        "result": "Your notes read: '10:04 shouting. 10:06 more shouting. 10:09 someone says \"with all due respect\" (no respect detected).' You learn a lot. None of it is about data.",
+        "effects": {
+          "sanity": -5
+        },
+        "addEvidence": {
+          "id": "screaming-call-notes",
+          "label": "Your notes from the stakeholder shouting call",
+          "type": "written",
+          "strength": 1
+        },
+        "setFlags": [
+          "knows-pattern"
+        ]
+      },
+      {
+        "label": "Unmute: 'Shall we take this offline?'",
+        "result": "Silence. Three faces stare at the junior who just spoke. The Ops lead says 'Good idea.' Veronica says nothing. Veronica remembers everything.",
+        "effects": {
+          "reputation": 4,
+          "sanity": -4
+        },
+        "setFlags": [
+          "spoke-up-early"
+        ]
+      },
+      {
+        "label": "Turn camera off. 'Bad connection.'",
+        "result": "You watch the rest with a cup of Milo. It's honestly better than Netflix. Afterwards, Veronica messages: 'Why camera off? This was for your learning.'",
+        "effects": {
+          "sanity": 2,
+          "reputation": -1
+        }
+      }
+    ],
+    "order": 2
+  },
+  {
+    "id": "onboarding",
+    "weeks": [
+      1,
+      1
+    ],
+    "always": true,
+    "scene": "office",
+    "speaker": "veronica",
+    "text": "Day one. Veronica runs your onboarding at 2x speed: systems, access requests, 'how we do things here'. At the end she snaps her laptop shut. 'Any questions?'",
+    "choices": [
+      {
+        "label": "'Anything I can help you with, or start on?'",
+        "result": "She stops. Blinks. Nobody has ever asked her that. 'Wah. Finally, someone with initiative.' From today, you are 'my junior'. This will be both a blessing and a curse. Mostly the second one.",
+        "effects": {
+          "performance": 5,
+          "sanity": 2
+        },
+        "setFlags": [
+          "favourite"
+        ]
+      },
+      {
+        "label": "'Where's the pantry?'",
+        "result": "She points vaguely. You find it 20 minutes later behind a door labelled 'Innovation Hub'.",
+        "effects": {
+          "sanity": 1
+        }
+      },
+      {
+        "label": "'Nope, all clear!'",
+        "result": "She nods and is already on her phone. You spend your first week reading a 2019 Confluence page about a system that no longer exists.",
+        "effects": {
+          "performance": -2,
+          "sanity": 2
+        }
+      }
+    ],
+    "order": 1
+  },
+  {
+    "id": "the-confidante",
+    "weeks": [
+      4,
+      6
+    ],
+    "weight": 3,
+    "scene": "dinner",
+    "speaker": "veronica",
+    "requires": {
+      "flags": [
+        "favourite",
+        "marcus-joined"
+      ]
+    },
+    "text": "Perks of being the favourite: she tells you things. Over dinner, leaning in: 'Between us ah. Marcus won't last here. Trust me, I'll make sure.' She smiles and orders dessert for both of you.",
+    "choices": [
+      {
+        "label": "Nod, then write it down word for word later",
+        "result": "In the Grab home, you type it into your notes with the date and time. Your hands are cold. Being trusted by the wrong person is a strange feeling.",
+        "effects": {
+          "sanity": -5
+        },
+        "addEvidence": {
+          "id": "wont-last-note",
+          "label": "Your dated note: 'Marcus won't last, I'll make sure'",
+          "type": "written",
+          "strength": 2
+        },
+        "setFlags": [
+          "knows-intent"
+        ]
+      },
+      {
+        "label": "Play along to hear more",
+        "result": "'Why you say that?' She tells you everything: the leave, the WFH, the emails to Gordon. You learn a lot. You also eat a lava cake you did not want.",
+        "effects": {
+          "sanity": -8,
+          "strikes": 1
+        },
+        "addEvidence": {
+          "id": "plan-recalled",
+          "label": "You remember her laying out her plan against Marcus",
+          "type": "recalled",
+          "strength": 1
+        },
+        "setFlags": [
+          "knows-intent"
+        ]
+      },
+      {
+        "label": "Change the subject to her car's air purifier",
+        "result": "Forty minutes on HEPA filters. Safe. Boring. You feel like you dodged something, but you're not sure what.",
+        "effects": {
+          "sanity": -2
+        }
+      }
+    ]
+  },
+  {
+    "id": "metric-explosion",
+    "weeks": [
+      2,
+      11
+    ],
+    "weight": 3,
+    "scene": "office",
+    "speaker": "veronica",
+    "text": "The ask: a dashboard showing how many people signed up for the beta. One number. Veronica's spec: Newly Registered. Newly Waitlisted. Newly Registered AND Waitlisted. Deregistered. Re-registered After Deregistering. Waitlisted But Not Yet Registered. Fourteen metrics. For a counter.",
+    "choices": [
+      {
+        "label": "Build all fourteen. Don't ask questions.",
+        "result": "Three weeks later it launches. The first stakeholder question: 'So... how many people signed up?' Nobody in the room can answer. Including Veronica.",
+        "effects": {
+          "performance": -5,
+          "sanity": -6
+        }
+      },
+      {
+        "label": "Ask: 'What's the bigger problem we're solving?'",
+        "result": "Gordon's catchphrase, used against her. Her eye twitches. 'Don't Gordon me.' But she cuts it to six metrics. A 57% reduction in nonsense. You'll take it.",
+        "effects": {
+          "performance": 3,
+          "reputation": 2,
+          "sanity": -2
+        }
+      },
+      {
+        "label": "Build all fourteen, put 'Total sign-ups' at the top",
+        "result": "One big number, fourteen small ones underneath. Usage logs show everyone looks at the big number and leaves. The fourteen metrics remain, like a monument to her vision.",
+        "effects": {
+          "performance": 4,
+          "sanity": -3
+        }
+      },
+      {
+        "label": "Propose one number with a drill-down",
+        "result": "'Too simplistic. Stakeholders need GRANULARITY.' The stakeholders, privately, tell you they love the simple version. She presents your simple version to Gordon as hers.",
+        "effects": {
+          "performance": 2,
+          "reputation": 3,
+          "sanity": -3
+        },
+        "addEvidence": {
+          "id": "dashboard-spec-thread",
+          "label": "Email thread: your simple design rejected, then presented as hers",
+          "type": "written",
+          "strength": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "lift-callback",
+    "weeks": [
+      2,
+      11
+    ],
+    "weight": 2,
+    "scene": "dinner",
+    "speaker": "veronica",
+    "text": "6:02pm. You're in the lift, doors closing, freedom in sight. Your phone buzzes. Veronica: 'Where are you? Come back up. Team dinner! Kai is free tonight, so rare!' Kai usually rushes home to his wife and a baby who does not believe in sleep. Kai had planned to spend this rare free evening asleep.",
+    "choices": [
+      {
+        "label": "Ride the lift back up",
+        "result": "Dinner for four. Veronica talks for 2.5 hours. Under the table, Kai, Jordan and you start a group chat purely for eye-roll emojis. It's the best thing to come out of the night.",
+        "effects": {
+          "sanity": -6,
+          "reputation": 1
+        },
+        "setFlags": [
+          "group-chat"
+        ]
+      },
+      {
+        "label": "'Aiya, doors closed already, sorry!'",
+        "result": "Technically true. You go home. Next morning: 'You missed a very good bonding session.' Kai texts you privately: 'lucky.'",
+        "effects": {
+          "sanity": 5,
+          "reputation": -2
+        }
+      },
+      {
+        "label": "Go back up, then engineer an 8pm exit for Kai",
+        "result": "At 7:55 you say loudly, 'Kai, didn't you say the baby has a check-up tomorrow?' Kai catches on instantly. You both leave. He buys your kopi for a week.",
+        "effects": {
+          "sanity": -2,
+          "allies": 1
+        },
+        "setFlags": [
+          "kai-ally"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "erd-no-crossing",
+    "weeks": [
+      2,
+      12
+    ],
+    "weight": 2,
+    "scene": "office",
+    "speaker": "veronica",
+    "text": "Documentation sprint. You draw the ERD: 47 tables, 63 relationships. Veronica's review comment: 'Lines cannot overlap. It looks messy. Fix by EOD.'",
+    "choices": [
+      {
+        "label": "Spend the weekend untangling it",
+        "result": "Sunday, 11pm: zero crossings. You achieved it by routing one line around the entire diagram, twice. It looks like a bowl of mee pok. She approves it.",
+        "effects": {
+          "sanity": -8,
+          "performance": 2
+        }
+      },
+      {
+        "label": "Explain the graph is mathematically non-planar",
+        "result": "You draw K3,3 on the whiteboard and explain Kuratowski's theorem. She listens patiently, then says: 'Then remove a relationship.' The diagram is now beautiful and wrong.",
+        "effects": {
+          "sanity": -4,
+          "reputation": 2
+        }
+      },
+      {
+        "label": "Use line jumps",
+        "result": "The little bridge humps. 'Technically, nothing overlaps. They hop over each other.' She squints for a long time. 'OK.' A rare victory for technicalities.",
+        "effects": {
+          "sanity": 3,
+          "performance": 2
+        }
+      },
+      {
+        "label": "Split it into 9 tiny ERDs",
+        "result": "Zero crossings. Also zero ability to see how any table connects to any other table. Documentation complete. Understanding destroyed.",
+        "effects": {
+          "performance": -2,
+          "sanity": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "dbt-count-check",
+    "weeks": [
+      3,
+      12
+    ],
+    "weight": 2,
+    "scene": "office",
+    "speaker": "veronica",
+    "text": "New rule: every dbt model must include COUNT(*) OVER (PARTITION BY id) to check for duplicates, 'because I cannot trust the data engineers'. Every model. All 212 of them. Including the ones that select from a single-row config table.",
+    "choices": [
+      {
+        "label": "Add it to all 212 models",
+        "result": "The nightly run goes from 40 minutes to 3 hours. The warehouse bill goes up 38%. Finance emails Gordon. Gordon emails the team one line: 'WHAT IS THE BIGGER PROBLEM HERE?'",
+        "effects": {
+          "performance": -4,
+          "sanity": -5
+        }
+      },
+      {
+        "label": "Propose a dbt unique test instead",
+        "result": "You write a one-pager: same check, runs once, costs nearly nothing. 'Tests can be skipped. Window functions cannot.' Derek reads your one-pager and quietly forwards it to Gordon.",
+        "effects": {
+          "reputation": 3,
+          "performance": 2,
+          "sanity": -2
+        },
+        "setFlags": [
+          "derek-aware"
+        ]
+      },
+      {
+        "label": "Add it, with a comment in every model",
+        "result": "212 models, each with '-- duplicate check added per V. Sharpe, see thread'. When Finance investigates the cost spike, every single query has her name on it.",
+        "effects": {
+          "sanity": 2,
+          "reputation": 1
+        },
+        "addEvidence": {
+          "id": "cost-spike-thread",
+          "label": "Email thread: her mandated checks behind the cost spike",
+          "type": "written",
+          "strength": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "ten-years-experience",
+    "weeks": [
+      1,
+      12
+    ],
+    "weight": 3,
+    "scene": "nebula",
+    "speaker": "veronica",
+    "text": "Sprint planning. Jordan suggests automating the weekly report instead of building it by hand in Excel. Veronica slams the table: 'IN MY 10 YEARS OF INDUSTRY EXPERIENCE, WE HAVE ALWAYS DONE IT THIS WAY.' Kai quietly adds a tally mark on the whiteboard. It's the fourth this week.",
+    "choices": [
+      {
+        "label": "'What was the outcome, those 10 years?'",
+        "result": "Silence. 'The outcome is that it WORKS.' The weekly report has been wrong since March. Nobody mentions March.",
+        "effects": {
+          "reputation": 3,
+          "sanity": -3
+        }
+      },
+      {
+        "label": "Add your own tally mark",
+        "result": "Five. Kai draws the diagonal line through the bundle with great ceremony. Jordan coughs to hide a laugh. Veronica thinks the whiteboard is a sprint burndown chart.",
+        "effects": {
+          "sanity": 4,
+          "reputation": 1
+        }
+      },
+      {
+        "label": "Automate it quietly anyway",
+        "result": "A scheduled query, 40 lines of SQL. The report now builds itself at 7am. You still 'send' it at 10am so nobody asks. Ten years of experience, eleven minutes of SQL.",
+        "effects": {
+          "performance": 5,
+          "sanity": 2
+        }
+      },
+      {
+        "label": "Nod respectfully",
+        "result": "Three more hours of manual Excel every Monday, forever. In your 10 weeks of experience, this is how it has always been done.",
+        "effects": {
+          "sanity": -4,
+          "performance": -2
+        }
+      }
+    ]
+  },
+  {
+    "id": "upward-management",
+    "weeks": [
+      2,
+      11
+    ],
+    "weight": 2,
+    "scene": "office",
+    "speaker": "veronica",
+    "text": "Veronica forwards your analysis to Margaret, the CFO, with one line added: 'Pulled this together over the weekend, thought it might help!' It is 9am Monday. You finished it Friday at 4pm. Margaret replies: 'Veronica, you're a star.'",
+    "choices": [
+      {
+        "label": "Reply-all with 'Happy to walk through my analysis!'",
+        "result": "Polite. Clear about whose analysis it is. Margaret's assistant books you a 15-minute slot. Veronica books herself into the same slot.",
+        "effects": {
+          "reputation": 3,
+          "sanity": -3
+        },
+        "addEvidence": {
+          "id": "cfo-credit-thread",
+          "label": "Email: your analysis forwarded to the CFO as hers",
+          "type": "written",
+          "strength": 2
+        }
+      },
+      {
+        "label": "Save the original file with Friday's timestamp",
+        "result": "File properties: created Friday 2:13pm, by you. Saved to your evidence folder, which is getting a bit full.",
+        "addEvidence": {
+          "id": "friday-file",
+          "label": "File metadata: you built it on Friday",
+          "type": "written",
+          "strength": 2
+        }
+      },
+      {
+        "label": "Let it go",
+        "result": "Margaret now thinks Veronica works weekends. Veronica now thinks you won't object. Both are wrong, eventually.",
+        "effects": {
+          "sanity": -3
+        }
+      }
+    ]
+  },
+  {
+    "id": "lobby-warning",
+    "weeks": [
+      5,
+      11
+    ],
+    "weight": 3,
+    "scene": "office",
+    "speaker": "marcus",
+    "requires": {
+      "flags": [
+        "marcus-joined",
+        "v-is-manager"
+      ]
+    },
+    "text": "12:30pm. You're heading out for lunch. Marcus is just walking into the lobby after his WFH morning. Upstairs, Veronica has been asking 'where is Marcus' every ten minutes since 11.",
+    "choices": [
+      {
+        "label": "'Bro, sit far away. You kena by her already. Faster run.'",
+        "result": "Marcus doesn't break stride. He takes the far lift, sits behind the pillar on the other side of the floor, and is 'in a call' until 3pm. A strike dodged.",
+        "effects": {
+          "allies": 1,
+          "strikes": -1,
+          "sanity": 2
+        },
+        "setFlags": [
+          "helped-marcus"
+        ]
+      },
+      {
+        "label": "Give him a look and a tiny head shake",
+        "result": "He reads it perfectly. Eyebrows up, mouth tight, a slow nod. Corporate sign language, fluently spoken.",
+        "effects": {
+          "strikes": -1
+        },
+        "setFlags": [
+          "helped-marcus"
+        ]
+      },
+      {
+        "label": "Wave and keep walking to lunch",
+        "result": "Your chicken rice is excellent. At 1:15 you hear Veronica's voice carry across the floor: 'MARCUS. A word.'",
+        "effects": {
+          "strikes": 1,
+          "sanity": -2
+        }
+      }
+    ]
+  },
+  {
+    "id": "secret-vent",
+    "weeks": [
+      5,
+      5
+    ],
+    "scene": "nebula",
+    "speaker": "marcus",
+    "requires": {
+      "flags": [
+        "marcus-joined",
+        "v-is-manager"
+      ]
+    },
+    "text": "The 'fresh start' lasted a day. This morning Veronica flared at Marcus again, at his desk, in front of the whole floor. Ten minutes later you walk past. He's staring at a blank spreadsheet.",
+    "choices": [
+      {
+        "label": "'You ok?' and nod toward an empty meeting room",
+        "result": "Door closed, voices low. He vents for twenty minutes. Then, calmly: 'I gave her ten strikes. If she hits ten, I resign.' He doesn't say what number she's on. He doesn't need to.",
+        "effects": {
+          "allies": 1,
+          "strikes": -1,
+          "sanity": -2
+        },
+        "addEvidence": {
+          "id": "marcus-account",
+          "label": "Marcus's account of the pattern, told to you",
+          "type": "witnessed",
+          "strength": 2
+        },
+        "setFlags": [
+          "knows-strikes",
+          "helped-marcus"
+        ]
+      },
+      {
+        "label": "Slack him a coffee emoji",
+        "result": "He replies with a coffee emoji and a skull. Small, but it's something.",
+        "effects": {
+          "strikes": 0,
+          "sanity": -1
+        }
+      },
+      {
+        "label": "Keep walking. Not your business.",
+        "result": "You walk past. Then you walk past again on the way back. He's still staring at the same blank spreadsheet.",
+        "effects": {
+          "strikes": 1,
+          "sanity": -3
+        }
+      }
+    ],
+    "always": true,
+    "order": 2
+  },
+  {
+    "id": "review-buddy",
+    "weeks": [
+      5,
+      11
+    ],
+    "weight": 2,
+    "scene": "office",
+    "speaker": "marcus",
+    "requires": {
+      "flags": [
+        "marcus-joined",
+        "v-is-manager"
+      ]
+    },
+    "text": "Marcus's work keeps coming back from Veronica covered in comments. 'Font inconsistent.' 'Why is this chart blue.' 'In my 10 years of industry experience, this is not how a deck flows.'",
+    "choices": [
+      {
+        "label": "Offer to check his work before he submits",
+        "result": "Every deck gets a second pair of eyes first: fonts, colours, the exact shade of blue she prefers. Her comments drop from 40 a deck to 6. She seems almost disappointed.",
+        "effects": {
+          "strikes": -1,
+          "allies": 1,
+          "sanity": -3,
+          "performance": -2
+        },
+        "setFlags": [
+          "helped-marcus"
+        ]
+      },
+      {
+        "label": "Share her 'preferences' doc with him",
+        "result": "You've kept a private list: font Calibri 11, no red, never start a slide with a number. Marcus reads it like a survival manual. It is a survival manual.",
+        "effects": {
+          "strikes": -1,
+          "sanity": -1
+        },
+        "setFlags": [
+          "helped-marcus"
+        ]
+      },
+      {
+        "label": "Stay out of it",
+        "result": "Next deck: 52 comments. One is just a question mark.",
+        "effects": {
+          "strikes": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "clear-the-air",
+    "weeks": [
+      5,
+      5
+    ],
+    "scene": "office",
+    "speaker": "marcus",
+    "requires": {
+      "flags": [
+        "marcus-joined"
+      ]
+    },
+    "text": "Marcus mostly keeps his head down and tries harder: earlier replies, cleaner decks, no complaints. Today he tells you he finally called Veronica to clear the air. 'She was totally fine. Said it was all a misunderstanding.' He looks genuinely relieved.",
+    "choices": [
+      {
+        "label": "'Send her a recap email of the call'",
+        "result": "He does: 'Thanks for the chat, glad we're aligned on...' Next morning she's back to normal. Normal meaning the old normal. But this time there's an email saying she agreed.",
+        "effects": {
+          "strikes": 0,
+          "sanity": -1
+        },
+        "addEvidence": {
+          "id": "clear-air-recap",
+          "label": "Marcus's recap: she agreed to reset, then reverted",
+          "type": "written",
+          "strength": 2
+        },
+        "setFlags": [
+          "helped-marcus"
+        ]
+      },
+      {
+        "label": "'That's great! Fresh start.'",
+        "result": "It lasts until 10:04 the next morning. Marcus doesn't say anything. He just goes back to keeping quiet and trying harder.",
+        "effects": {
+          "strikes": 1,
+          "sanity": -2
+        }
+      },
+      {
+        "label": "'Be careful. Give it a week.'",
+        "result": "It doesn't take a week. It takes a day. 'You called it,' he says, without smiling.",
+        "effects": {
+          "strikes": 0,
+          "allies": 1
+        }
+      }
+    ],
+    "always": true,
+    "order": 1
+  },
+  {
+    "id": "derek-draws-line",
+    "weeks": [
+      6,
+      6
+    ],
+    "scene": "nebula",
+    "speaker": "manager",
+    "requires": {
+      "flags": [
+        "marcus-joined"
+      ]
+    },
+    "text": "Through the glass walls of Nebula you watch Derek and Veronica. She has a printout. It's her fifth complaint about Marcus this month. Derek, normally the most conflict-avoidant man on floor 23, stands up: 'Enough. From now on, you don't work with Marcus. You don't sit near Marcus. At all.'",
+    "choices": [
+      {
+        "label": "Pretend to read your screen. Read lips instead.",
+        "result": "You catch 'at all' and 'I'm serious'. Veronica walks out pale. Derek sits down and exhales like a man who just ran a marathon. Slow to act, but he acted.",
+        "effects": {
+          "strikes": -2,
+          "sanity": 3
+        },
+        "setFlags": [
+          "derek-drew-line"
+        ]
+      },
+      {
+        "label": "Message Jordan: 'DEREK HAS A SPINE??'",
+        "result": "Jordan: 'WHAT.' Kai: 'screenshot or it didn't happen.' Derek has a spine. It just takes five printouts to activate.",
+        "effects": {
+          "strikes": -2,
+          "sanity": 4,
+          "reputation": -1
+        },
+        "setFlags": [
+          "derek-drew-line",
+          "group-chat"
+        ]
+      }
+    ],
+    "always": true,
+    "order": 3
+  },
+  {
+    "id": "technically-not-near",
+    "weeks": [
+      7,
+      11
+    ],
+    "weight": 2,
+    "scene": "office",
+    "speaker": "veronica",
+    "requires": {
+      "flags": [
+        "derek-drew-line"
+      ]
+    },
+    "text": "Veronica is obeying Derek's rule. Technically. She doesn't sit near Marcus. She just discusses his work in the leadership chat, cc's his stakeholders, and asks you, loudly, whether 'some people' have submitted their stats yet.",
+    "choices": [
+      {
+        "label": "'I don't know, I'm not near him either'",
+        "result": "Kai turns a laugh into a cough so violent that Jordan offers him water. Veronica narrows her eyes at all three of you.",
+        "effects": {
+          "sanity": 3,
+          "reputation": 1
+        }
+      },
+      {
+        "label": "Screenshot the leadership chat messages",
+        "result": "Rule set by Derek. Rule bent in writing, timestamped, in a group chat with the CFO. Saved.",
+        "addEvidence": {
+          "id": "rule-bent",
+          "label": "Chat: discussing Marcus after Derek's no-contact rule",
+          "type": "written",
+          "strength": 3
+        }
+      },
+      {
+        "label": "Say nothing",
+        "result": "She asks again, louder. Marcus, two rows away, heard it the first time.",
+        "effects": {
+          "strikes": 1,
+          "sanity": -2
+        }
+      }
+    ]
+  },
+  {
+    "id": "smear-campaign",
+    "weeks": [
+      13,
+      13
+    ],
+    "weight": 0,
+    "epilogue": true,
+    "scene": "office",
+    "speaker": "veronica",
+    "requires": {
+      "flags": [
+        "exposed"
+      ]
+    },
+    "text": "Monday, 11am. Veronica walks out of a meeting with Derek, Gordon and HR. Garden leave, effective immediately. By 11:20 she's going desk to desk: 'Marcus did this to me. Be careful of him.' Marcus, who never filed a single complaint. Marcus, who kept quiet for months.",
+    "choices": [
+      {
+        "label": "'Marcus never complained once. You did.'",
+        "result": "Said quietly, to the person she was just whispering to. They blink. Then nod. The whisper campaign dies at that desk.",
+        "effects": {
+          "reputation": 3,
+          "strikes": -1
+        }
+      },
+      {
+        "label": "Message Marcus: 'Ignore whatever you hear today'",
+        "result": "'Already heard. It's ok.' Then, a minute later: 'Thanks for being on my side.'",
+        "effects": {
+          "allies": 1,
+          "strikes": -1
+        }
+      },
+      {
+        "label": "Keep your head down until she's gone",
+        "result": "You count the minutes until her access card stops working. 4 hours, 12 minutes.",
+        "effects": {
+          "sanity": -2
+        }
+      }
+    ]
+  },
+  {
+    "id": "farewell-one-on-one",
+    "weeks": [
+      13,
+      13
+    ],
+    "weight": 0,
+    "epilogue": true,
+    "scene": "nebula",
+    "speaker": "veronica",
+    "requires": {
+      "flags": [
+        "exposed",
+        "favourite"
+      ]
+    },
+    "text": "Her last hour. She books Nebula with you, of course. 'I'm leaving today. I wanted you to hear it from me. Don't trust Marcus. And honestly? This company cannot survive without me.' She's looking at you the way she did on your first day.",
+    "choices": [
+      {
+        "label": "'Thank you for onboarding me.'",
+        "result": "True, and kind, and nothing more. She nods, satisfied, and doesn't notice what you didn't say. You'll think about this conversation for a long time.",
+        "effects": {
+          "sanity": 2
+        }
+      },
+      {
+        "label": "'I think the team will be okay.'",
+        "result": "She studies your face for a long second. 'We'll see.' The team, it turns out, will be more than okay.",
+        "effects": {
+          "sanity": 4,
+          "reputation": 1
+        }
+      },
+      {
+        "label": "Nod. Say nothing.",
+        "result": "She hugs you. You let her. Then she walks out with a box and a plant, and that's the last time you see her in the office.",
+        "effects": {
+          "sanity": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "recruiter-ping",
+    "weeks": [
+      3,
+      9
+    ],
+    "weight": 2,
+    "scene": "night",
+    "text": "11:40pm. A LinkedIn message: 'Hi! Exciting opportunity, Senior Analyst, great culture, no micromanagement 🙂'. You've been staring at Veronica's 10:30pm Slack for twenty minutes.",
+    "choices": [
+      {
+        "label": "Reply: 'Happy to chat'",
+        "result": "A call is booked for Thursday lunch. You'll take it from the car park, like a spy.",
+        "effects": {
+          "sanity": 4
+        },
+        "setFlags": [
+          "job-hunting"
+        ]
+      },
+      {
+        "label": "Leave it on read",
+        "result": "Not now. The team needs you. Probably. You'll check again in a month.",
+        "effects": {
+          "sanity": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "the-offer",
+    "weeks": [
+      6,
+      11
+    ],
+    "weight": 4,
+    "scene": "office",
+    "requires": {
+      "flags": [
+        "job-hunting"
+      ]
+    },
+    "text": "The email arrives during the 2pm stats update: an offer. 18% more, a manager whose reviews say 'reasonable', and nobody who will ever say 'come, toilet'. Signing deadline: Friday.",
+    "choices": [
+      {
+        "label": "Sign it. Resign today.",
+        "result": "You hand Derek your letter. Then you go home and sleep for eleven hours.",
+        "effects": {
+          "sanity": 20
+        },
+        "endsGame": "youResigned"
+      },
+      {
+        "label": "Decline. You're not leaving them with her.",
+        "result": "You write 'thank you, but not right now' and close the laptop. Kai, Jordan, Marcus. Not yet.",
+        "effects": {
+          "sanity": -4,
+          "reputation": 2,
+          "allies": 1
+        },
+        "setFlags": [
+          "stayed-for-team"
+        ]
+      },
+      {
+        "label": "Ask for a later start date",
+        "result": "They give you until the end of the quarter. A safety net. You'll decide later. Probably at 2am.",
+        "effects": {
+          "sanity": 5
+        },
+        "setFlags": [
+          "offer-in-pocket"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "kai-offer",
+    "weeks": [
+      6,
+      11
+    ],
+    "weight": 3,
+    "scene": "pantry",
+    "speaker": "kai",
+    "text": "Kai shows you his phone, unimpressed. A recruiter finally came through with an offer. It's... fine. 4% more, an office 20 minutes further from home, and a 'flexible' WFH policy that is one day a month. 'Is this worth leaving for?' he asks. Neither of you is sure what 'this' refers to.",
+    "choices": [
+      {
+        "label": "'Negotiate. Ask for what you're worth.'",
+        "result": "He asks for 15%. They come back with 5% and a free gym membership. Kai declines. 'Even Veronica is better than a gym membership.' He pauses. 'Almost.'",
+        "effects": {
+          "sanity": 2,
+          "allies": 1
+        },
+        "setFlags": [
+          "kai-stayed",
+          "kai-ally"
+        ]
+      },
+      {
+        "label": "'Not good enough. Stay, we need you.'",
+        "result": "He declines it the same afternoon. 'Ok. But you're buying kopi until she's gone.' Deal.",
+        "effects": {
+          "allies": 1,
+          "sanity": 2
+        },
+        "setFlags": [
+          "kai-stayed",
+          "kai-ally"
+        ]
+      },
+      {
+        "label": "'Take it anyway. Get out while you can.'",
+        "result": "He takes it, half-hearted. Two weeks later his desk is empty except for a sticky note: 'Nebula Survivors forever. Don't let her win.'",
+        "effects": {
+          "allies": -1,
+          "sanity": -4
+        },
+        "setFlags": [
+          "kai-left"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "friday-before",
+    "weeks": [
+      12,
+      12
+    ],
+    "always": true,
+    "order": 1,
+    "scene": "office",
+    "speaker": "veronica",
+    "text": "Friday. Something's off. Veronica is being... nice. She buys the whole team kaya toast. She compliments Marcus's deck, from a distance of exactly four desks. Derek's calendar for Monday 9am just says 'Meeting (private)'.",
+    "choices": [
+      {
+        "label": "Eat the kaya toast. Say nothing.",
+        "result": "It's very good kaya toast. It tastes like the last day of something.",
+        "effects": {
+          "sanity": 2
+        }
+      },
+      {
+        "label": "Message the group chat: 'why is she being nice'",
+        "result": "Kai: 'she knows.' Jordan: 'she doesn't know.' Marcus: 'eat the toast.' Wise words.",
+        "effects": {
+          "sanity": 3
+        },
+        "setFlags": [
+          "group-chat"
+        ]
+      },
+      {
+        "label": "Ask her if everything's ok",
+        "result": "'Of course! Why wouldn't it be?' She smiles too long. You eat your toast very quickly.",
+        "effects": {
+          "sanity": -2
+        }
+      }
+    ]
+  },
+  {
+    "id": "the-pip",
+    "weeks": [
+      6,
+      12
+    ],
+    "always": true,
+    "order": 9,
+    "scene": "nebula",
+    "speaker": "veronica",
+    "requires": {
+      "stats": {
+        "performance": [
+          0,
+          35
+        ]
+      }
+    },
+    "text": "A calendar invite: 'Quick chat', with HR copied. Veronica slides a document across the table. Performance Improvement Plan. Section 1, 'Areas of concern': visibility, ownership, and 'attitude when asked to come to the toilet'.",
+    "choices": [
+      {
+        "label": "Sign it. You're too tired to fight.",
+        "result": "Six weeks of daily check-ins with the person who wrote the PIP. You don't make it to week four.",
+        "effects": {
+          "performance": -10
+        },
+        "endsGame": "managedOut"
+      },
+      {
+        "label": "Refuse to sign. Ask HR for the evidence.",
+        "result": "HR asks Veronica for the evidence. Veronica produces a spreadsheet with one row: 'vibes'. The PIP is 'paused for review'.",
+        "effects": {
+          "performance": 15,
+          "sanity": -8,
+          "reputation": 2
+        },
+        "addEvidence": {
+          "id": "pip-no-evidence",
+          "label": "HR paused a PIP that had no evidence behind it",
+          "type": "written",
+          "strength": 2
+        }
+      },
+      {
+        "label": "Bring your delivery log to the meeting",
+        "result": "Twelve weeks of shipped work, dated and linked. The HR partner reads it, looks at Veronica, and says 'let's take this offline'. For once, you love that phrase.",
+        "effects": {
+          "performance": 20,
+          "sanity": -4
+        }
+      }
+    ]
+  }
+]

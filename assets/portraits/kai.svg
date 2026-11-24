@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs><clipPath id="c"><circle cx="60" cy="60" r="60"/></clipPath></defs>
+  <circle cx="60" cy="60" r="60" fill="#d3f9d8"/>
+  <g clip-path="url(#c)">
+    <path d="M14 122 Q18 88 60 84 Q102 88 106 122Z" fill="#5c7cfa"/>
+    <path d="M44 86 Q60 100 76 86" stroke="#4263eb" stroke-width="6" fill="none"/>
+    <path d="M52 92 L50 122 M68 92 L70 122" stroke="#fff" stroke-width="2"/>
+    <rect x="46" y="104" width="28" height="14" rx="2" fill="#fff" stroke="#adb5bd"/>
+    <text x="60" y="114" font-family="system-ui,sans-serif" font-size="7" font-weight="700" text-anchor="middle" fill="#343a40">SENIOR</text>
+    <rect x="53" y="72" width="14" height="14" rx="4" fill="#e8b88f"/>
+    <ellipse cx="60" cy="54" rx="21" ry="23" fill="#e8b88f"/>
+    <path d="M38 50 Q34 24 58 24 Q66 18 72 24 Q88 26 84 50 L80 40 L74 44 L70 36 L62 42 L56 34 L50 42 L44 38Z" fill="#3b2a1e"/>
+    <path d="M38 52 Q34 56 38 62" stroke="#f8f9fa" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <circle cx="38" cy="63" r="3" fill="#f8f9fa"/>
+    <circle cx="51" cy="54" r="3" fill="#1d1d1f"/><circle cx="69" cy="54" r="3" fill="#1d1d1f"/>
+    <circle cx="52" cy="53" r="1" fill="#fff"/><circle cx="70" cy="53" r="1" fill="#fff"/>
+    <path d="M46 47 L55 46 M65 46 L74 47" stroke="#3b2a1e" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M55 66 L66 66" stroke="#7a3e2b" stroke-width="2.6" stroke-linecap="round"/>
+  </g>
+</svg>

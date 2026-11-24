@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240">
+  <rect width="600" height="240" fill="#ece6da"/>
+  <rect x="0" y="20" width="600" height="110" fill="#bfd7ea"/>
+  <g fill="#8fb0cc">
+    <rect x="20" y="70" width="40" height="60"/><rect x="70" y="50" width="30" height="80"/><rect x="110" y="80" width="50" height="50"/>
+    <rect x="300" y="40" width="36" height="90"/><rect x="346" y="66" width="44" height="64"/><rect x="470" y="56" width="34" height="74"/><rect x="514" y="84" width="60" height="46"/>
+  </g>
+  <rect x="200" y="30" width="60" height="100" fill="#6f93b3"/>
+  <path d="M230 14 l4 9 10 1 -8 6 3 10 -9 -6 -9 6 3 -10 -8 -6 10 -1Z" fill="#fab005"/>
+  <g stroke="#ece6da" stroke-width="6"><path d="M150 20 V130 M300 20 V130 M450 20 V130"/></g>
+  <rect x="0" y="126" width="600" height="8" fill="#d6cdbd"/>
+  <rect x="0" y="180" width="600" height="60" fill="#cfc4b0"/>
+  <g>
+    <rect x="40" y="150" width="200" height="12" rx="2" fill="#a07850"/>
+    <rect x="70" y="112" width="56" height="36" rx="3" fill="#343a40"/><rect x="74" y="116" width="48" height="28" fill="#74c0fc"/>
+    <rect x="94" y="148" width="8" height="4" fill="#343a40"/>
+    <rect x="150" y="112" width="56" height="36" rx="3" fill="#343a40"/><rect x="154" y="116" width="48" height="28" fill="#ffd43b"/>
+    <rect x="174" y="148" width="8" height="4" fill="#343a40"/>
+    <rect x="48" y="162" width="6" height="40" fill="#8a6440"/><rect x="226" y="162" width="6" height="40" fill="#8a6440"/>
+  </g>
+  <g>
+    <rect x="330" y="150" width="200" height="12" rx="2" fill="#a07850"/>
+    <rect x="360" y="112" width="56" height="36" rx="3" fill="#343a40"/><rect x="364" y="116" width="48" height="28" fill="#b2f2bb"/>
+    <rect x="384" y="148" width="8" height="4" fill="#343a40"/>
+    <rect x="440" y="112" width="56" height="36" rx="3" fill="#343a40"/><rect x="444" y="116" width="48" height="28" fill="#ffc9c9"/>
+    <rect x="464" y="148" width="8" height="4" fill="#343a40"/>
+    <rect x="338" y="162" width="6" height="40" fill="#8a6440"/><rect x="516" y="162" width="6" height="40" fill="#8a6440"/>
+    <rect x="500" y="134" width="14" height="16" rx="2" fill="#fff"/><path d="M514 138 q6 2 0 8" stroke="#fff" stroke-width="2" fill="none"/>
+  </g>
+  <rect x="560" y="140" width="24" height="40" rx="3" fill="#c08457"/>
+  <circle cx="572" cy="124" r="20" fill="#51cf66"/><circle cx="562" cy="110" r="12" fill="#40c057"/><circle cx="584" cy="114" r="12" fill="#37b24d"/>
+  <rect x="262" y="60" width="50" height="34" fill="#fff" stroke="#ced4da"/>
+  <text x="287" y="75" font-family="system-ui,sans-serif" font-size="9" font-weight="800" text-anchor="middle" fill="#c92a2a">SYNERGY</text>
+  <text x="287" y="87" font-family="system-ui,sans-serif" font-size="6" text-anchor="middle" fill="#495057">is a verb now</text>
+</svg>

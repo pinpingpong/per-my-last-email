@@ -1,0 +1,33 @@
+{
+  "_note": "Tuned 2026-11-24 via tools/simulate.mjs: smart ~82% Exposed, random ~1% Exposed / ~32% Strike Ten / ~14% Burnout.",
+  "weeks": 12,
+  "eventsPerWeek": [
+    2,
+    3
+  ],
+  "start": {
+    "sanity": 70,
+    "performance": 60,
+    "reputation": 50,
+    "allies": 0,
+    "strikes": 0
+  },
+  "hr": {
+    "maxEvidence": 5,
+    "allyWeight": 2,
+    "reputationBonus": {
+      "above": 60,
+      "bonus": 2
+    },
+    "thresholds": {
+      "exposed": 26,
+      "gracefulExit": 14
+    },
+    "favouriteBonus": 3,
+    "_note": "Evidence = what you can tell Derek on the call. favouriteBonus: Derek thought you were close to her, so your account carries extra weight."
+  },
+  "marcus": {
+    "strikeLimit": 10,
+    "_note": "Hidden counter. At strikeLimit Marcus resigns (engine logic TODO in build phase). Exposed ending requires Marcus still here for the full true ending."
+  }
+}

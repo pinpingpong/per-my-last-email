@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Per My Last Email</title>
+  <meta name="description" content="A satirical office survival sim. Survive 12 weeks under a workplace bully, keep receipts, get her exposed.">
+  <style>
+:root {
+  --bg: #f4f2ee;
+  --surface: #ffffff;
+  --text: #1d1d1f;
+  --muted: #6b6b70;
+  --line: #e2dfd8;
+  --accent: #3b5bdb;
+  --accent-text: #ffffff;
+  --good: #2b8a3e;
+  --bad: #c92a2a;
+  --ev: #7048e8;
+  --radius: 12px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141416;
+    --surface: #1f1f23;
+    --text: #ececef;
+    --muted: #9a9aa2;
+    --line: #2f2f35;
+    --accent: #748ffc;
+    --accent-text: #0b0b0d;
+    --good: #69db7c;
+    --bad: #ff8787;
+    --ev: #b197fc;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+main { max-width: 560px; margin: 0 auto; padding: 16px; outline: none; }
+h1 { font-size: 2rem; line-height: 1.1; margin: 0.25em 0; }
+h2 { margin: 0 0 0.5em; }
+.muted { color: var(--muted); }
+.small { font-size: 0.85rem; }
+code { font-size: 0.9em; }
+
+/* HUD */
+#hud {
+  position: sticky; top: 0; z-index: 2;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 16px;
+}
+.hud-top, .stats { max-width: 528px; margin: 0 auto; }
+.hud-top { display: flex; gap: 12px; align-items: center; font-size: 0.9rem; }
+.hud-top .week { font-weight: 600; margin-right: auto; }
+.stats { display: grid; gap: 4px; margin-top: 8px; }
+.stat { display: grid; grid-template-columns: 96px 1fr 28px; gap: 8px; align-items: center; font-size: 0.8rem; }
+.stat-val { text-align: right; font-variant-numeric: tabular-nums; }
+.meter { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.meter span { display: block; height: 100%; background: var(--accent); transition: width 0.4s; }
+.stat-sanity .meter span { background: var(--good); }
+.stat-performance .meter span { background: #f08c00; }
+
+/* Buttons */
+.btn {
+  display: block; width: 100%;
+  padding: 12px 14px; margin-top: 10px;
+  font: inherit; text-align: left;
+  color: var(--text); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px;
+  cursor: pointer;
+}
+.btn:hover:not(:disabled) { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); text-align: center; font-weight: 600; }
+.link { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); cursor: pointer; text-decoration: underline; }
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-top: 8px;
+}
+.card-meta { font-size: 0.8rem; color: var(--muted); margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+.from { margin: 0 0 8px; font-size: 0.9rem; color: var(--muted); }
+.from b { color: var(--text); }
+.card-text { font-size: 1.05rem; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.chip { font-size: 0.8rem; padding: 3px 8px; border-radius: 99px; border: 1px solid var(--line); }
+.chip.up { color: var(--good); }
+.chip.down { color: var(--bad); }
+.chip.ev { color: var(--ev); }
+
+.slack { border-left: 3px solid var(--line); padding-left: 12px; }
+.slack p { margin: 4px 0; }
+
+/* Scenes + portraits */
+.card.has-scene { padding-top: 0; overflow: hidden; }
+.scene { position: relative; margin: 0 -18px 14px; aspect-ratio: 5 / 2; background: var(--line); }
+.scene-bg { display: block; width: 100%; height: 100%; object-fit: cover; }
+.portraits { position: absolute; left: 14px; bottom: -14px; display: flex; gap: 6px; }
+.portrait {
+  width: 72px; height: 72px; border-radius: 50%;
+  border: 3px solid var(--surface); background: var(--surface);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.2);
+}
+.scene:has(.portraits) { margin-bottom: 28px; }
+
+/* Title */
+.title { padding-top: 16px; }
+.hero { display: block; width: 100%; border-radius: var(--radius); margin-bottom: 16px; aspect-ratio: 60 / 26; object-fit: cover; }
+.company { font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0; }
+.tagline { margin: 0; color: var(--muted); font-style: italic; }
+.pitch { font-size: 1.1rem; }
+.actions { margin: 24px 0; }
+
+/* Evidence */
+.ev-list { list-style: none; padding: 0; margin: 12px 0; }
+.ev-list li { padding: 8px 0; border-bottom: 1px solid var(--line); }
+.ev-label { display: block; }
+.ev-meta { font-size: 0.8rem; color: var(--muted); }
+.ev-written { color: var(--good); }
+.ev-witnessed { color: #f08c00; }
+.ev-pick { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.ev-pick input { margin-top: 5px; }
+
+dialog {
+  width: min(520px, calc(100vw - 32px));
+  max-height: 80vh;
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px;
+}
+dialog::backdrop { background: rgb(0 0 0 / 0.5); }
+
+.ending h2 { font-size: 1.6rem; }
+.ending-exposed { border-color: var(--good); }
+.ending-failingUpward, .ending-burnout, .ending-managedOut { border-color: var(--bad); }
+.score { font-size: 0.9rem; color: var(--muted); }
+
+.notice {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--bad);
+  background: color-mix(in srgb, var(--bad) 10%, transparent);
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.act { padding: 18vh 0 0; text-align: center; }
+.act h2 { font-size: 2.2rem; margin: 0.2em 0 1em; }
+
+/* Marcus strike meter */
+.strikes { max-width: 528px; margin: 6px auto 0; display: grid; grid-template-columns: 96px 1fr 36px; gap: 8px; align-items: center; font-size: 0.8rem; }
+.strike-dots { display: flex; gap: 3px; }
+.strike { flex: 1; height: 8px; border-radius: 2px; background: var(--line); }
+.strike.on { background: var(--bad); }
+
+/* Endings gallery */
+.gallery ul { list-style: none; padding: 0; margin: 6px 0 16px; display: flex; flex-wrap: wrap; gap: 6px; }
+.gallery li { font-size: 0.8rem; padding: 3px 10px; border-radius: 99px; border: 1px dashed var(--line); color: var(--muted); }
+.gallery li.got { border-style: solid; border-color: var(--accent); color: var(--text); }
+
+/* Minigames */
+.mg-canvas { display: block; width: 100%; max-width: 360px; margin: 8px auto; border-radius: 8px; border: 1px solid var(--line); touch-action: none; }
+.mg-help { font-size: 0.9rem; }
+.mg-pad { display: grid; grid-template-columns: repeat(3, 56px); grid-template-areas: ". up ." "left down right"; gap: 6px; justify-content: center; margin: 8px 0; user-select: none; -webkit-user-select: none; }
+.mg-pad button { height: 48px; font-size: 1.1rem; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--text); touch-action: none; }
+.mg-pad [data-k="up"] { grid-area: up; } .mg-pad [data-k="left"] { grid-area: left; }
+.mg-pad [data-k="down"] { grid-area: down; } .mg-pad [data-k="right"] { grid-area: right; }
+.mg-status { min-height: 1.5em; font-weight: 600; text-align: center; }
+.mg-status.won { color: var(--good); } .mg-status.lost { color: var(--bad); }
+
+</style>
+</head>
+<body>
+  <header id="hud" hidden></header>
+  <main id="app" tabindex="-1"></main>
+  <dialog id="evidence"></dialog>
+  <script>window.__GAME_DATA__ = {"balance": {"_note": "Tuned 2026-11-24 via tools/simulate.mjs: smart ~82% Exposed, random ~1% Exposed / ~32% Strike Ten / ~14% Burnout.", "weeks": 12, "eventsPerWeek": [2, 3], "start": {"sanity": 70, "performance": 60, "reputation": 50, "allies": 0, "strikes": 0}, "hr": {"maxEvidence": 5, "allyWeight": 2, "reputationBonus": {"above": 60, "bonus": 2}, "thresholds": {"exposed": 26, "gracefulExit": 14}, "favouriteBonus": 3, "_note": "Evidence = what you can tell Derek on the call. favouriteBonus: Derek thought you were close to her, so your account carries extra weight."}, "marcus": {"strikeLimit": 10, "_note": "Hidden counter. At strikeLimit Marcus resigns (engine logic TODO in build phase). Exposed ending requires Marcus still here for the full true ending."}}, "endings": {"exposed": {"title": "Exposed", "text": "By Monday afternoon, Veronica's calendar shows one event: 'Garden Leave'. Her access card stops working at 3:12pm. A month later, an all-staff email thanks her for her contributions and wishes her well in her future endeavours. Then the irony lands: Derek promotes Marcus to lead the team. Your new manager says 'good morning' and means nothing else by it. He never calls after 7pm. He goes to the toilet alone. Within a year he's one of the best-liked leaders on floor 23. Someone orders a cake. Nobody says why. Everybody knows why.", "scene": "garden"}, "gracefulExit": {"title": "The Graceful Exit", "text": "HR 'takes your concerns seriously' and 'will monitor the situation'. You don't wait to find out. Your new offer is 20% higher and has no after-hours calls. On your last day, Marcus shakes your hand: 'Thanks for having my back.' Your farewell card has 31 signatures. Veronica's is not one of them. The team group chat survives the resignation. It survives the next three resignations too.", "scene": "office"}, "burnout": {"title": "Burnout", "text": "You wake up on a Tuesday and cannot open Outlook. Your doctor writes 'two weeks MC'. Veronica forwards your project to someone else with the note 'they had capacity issues'. Rest. Then keep receipts next time.", "scene": "office"}, "managedOut": {"title": "Managed Out", "text": "A calendar invite appears: 'Quick chat', with HR. It's a Performance Improvement Plan. The 'improvement' is 'visibility'. You were removed from every meeting where visibility happens. Funny how that works.", "scene": "nebula"}, "failingUpward": {"title": "Failing Upward", "text": "HR finds 'no clear evidence of misconduct, just a clash of working styles'. The following quarter, Veronica is promoted to VP of Strategic Alignment. Her first initiative is a 'Culture & Kindness' task force. You are not invited.", "scene": "townhall"}, "marcusResigned": {"title": "Strike Ten", "scene": "office", "text": "Marcus's farewell email is short and kind. He thanks everyone by name. Veronica replies-all: 'All the best! 🙏' Weeks later she's gone too, but the best manager this team never had is already thriving somewhere else. You still have his number. You still think about strike ten."}, "sheResigned": {"title": "Pre-emptive Strike", "scene": "office", "text": "Friday, 4:58pm, before Monday's meeting can happen, Veronica resigns. By 6pm her LinkedIn reads: 'After 10 incredible years of industry experience, I'm excited to pursue my next chapter! Grateful to my amazing team.' 200 likes, mostly from people she has screamed at. The meeting is cancelled. There's no garden leave, no reckoning, just a farewell lunch she organises for herself. Aircon only. Marcus leads the team a month later anyway."}, "youResigned": {"title": "The Lift Goes Down", "scene": "office", "text": "Your last day. The lift goes down, exactly as the CEO promised. Your new job has a manager who says 'take your time' and means it. Some nights you still check the old team chat to see what she's done now."}, "_lines": [{"if": {"flags": ["exposed"]}, "notFlags": ["marcus-resigned"], "text": "Months later, over kopi, Marcus tells you about his ten strikes. She never reached ten."}, {"if": {"flags": ["kai-left"]}, "text": "Kai left weeks before any of this. He hears the news in the group chat and replies with a single, perfect GIF."}, {"if": {"flags": ["kai-stayed"]}, "notFlags": ["kai-left"], "text": "Kai turned down a better offer to stay. He still says it was the best bad decision he ever made."}, {"if": {"flags": ["helped-marcus"]}, "onlyEndings": ["youResigned"], "text": "Before you leave, Marcus shakes your hand: 'Thanks for having my back.' You hope it was enough."}, {"if": {"flags": ["favourite", "testified"]}, "text": "She never found out it was her favourite who told Derek. Or maybe she did, and that's why she hugged you."}, {"if": {"flags": ["denied"]}, "text": "You never told Derek what you saw. You think about that more than you'd like."}, {"if": {"flags": ["group-chat"]}, "text": "Years later, everyone on that team has moved on. The group chat is still going, and it's still called 'Nebula Survivors'."}]}, "flavor": {"company": "Celestial Pte Ltd", "tagline": "Reaching for the stars, one escalation at a time.", "hrIntro": "Derek: 'Walk me through it. What did you see?' You won't be in Monday's meeting with Gordon and HR. What you say now is what Derek carries into that room. Pick what you can tell him with confidence.", "quietWeek": ["Quiet week. Veronica is at a leadership offsite in Bali, 'aligning on alignment'.", "Quiet week. The only drama is someone microwaving fish in the pantry.", "Quiet week. The office aircon breaks. Everyone bonds over suffering."], "slack": [{"from": "Veronica Sharpe", "channel": "general", "text": "Huge shoutout to MY team for crushing it this week!! 🚀 (details to follow)"}, {"from": "Derek", "channel": "team-celestial", "text": "Reminder: our values are Ownership, Candour and Synergy. Please stop asking which one applies to Veronica."}, {"from": "Kai", "channel": "random", "text": "reminder that i referred marcus and i have zero regrets. also does anyone know if the 4th floor printer is haunted"}, {"from": "Melissa", "channel": "people-and-culture", "text": "Friendly reminder that our Speak Up survey is 100% anonymous! Please include your employee ID."}, {"from": "IT Helpdesk", "channel": "it-announcements", "text": "All Slack messages are retained for 7 years. Unrelated, but thought you'd like to know."}, {"from": "Veronica Sharpe", "channel": "general", "text": "Per my last email, per my last Slack, per my last meeting: let's align."}, {"from": "Office Bot", "channel": "general", "text": "Free cake in the pantry! (Cake has been claimed.)"}, {"from": "Kai", "channel": "random", "text": "client just emailed 'Dear Celestia team' again. third time this week. are we a pony now"}, {"from": "Jordan", "channel": "random", "text": "Delivery guy asked for 'Celestical'. I said yes. We are Celestical now."}, {"from": "Marcus", "channel": "veronica-and-team", "text": "Morning all, WFH till 1pm as per approved arrangement, reachable on Slack. Back in office after lunch."}, {"from": "Gordon", "channel": "data-and-analytics", "text": "Before anyone builds anything this sprint: WHAT IS THE BIGGER PROBLEM?"}, {"from": "Stakeholder", "channel": "data-requests", "text": "hi can u pull the numbers real quick, no rush (need by 3pm today)"}, {"from": "Veronica Sharpe", "channel": "veronica-and-team", "text": "In my 10 years of industry experience, a dashboard needs at least 14 metrics. Pls revise."}, {"from": "Kai", "channel": "nebula-survivors", "text": "10-years counter this week: 7. new record. jordan owes me kopi"}, {"from": "Jordan", "channel": "nebula-survivors", "text": "considered living closer to the office. considered my bank account. stopped considering."}], "catchphrases": {"veronica": "IN MY 10 YEARS OF INDUSTRY EXPERIENCE, WE HAVE ALWAYS DONE IT THIS WAY.", "gordon": "WHAT IS THE BIGGER PROBLEM WE ARE TRYING TO SOLVE HERE?", "ceo": ["If you're not happy here, the lift goes down as well as up.", "Have you considered living closer to the office?"]}, "marcusResignedNotice": "Marcus has resigned. His farewell email is short and kind. Strike ten.", "epilogueEnd": "Her access card stops working at 3:12pm. Her desk is empty by 3:30. The floor is very, very quiet. Then someone in the group chat sends a single cake emoji.", "acts": [{"from": 1, "to": 3, "title": "Act 1 · The Favourite"}, {"from": 4, "to": 6, "title": "Act 2 · The Target"}, {"from": 7, "to": 9, "title": "Act 3 · The Meeting"}, {"from": 10, "to": 12, "title": "Act 4 · The Call"}]}, "cast": {"veronica": {"name": "Veronica Sharpe", "title": "Head of Strategic Alignment"}, "kai": {"name": "Kai", "title": "Senior Analyst. Referred Marcus for the job"}, "hrbp": {"name": "Melissa", "title": "HR Business Partner"}, "whisper": {"name": "Jordan", "title": "Senior Analyst, quietly supportive"}, "manager": {"name": "Derek", "title": "Head of Department. Slow to act, but listens"}, "it": {"name": "Raj", "title": "IT, knows where the logs are"}, "marcus": {"name": "Marcus", "title": "Lead, new joiner. Keeps quiet, tries harder"}, "ceo": {"name": "The CEO", "title": "Chief Executive, Celestial Pte Ltd"}, "bigboss": {"name": "Gordon", "title": "VP, Data & Analytics. Derek's boss"}, "cfo": {"name": "Margaret", "title": "CFO"}}, "events": [{"id": "credit-stolen-townhall", "weeks": [1, 4], "weight": 3, "scene": "townhall", "speaker": "veronica", "text": "At the town hall, Veronica presents your dashboard as 'a little something my team pulled together under my direction'. Your name is not on the slide. The CEO calls it 'game-changing'.", "choices": [{"label": "Email her a 'quick recap' afterwards", "result": "'Great to see the dashboard I built land so well! Attaching v1 from 3 March for reference.' Timestamped. Polite. Lethal.", "effects": {"sanity": -2, "reputation": 2}, "addEvidence": {"id": "dashboard-recap-email", "label": "Recap email proving you built the dashboard", "type": "written", "strength": 3}, "setFlags": ["credit-stolen"]}, {"label": "Interrupt: 'Actually, I built that'", "result": "Forty faces turn. Veronica smiles. 'Love the energy! Let's take this offline.' You are now 'not a team player'.", "effects": {"sanity": 5, "reputation": -8}, "setFlags": ["credit-stolen", "public-clash"]}, {"label": "Say nothing, eat the free croissant", "result": "The croissant is stale. So is your career.", "effects": {"sanity": -6}, "addEvidence": {"id": "townhall-memory", "label": "You remember the town hall slide", "type": "recalled", "strength": 1}, "setFlags": ["credit-stolen"]}]}, {"id": "calendar-ghosting", "weeks": [1, 6], "weight": 2, "scene": "office", "text": "You notice the recurring 'Project Orion Sync' has vanished from your calendar. It is still on everyone else's. The meeting is about your project.", "choices": [{"label": "Ask in writing why you were removed", "result": "'Hi Veronica, noticed I'm no longer on Orion Sync. Could you confirm if that's intended?' She replies: 'Must be an Outlook glitch!' You screenshot the glitch.", "effects": {"sanity": -2, "reputation": 1}, "addEvidence": {"id": "orion-removal-email", "label": "Email thread: removed from your own project meeting", "type": "written", "strength": 3}}, {"label": "Show up anyway with a laptop and a smile", "result": "Veronica: 'Oh! Didn't think you'd need to be here.' Three people saw her face do the thing.", "effects": {"sanity": 2, "reputation": -2, "performance": 3}, "addEvidence": {"id": "orion-crash-witnessed", "label": "Colleagues saw her surprise you joined", "type": "witnessed", "strength": 2}}, {"label": "Let it go. Fewer meetings, right?", "result": "You gain 30 minutes a week and lose all context on your own project. Decisions are made. You learn about them from the intern.", "effects": {"performance": -8, "sanity": 3}}]}, {"id": "one-on-one-rewrite", "weeks": [5, 12], "weight": 2, "scene": "nebula", "speaker": "veronica", "text": "In your 1:1, Veronica frowns. 'I never asked you to build the Q3 deck. Why are you working on things nobody asked for?' She asked you on Monday. In this room.", "choices": [{"label": "Send a recap email right after", "result": "'Thanks for the chat! To confirm: pausing the Q3 deck you requested on Monday.' She leaves it on read. The server does not.", "effects": {"sanity": -3}, "addEvidence": {"id": "q3-recap-email", "label": "1:1 recap email about the Q3 deck", "type": "written", "strength": 3}}, {"label": "Dig up Monday's Slack message and save it", "result": "Found it: 'can u do the Q3 deck pls'. Archived to a personal folder. Took 20 minutes of scrolling past cat photos.", "effects": {"performance": -3}, "addEvidence": {"id": "q3-slack-request", "label": "Saved Slack: Veronica requesting the Q3 deck", "type": "written", "strength": 3}}, {"label": "Argue. You know what she said.", "result": "'I think you're misremembering.' 'I think YOU are.' Nobody wins. You replay it in the shower for a week.", "effects": {"sanity": -10}, "addEvidence": {"id": "q3-memory", "label": "You remember her asking for the deck", "type": "recalled", "strength": 1}}], "requires": {"flags": ["v-is-manager"]}}, {"id": "intern-saw-it", "weeks": [2, 6], "weight": 3, "scene": "office", "speaker": "kai", "requires": {"flags": ["credit-stolen"]}, "text": "Kai slides over to your desk. 'Hey. That thing at the town hall was messed up. Everyone on the team knows you built the dashboard.'", "choices": [{"label": "Ask if Kai would put that in writing", "result": "Kai nods. 'Of course. If she does it to you, she'll do it to anyone.' Seniors with a spine: rarer than a working office printer.", "effects": {"allies": 1, "reputation": 2}, "addEvidence": {"id": "kai-statement", "label": "Kai confirms you built the dashboard", "type": "witnessed", "strength": 2}, "setFlags": ["kai-ally"]}, {"label": "Vent together over kopi", "result": "Forty-five glorious minutes. Someone from Veronica's team was at the next table.", "effects": {"sanity": 8, "reputation": -4}}, {"label": "Thank Kai and change the subject", "result": "Kai looks a little disappointed. You both pretend to read a spreadsheet.", "effects": {"sanity": 2}}]}, {"id": "mandatory-fun", "weeks": [4, 9], "weight": 2, "scene": "escape", "speaker": "veronica", "text": "Team building: escape room. Veronica appoints herself 'Room Captain'. The team fails with 4 minutes left. She announces, to everyone, that you 'held the group back'.", "choices": [{"label": "Laugh it off, buy everyone bubble tea", "result": "$47 well spent. The team likes you more. Veronica does not like that the team likes you more.", "effects": {"sanity": -3, "reputation": 5}}, {"label": "Note down who heard it", "result": "Five witnesses, one public blame, zero clues solved by Veronica. Logged in your notes app with today's date.", "effects": {"sanity": -2}, "addEvidence": {"id": "escape-room-blame", "label": "Public blame at team building, 5 witnesses", "type": "witnessed", "strength": 2}}, {"label": "Skip the drinks after. 'Client call.'", "result": "There is no client. There is only your sofa. It is wonderful.", "effects": {"sanity": 5, "reputation": -3}}]}, {"id": "perf-review-surprise", "weeks": [8, 12], "weight": 3, "scene": "nebula", "speaker": "veronica", "text": "Mid-year review. Veronica rates you 'Needs Improvement'. Reason: 'low visibility'. You were removed from the meetings where visibility happens.", "choices": [{"label": "Reply in writing with everything you delivered", "result": "Bullet points. Dates. Links. Derek is cc'd. The rating is 'under review'.", "effects": {"performance": 8, "sanity": -3}, "addEvidence": {"id": "review-rebuttal", "label": "Written rebuttal to unfair performance rating", "type": "written", "strength": 3}}, {"label": "Accept it. Pick your battles.", "result": "The rating goes on your file. Your bonus goes on Veronica's holiday.", "effects": {"performance": -20, "sanity": -5}}, {"label": "Cry in the pantry", "result": "The pantry has seen things. A colleague hands you a tissue and a Milo. Cathartic, at least.", "effects": {"sanity": 6, "reputation": -2}}], "requires": {"flags": ["v-is-manager"]}}, {"id": "after-hours-call", "weeks": [1, 12], "weight": 3, "scene": "night", "speaker": "veronica", "text": "9:47pm. You are in pyjamas. Your phone lights up: Veronica. You know from experience that 'quick chat' means somewhere between two and three hours.", "choices": [{"label": "Pick up. It's easier this way.", "result": "Two hours and forty minutes. Topics covered: her ex-colleague, her nail technician, and why the team 'lacks ownership'. Zero work decisions made.", "effects": {"sanity": -12, "performance": -2}}, {"label": "Text back: 'Saw your call! Let's sync at 10am tomorrow?'", "result": "A boundary, in writing, with a timestamp. She replies 'k'. The 'k' is doing a lot of work.", "effects": {"sanity": 4, "reputation": -1}, "addEvidence": {"id": "after-hours-boundary", "label": "Text setting a boundary on 9:47pm calls", "type": "written", "strength": 2}, "setFlags": ["set-boundary"]}, {"label": "Pick up, then 'my battery is at 2%'", "result": "You hang up at minute 14. Your battery is at 87%. You will carry this lie to your grave.", "effects": {"sanity": -4}}]}, {"id": "toilet-buddy", "weeks": [1, 10], "weight": 3, "scene": "restroom", "speaker": "veronica", "text": "You are 20 minutes from a deadline. Veronica appears at your desk, hooks her arm through yours and says 'Come, toilet.' It is not a question. It has never been a question. The whole floor has seen you two walk off arm in arm so often they think you're best friends.", "choices": [{"label": "Go. Resistance is futile.", "result": "The meeting continues through a cubicle wall. You learn about her weekend in surround sound. The deadline whooshes past.", "effects": {"sanity": -6, "performance": -5}}, {"label": "'Can't, deadline at 3. Grab coffee after?'", "result": "She stares for a full second. 'Wah, so busy now.' You hit the deadline. You will hear about 'attitude' later.", "effects": {"performance": 4, "reputation": -2, "sanity": 2}, "setFlags": ["said-no"]}, {"label": "Put on headphones and pretend not to hear", "result": "She taps your shoulder. Then your monitor. Then your soul. You go.", "effects": {"sanity": -8}}, {"label": "Make a run for meeting room Nebula", "result": "", "effects": {}, "minigame": {"id": "toilet-dodge", "win": {"result": "You make it to Nebula and book it for '30 min focus time'. You hit your deadline. She asks the intern to go to the toilet with her instead.", "effects": {"sanity": 6, "performance": 4}}, "lose": {"result": "'THERE you are.' Arm hooked. Toilet. Deadline missed. She tells everyone you were 'hiding from work'.", "effects": {"sanity": -8, "performance": -5, "reputation": -1}}}}]}, {"id": "dinner-and-drive", "weeks": [2, 9], "weight": 2, "scene": "dinner", "speaker": "veronica", "text": "'Dinner tonight. My treat. Then I'll drive you home.' You had plans. Your plans were a quiet bowl of noodles and nobody talking to you.", "choices": [{"label": "Go. Order the most expensive thing.", "result": "The lobster is excellent. The 90-minute drive home, during which she reviews your 'growth areas', is not.", "effects": {"sanity": -9, "reputation": 1}}, {"label": "'Already have dinner plans, sorry!'", "result": "True, technically. Your plans are with a bowl of noodles. The noodles do not micromanage you.", "effects": {"sanity": 5, "reputation": -2}, "setFlags": ["said-no"]}, {"label": "Go, but say you'll take the MRT home", "result": "You escape at the dessert course. 'Next time I'll drive, ok?' It is not a question.", "effects": {"sanity": -4}}]}, {"id": "new-lead-arrives", "weeks": [2, 2], "always": true, "scene": "office", "speaker": "marcus", "text": "A new hire joins: Marcus, coming in as a Lead. Kai referred him and is visibly proud. Marcus reports to Derek, same as Veronica. He's friendly, competent and brought kueh for the team on day one. Veronica's smile does not reach her eyes.", "choices": [{"label": "Welcome him and show him around", "result": "Marcus is grateful. Veronica watches you two from across the floor like a nature documentary.", "effects": {"reputation": 2, "sanity": 1}, "setFlags": ["marcus-joined", "marcus-friend"]}, {"label": "Keep a polite distance. Read the room.", "result": "Safe. Quiet. The kueh is very good though.", "effects": {"sanity": 1}, "setFlags": ["marcus-joined"]}], "order": 1}, {"id": "wfh-jibe", "weeks": [3, 3], "scene": "office", "speaker": "veronica", "requires": {"flags": ["marcus-joined"]}, "text": "Marcus works from home in the mornings to care for his sick mum, then comes in after lunch. As he arrives, Veronica says loudly: 'Wah, some people treat WFH like a staycation ah.'", "choices": [{"label": "Check in with Marcus privately later", "result": "'Thanks. Derek approved the arrangement, but she keeps bringing it up.' He looks tired. You now know the arrangement was approved.", "effects": {"allies": 1, "sanity": -1, "strikes": 1}, "setFlags": ["marcus-confided"]}, {"label": "Note the date and what she said", "result": "Notes app, dated, exact words. It feels petty. It is not petty. It is a pattern.", "addEvidence": {"id": "wfh-jibe-note", "label": "Your dated note of the 'WFH staycation' comment", "type": "written", "strength": 2}, "effects": {"strikes": 1}}, {"label": "Laugh awkwardly with everyone else", "result": "Everyone laughs a bit. Nobody looks at Marcus. You feel like you swallowed a stapler.", "effects": {"sanity": -5, "reputation": 1, "strikes": 2}}], "always": true, "order": 1}, {"id": "leave-escalation", "weeks": [4, 4], "scene": "office", "speaker": "veronica", "requires": {"flags": ["marcus-joined"]}, "text": "Marcus takes two weeks of leave, approved in writing by HR and Derek before he even joined. Veronica emails Derek's boss, cc Derek: 'Concerned about leave abuse. May need to escalate to Compliance as a governance breach.' She forwards it to you 'for visibility'.", "choices": [{"label": "Save the email somewhere safe", "result": "Saved. She sent you, in writing, her threat to report an approved leave as a Compliance breach. She did your job for you.", "addEvidence": {"id": "compliance-threat-email", "label": "Veronica's email threatening a Compliance escalation over approved leave", "type": "written", "strength": 3}, "next": "bigger-problem-reply", "effects": {"strikes": 1}}, {"label": "Reply-all: 'I believe this leave was pre-approved?'", "result": "Brave. True. Career-limiting. Derek's boss now knows your name, for better or worse.", "effects": {"reputation": 3, "sanity": -6, "performance": -3, "strikes": 1}, "addEvidence": {"id": "compliance-threat-email", "label": "Veronica's email threatening a Compliance escalation over approved leave", "type": "written", "strength": 3}, "setFlags": ["spoke-up-early"], "next": "bigger-problem-reply"}, {"label": "Delete it. Not your business.", "result": "Gone. Out of sight, out of mind. Until week 12, when you will really wish you had it.", "effects": {"sanity": 2, "strikes": 2}}], "always": true, "order": 1}, {"id": "the-promotion", "weeks": [4, 4], "always": true, "scene": "townhall", "speaker": "veronica", "text": "All-hands announcement: Veronica is promoted to Team Lead. Effective Monday, she is your manager. Her first act is renaming the team channel to #veronica-and-team.", "choices": [{"label": "Clap. Smile. Die a little inside.", "result": "You clap. Somewhere, your sanity files a resignation letter.", "effects": {"sanity": -6}, "setFlags": ["v-is-manager"]}, {"label": "Update your LinkedIn to 'Open to Work' (hidden)", "result": "LinkedIn assures you recruiters can't see it. You choose to believe LinkedIn.", "effects": {"sanity": 2}, "setFlags": ["v-is-manager", "job-hunting"]}], "order": 2}, {"id": "status-spreadsheet", "weeks": [5, 11], "weight": 2, "scene": "office", "speaker": "veronica", "requires": {"flags": ["v-is-manager"]}, "text": "New process: everyone updates a status tracker every hour. There is a column for 'Time spent updating tracker'. She reviews it at 11pm.", "choices": [{"label": "Comply, meticulously", "result": "18% of your week is now spent describing your week. Your actual work is 'in progress'. Forever.", "effects": {"performance": -10, "sanity": -4}}, {"label": "Ask Derek if this is a department-wide process", "result": "Derek: 'First I've heard of it.' He doesn't do anything yet. But he's heard of it.", "effects": {"reputation": 1}, "setFlags": ["derek-aware"]}, {"label": "Update it with brutal honesty", "result": "'10:00-11:00: updated tracker.' She calls it 'malicious compliance'. She is not wrong.", "effects": {"sanity": 4, "reputation": -3}}]}, {"id": "stats-ritual", "weeks": [3, 3], "always": true, "scene": "office", "speaker": "veronica", "text": "Veronica volunteers the team, unasked, to post key stats manually in the leadership group chat. Three times a day: 10am, 2pm, 6pm. Sharp. Her draft message opens with 'Good morning Margaret!' and a sun emoji. Margaret is the CFO.", "choices": [{"label": "'I can automate it with a scheduled query'", "result": "'No. Leaders like the personal touch.' The personal touch is a human copy-pasting numbers from a dashboard the leaders already have access to.", "effects": {"reputation": 1, "sanity": -2}, "setFlags": ["stats-ritual"]}, {"label": "Volunteer to post them yourself", "result": "Favourite behaviour. You now have three alarms a day. Your lunch is scheduled around 2pm. Your life is scheduled around 6pm.", "effects": {"performance": 2, "sanity": -5}, "setFlags": ["stats-ritual"]}, {"label": "Say nothing", "result": "She posts the first one herself. Margaret replies with a thumbs up. Veronica screenshots the thumbs up and posts it in the team chat.", "effects": {"sanity": -1}, "setFlags": ["stats-ritual"]}], "order": 2}, {"id": "stats-handover", "weeks": [6, 6], "always": true, "scene": "office", "speaker": "veronica", "requires": {"flags": ["stats-ritual", "marcus-joined", "v-is-manager"]}, "text": "Veronica reassigns the 10-2-6 stats posting to Marcus. 'As a Lead, he should have visibility with leadership.' Said with a smile. Marcus does mornings from home on his approved arrangement, so 10am is the busiest moment of his day.", "choices": [{"label": "Set up reminders and a template for Marcus", "result": "Calendar alerts at 9:55, 1:55 and 5:55, plus a pre-filled message. Marcus: 'You're a lifesaver.' It helps. It doesn't help enough.", "effects": {"allies": 1, "sanity": -1, "strikes": 1}, "setFlags": ["helped-marcus"]}, {"label": "Offer to keep doing it yourself", "result": "'No no. Marcus should do it.' Very firm. Very quick. Kai and Jordan exchange a look. You understand, too late, that this is not about stats.", "effects": {"sanity": -2, "strikes": 1}, "setFlags": ["saw-setup"]}, {"label": "Stay out of it", "result": "Not your task, not your problem. That's what you tell yourself.", "effects": {"sanity": 1, "strikes": 2}}], "order": 1}, {"id": "the-scolding", "weeks": [7, 7], "always": true, "scene": "nebula", "speaker": "veronica", "requires": {"flags": ["marcus-joined", "v-is-manager"]}, "text": "6:15pm. The 6pm stats update still isn't in the leadership chat. Marcus posts it, fifteen minutes late, again. Next morning's team meeting, everyone present, Derek included, Veronica turns on Marcus: the late updates, his WFH, his leave, his 'commitment'. In front of everyone. It goes on for twenty minutes. Nobody moves. Marcus stares at the table.", "choices": [{"label": "Write down what's said, with the time and who's there", "result": "You type under the table. Names, times, exact phrases. Your hands are shaking. Your notes are not.", "effects": {"sanity": -6, "strikes": 2}, "addEvidence": {"id": "scolding-notes", "label": "Your notes from the meeting: time, attendees, exact words", "type": "written", "strength": 3}, "setFlags": ["witnessed-scolding"], "next": "guilt-pact"}, {"label": "Interrupt: 'Can we take this offline?'", "result": "Using her own phrase against her. The room exhales. She turns to you: 'Oh, now YOU have opinions?' Worth it. Mostly.", "effects": {"sanity": -8, "reputation": 6, "strikes": 2}, "addEvidence": {"id": "scolding-witnessed", "label": "Everyone saw you try to stop the scolding", "type": "witnessed", "strength": 2}, "setFlags": ["witnessed-scolding", "spoke-up-early"], "next": "guilt-pact"}, {"label": "Freeze. Stare at your laptop.", "result": "Twenty minutes is a long time to read the same email. You don't remember a single word of it.", "effects": {"sanity": -10, "strikes": 3}, "addEvidence": {"id": "scolding-memory", "label": "You remember the scolding, roughly", "type": "recalled", "strength": 1}, "setFlags": ["witnessed-scolding", "froze"], "next": "guilt-pact"}], "order": 1}, {"id": "guilt-pact", "weeks": [1, 12], "weight": 0, "scene": "pantry", "speaker": "whisper", "text": "You can't sleep. You keep replaying the meeting: Marcus staring at the table, twenty minutes, and nobody, including you, saying a word. Not guilt for something you did. Guilt for something you didn't. Next morning Jordan finds you in the pantry: 'We just sat there.' Your 2-on-1 lunch with Derek is next week.", "choices": [{"label": "'Let's tell Derek at lunch. Together.'", "result": "A pact, sealed over three-in-one coffee. Two witnesses are harder to dismiss than one.", "effects": {"allies": 1, "sanity": 3}, "setFlags": ["pact"], "next": "jordan-dinner"}, {"label": "'Let's write down what we both saw, today'", "result": "You compare notes while it's fresh. Two accounts, same details, same day. HR people dream of this.", "effects": {"allies": 1}, "addEvidence": {"id": "joint-account", "label": "Joint written account with Jordan, same day", "type": "written", "strength": 3}, "setFlags": ["pact"], "next": "jordan-dinner"}, {"label": "'Not our fight. Let's keep our heads down.'", "result": "Jordan nods slowly. The coffee tastes like regret, and also like three-in-one.", "effects": {"sanity": -4}, "next": "jordan-dinner"}]}, {"id": "jordan-dinner", "weeks": [1, 12], "weight": 0, "scene": "dinner", "speaker": "whisper", "text": "Plot twist. Two days before your carefully planned lunch, Jordan bumps into Derek leaving the office. One 'eh, makan?' later, they're at a hawker centre, and Jordan tells him everything. Over chicken rice.", "choices": [{"label": "'Jordan. We had a PLAN.'", "result": "'He asked how the team was! What was I supposed to say, fine?' Fair. The plan was a 14-slide deck. Jordan's version was one plate of chicken rice. Jordan's version worked.", "effects": {"sanity": 5}, "setFlags": ["derek-told"], "next": "confirmation-call"}, {"label": "Ask Jordan exactly what Derek said", "result": "'He went quiet. Then he said he'd talk to the others.' The others means you. Your phone suddenly feels heavier.", "effects": {"sanity": 2, "allies": 0}, "setFlags": ["derek-told"], "next": "confirmation-call"}]}, {"id": "confirmation-call", "weeks": [1, 12], "weight": 0, "scene": "office", "speaker": "manager", "text": "Next morning, Derek calls you. 'Jordan told me about the meeting with Marcus. I need you to be straight with me. What happened?' No email, no form, no paper trail. Just your point of view, on the phone. This is the moment.", "choices": [{"label": "Tell him everything you saw", "result": "You walk him through it: dates, words, who was in the room. He listens without interrupting. Your account matches Jordan's to the minute. At the end, a long pause. 'Thank you. That's what I needed.' No email. No attachments. Just your word, and it's enough.", "effects": {"allies": 1, "reputation": 4, "sanity": -3}, "setFlags": ["testified"], "next": "the-dig", "opensCase": true}, {"label": "Confirm it, but keep it vague", "result": "'It was... a lot.' Derek sighs. He believes you, but 'a lot' doesn't fit on an HR form.", "effects": {"sanity": -2, "strikes": 1}, "addEvidence": {"id": "vague-confirmation", "label": "You vaguely confirmed to Derek", "type": "recalled", "strength": 1}, "next": "the-dig"}, {"label": "'I didn't really notice anything'", "result": "Derek pauses. 'Okay.' The call ends. Marcus will never know you had this chance. You will.", "effects": {"sanity": -12, "reputation": -4, "strikes": 3}, "setFlags": ["denied"], "next": "the-dig"}], "variants": [{"if": {"flags": ["favourite"]}, "text": "Next morning, Derek calls you. He sounds careful. 'I'll be honest, I always thought you and Veronica were close. You two are always walking off together. So I need you to be straight with me. What happened with Marcus?' If her favourite says it happened, it happened. This is the moment."}]}, {"id": "the-dig", "weeks": [1, 12], "weight": 0, "scene": "restroom", "speaker": "veronica", "text": "Veronica saw Derek call you. 'Come, toilet.' At the sinks, too casually: 'Derek called you ah? What did he want? Was it about me?'", "choices": [{"label": "'Just project stuff. You know Derek.'", "result": "She studies your face in the mirror. You think about nothing. You are a blank Excel sheet. She lets it go. For now.", "effects": {"sanity": -5}}, {"label": "'He asked me to keep it confidential.'", "result": "Honest, and it shuts the door. Her face does seven things at once. Then she leaves without washing her hands.", "effects": {"sanity": -3, "reputation": 2}, "addEvidence": {"id": "dig-attempt", "label": "Veronica tried to extract details of Derek's call", "type": "recalled", "strength": 1}}, {"label": "Tell her about the call", "result": "Her eyes narrow. For the rest of the quarter you are put on 'special projects', which turns out to mean filing.", "effects": {"sanity": -10, "performance": -15, "strikes": 2}, "setFlags": ["leaked"]}]}, {"id": "bigger-problem-reply", "weeks": [1, 12], "weight": 0, "scene": "office", "speaker": "bigboss", "text": "Gordon replies-all to Veronica's Compliance email. One line: 'WHAT IS THE BIGGER PROBLEM WE ARE TRYING TO SOLVE HERE?' Veronica replies with a 9-page attachment. Gordon does not reply again.", "choices": [{"label": "Forward it to Jordan with no comment", "result": "Jordan replies with a single skull emoji. Communication is 90% non-verbal.", "effects": {"sanity": 5}}, {"label": "Print it. Frame it.", "result": "It sits on your desk next to a cactus. Nobody asks. Everybody reads it.", "effects": {"sanity": 4, "reputation": 1}}]}, {"id": "bigger-problem-csv", "weeks": [1, 12], "weight": 3, "scene": "office", "speaker": "bigboss", "text": "A stakeholder pings: 'Can you pull a quick CSV of last month's numbers?' Gordon's voice echoes in your head: 'WHAT ARE YOU TRYING TO SOLVE HERE? WHAT IS THE BIGGER PROBLEM?'", "choices": [{"label": "Ask: 'What's the bigger problem here?'", "result": "Forty messages later, the bigger problem is that their boss asked for the CSV. Their boss's boss asked their boss. Nobody knows why. You send the CSV.", "effects": {"sanity": -3, "performance": 3}}, {"label": "Just send the CSV", "result": "Done in 4 minutes. Gordon finds out at the weekly sync. 'Did you ask about the BIGGER PROBLEM?' You did not.", "effects": {"performance": 2, "reputation": -2}}, {"label": "Build a full dashboard instead", "result": "Three weeks, twelve charts, one filter nobody uses. The stakeholder still exports it to CSV. The circle of life.", "effects": {"performance": -4, "sanity": -4, "reputation": 3}}]}, {"id": "dashboard-wrong", "weeks": [2, 12], "weight": 2, "scene": "office", "speaker": "veronica", "text": "Veronica forwards a stakeholder complaint, cc Derek: 'The dashboard is WRONG. Please fix urgently.' You check. The dashboard is right. The source system is wrong. It has been wrong since 2019.", "choices": [{"label": "Reply with a clear data lineage explanation", "result": "Tables, timestamps, the exact upstream bug. Derek replies 'thanks, clear'. Veronica replies 'noted'. In her language, 'noted' means 'I will remember this'.", "effects": {"performance": 5, "sanity": -2}, "addEvidence": {"id": "dashboard-blame-email", "label": "Email thread: blamed for an upstream data issue", "type": "written", "strength": 2}}, {"label": "Quietly patch it in the dashboard", "result": "You add a CASE WHEN that will outlive everyone in this building. Future you will find it and weep.", "effects": {"performance": 2, "sanity": -3}}]}, {"id": "divide-and-conquer", "weeks": [6, 6], "scene": "pantry", "speaker": "kai", "requires": {"flags": ["marcus-joined"]}, "text": "Kai pulls you into the pantry, rattled. Veronica just took Kai for a 'quick coffee' and said: 'Don't trust Marcus. He's not a good friend. Be careful of him.' Kai referred Marcus for this job.", "choices": [{"label": "'Write down exactly what she said. Now.'", "result": "Kai types it into a note with today's date, word for word. 'She really thought I'd turn on the guy I referred?' Divide and conquer only works if nobody compares notes.", "effects": {"allies": 1, "sanity": -1, "strikes": 0}, "addEvidence": {"id": "kai-turn-attempt", "label": "Kai's dated note: Veronica told Kai not to trust Marcus", "type": "written", "strength": 2}, "setFlags": ["kai-ally"]}, {"label": "'You should give Marcus a heads-up'", "result": "Marcus listens, then laughs quietly. 'Thanks. I figured.' The three of you start a group chat that evening. It is named after a meeting room. It will outlive this company.", "effects": {"allies": 1, "reputation": 2, "sanity": 3, "strikes": 0}, "setFlags": ["kai-ally", "group-chat"]}, {"label": "'Hmm. Maybe she has a point?'", "result": "Kai stares at you like you've just suggested pineapple on nasi lemak. The pantry gets very quiet. The kettle clicks off.", "effects": {"reputation": -5, "sanity": -3, "strikes": 2}, "setFlags": ["doubted-marcus"]}], "always": true, "order": 2}, {"id": "hot-desk-war", "weeks": [1, 12], "weight": 2, "scene": "office", "speaker": "veronica", "text": "Hot-desking day. The Growth team arrived at 7:45am and choped the row your team usually sits in. Veronica video-calls their manager, from three desks away, and shares her screen: an Excel seating plan. Colour-coded. With a legend. 'As you can see, rows C to E are historically ours.'", "choices": [{"label": "'It's fine, I'll sit by the window'", "result": "'No. It's the PRINCIPLE.' She adds a new tab to the spreadsheet called 'Escalation'. You sit by the window anyway. The view is great. You enjoy it in silence.", "effects": {"sanity": -3, "performance": 1}}, {"label": "Mouth 'sorry' to the Growth team", "result": "Their whole row nods at you. You have just made eleven friends in a department you've never worked with. Cross-functional collaboration, achieved.", "effects": {"reputation": 3, "sanity": 1}}, {"label": "Offer to 'optimise' her seating plan", "result": "You add a VLOOKUP, conditional formatting and a pivot table of seat occupancy by team. She loves it. She presents it at the next ops meeting as her own work. Of course she does.", "effects": {"performance": 2, "reputation": -3, "sanity": -2}, "addEvidence": {"id": "seating-plan-credit", "label": "Email: your seating-plan analysis presented as hers", "type": "written", "strength": 2}}, {"label": "Take your laptop to the pantry for the day", "result": "Productive day. Good coffee. Zero spreadsheets about chairs. You consider making the pantry your permanent desk.", "effects": {"sanity": 4, "reputation": -1}}]}, {"id": "aircon-only-lunch", "weeks": [1, 12], "weight": 2, "scene": "dinner", "speaker": "veronica", "text": "Team lunch. Someone suggests the hawker centre downstairs: $5 chicken rice, 3-minute walk. Veronica: 'Aircon places only. I don't sweat.' The only aircon option is a mall salad bar. $24 per bowl. Before drinks.", "choices": [{"label": "Go along. Order the cheapest leaves.", "result": "$24 of leaves and one sad cherry tomato. Lunch conversation is about her new car's air purifier. You are hungry again by 3pm.", "effects": {"sanity": -4, "reputation": 1}}, {"label": "'I'll da bao from the hawker and join you'", "result": "You arrive with chicken rice in a plastic bag. The smell fills the salad bar. Kai and Jordan look at your bag with naked longing.", "effects": {"sanity": 3, "reputation": -1}}, {"label": "Suggest a food court with aircon", "result": "Compromise! Aircon AND $6 food. Veronica says the food court is 'too noisy'. She means 'not my idea'. You go to the salad bar.", "effects": {"sanity": -2, "reputation": 2}}]}, {"id": "stakeholder-screaming-call", "weeks": [2, 2], "always": true, "scene": "office", "speaker": "veronica", "text": "Your second week. Veronica adds you to a call 'to observe'. Two stakeholders from Product and Ops are already there. Within four minutes, all three adults are screaming at each other. You are the only one with your camera on.", "choices": [{"label": "Stay muted and take notes", "result": "Your notes read: '10:04 shouting. 10:06 more shouting. 10:09 someone says \"with all due respect\" (no respect detected).' You learn a lot. None of it is about data.", "effects": {"sanity": -5}, "addEvidence": {"id": "screaming-call-notes", "label": "Your notes from the stakeholder shouting call", "type": "written", "strength": 1}, "setFlags": ["knows-pattern"]}, {"label": "Unmute: 'Shall we take this offline?'", "result": "Silence. Three faces stare at the junior who just spoke. The Ops lead says 'Good idea.' Veronica says nothing. Veronica remembers everything.", "effects": {"reputation": 4, "sanity": -4}, "setFlags": ["spoke-up-early"]}, {"label": "Turn camera off. 'Bad connection.'", "result": "You watch the rest with a cup of Milo. It's honestly better than Netflix. Afterwards, Veronica messages: 'Why camera off? This was for your learning.'", "effects": {"sanity": 2, "reputation": -1}}], "order": 2}, {"id": "onboarding", "weeks": [1, 1], "always": true, "scene": "office", "speaker": "veronica", "text": "Day one. Veronica runs your onboarding at 2x speed: systems, access requests, 'how we do things here'. At the end she snaps her laptop shut. 'Any questions?'", "choices": [{"label": "'Anything I can help you with, or start on?'", "result": "She stops. Blinks. Nobody has ever asked her that. 'Wah. Finally, someone with initiative.' From today, you are 'my junior'. This will be both a blessing and a curse. Mostly the second one.", "effects": {"performance": 5, "sanity": 2}, "setFlags": ["favourite"]}, {"label": "'Where's the pantry?'", "result": "She points vaguely. You find it 20 minutes later behind a door labelled 'Innovation Hub'.", "effects": {"sanity": 1}}, {"label": "'Nope, all clear!'", "result": "She nods and is already on her phone. You spend your first week reading a 2019 Confluence page about a system that no longer exists.", "effects": {"performance": -2, "sanity": 2}}], "order": 1}, {"id": "the-confidante", "weeks": [4, 6], "weight": 3, "scene": "dinner", "speaker": "veronica", "requires": {"flags": ["favourite", "marcus-joined"]}, "text": "Perks of being the favourite: she tells you things. Over dinner, leaning in: 'Between us ah. Marcus won't last here. Trust me, I'll make sure.' She smiles and orders dessert for both of you.", "choices": [{"label": "Nod, then write it down word for word later", "result": "In the Grab home, you type it into your notes with the date and time. Your hands are cold. Being trusted by the wrong person is a strange feeling.", "effects": {"sanity": -5}, "addEvidence": {"id": "wont-last-note", "label": "Your dated note: 'Marcus won't last, I'll make sure'", "type": "written", "strength": 2}, "setFlags": ["knows-intent"]}, {"label": "Play along to hear more", "result": "'Why you say that?' She tells you everything: the leave, the WFH, the emails to Gordon. You learn a lot. You also eat a lava cake you did not want.", "effects": {"sanity": -8, "strikes": 1}, "addEvidence": {"id": "plan-recalled", "label": "You remember her laying out her plan against Marcus", "type": "recalled", "strength": 1}, "setFlags": ["knows-intent"]}, {"label": "Change the subject to her car's air purifier", "result": "Forty minutes on HEPA filters. Safe. Boring. You feel like you dodged something, but you're not sure what.", "effects": {"sanity": -2}}]}, {"id": "metric-explosion", "weeks": [2, 11], "weight": 3, "scene": "office", "speaker": "veronica", "text": "The ask: a dashboard showing how many people signed up for the beta. One number. Veronica's spec: Newly Registered. Newly Waitlisted. Newly Registered AND Waitlisted. Deregistered. Re-registered After Deregistering. Waitlisted But Not Yet Registered. Fourteen metrics. For a counter.", "choices": [{"label": "Build all fourteen. Don't ask questions.", "result": "Three weeks later it launches. The first stakeholder question: 'So... how many people signed up?' Nobody in the room can answer. Including Veronica.", "effects": {"performance": -5, "sanity": -6}}, {"label": "Ask: 'What's the bigger problem we're solving?'", "result": "Gordon's catchphrase, used against her. Her eye twitches. 'Don't Gordon me.' But she cuts it to six metrics. A 57% reduction in nonsense. You'll take it.", "effects": {"performance": 3, "reputation": 2, "sanity": -2}}, {"label": "Build all fourteen, put 'Total sign-ups' at the top", "result": "One big number, fourteen small ones underneath. Usage logs show everyone looks at the big number and leaves. The fourteen metrics remain, like a monument to her vision.", "effects": {"performance": 4, "sanity": -3}}, {"label": "Propose one number with a drill-down", "result": "'Too simplistic. Stakeholders need GRANULARITY.' The stakeholders, privately, tell you they love the simple version. She presents your simple version to Gordon as hers.", "effects": {"performance": 2, "reputation": 3, "sanity": -3}, "addEvidence": {"id": "dashboard-spec-thread", "label": "Email thread: your simple design rejected, then presented as hers", "type": "written", "strength": 2}}]}, {"id": "lift-callback", "weeks": [2, 11], "weight": 2, "scene": "dinner", "speaker": "veronica", "text": "6:02pm. You're in the lift, doors closing, freedom in sight. Your phone buzzes. Veronica: 'Where are you? Come back up. Team dinner! Kai is free tonight, so rare!' Kai usually rushes home to his wife and a baby who does not believe in sleep. Kai had planned to spend this rare free evening asleep.", "choices": [{"label": "Ride the lift back up", "result": "Dinner for four. Veronica talks for 2.5 hours. Under the table, Kai, Jordan and you start a group chat purely for eye-roll emojis. It's the best thing to come out of the night.", "effects": {"sanity": -6, "reputation": 1}, "setFlags": ["group-chat"]}, {"label": "'Aiya, doors closed already, sorry!'", "result": "Technically true. You go home. Next morning: 'You missed a very good bonding session.' Kai texts you privately: 'lucky.'", "effects": {"sanity": 5, "reputation": -2}}, {"label": "Go back up, then engineer an 8pm exit for Kai", "result": "At 7:55 you say loudly, 'Kai, didn't you say the baby has a check-up tomorrow?' Kai catches on instantly. You both leave. He buys your kopi for a week.", "effects": {"sanity": -2, "allies": 1}, "setFlags": ["kai-ally"]}]}, {"id": "erd-no-crossing", "weeks": [2, 12], "weight": 2, "scene": "office", "speaker": "veronica", "text": "Documentation sprint. You draw the ERD: 47 tables, 63 relationships. Veronica's review comment: 'Lines cannot overlap. It looks messy. Fix by EOD.'", "choices": [{"label": "Spend the weekend untangling it", "result": "Sunday, 11pm: zero crossings. You achieved it by routing one line around the entire diagram, twice. It looks like a bowl of mee pok. She approves it.", "effects": {"sanity": -8, "performance": 2}}, {"label": "Explain the graph is mathematically non-planar", "result": "You draw K3,3 on the whiteboard and explain Kuratowski's theorem. She listens patiently, then says: 'Then remove a relationship.' The diagram is now beautiful and wrong.", "effects": {"sanity": -4, "reputation": 2}}, {"label": "Use line jumps", "result": "The little bridge humps. 'Technically, nothing overlaps. They hop over each other.' She squints for a long time. 'OK.' A rare victory for technicalities.", "effects": {"sanity": 3, "performance": 2}}, {"label": "Split it into 9 tiny ERDs", "result": "Zero crossings. Also zero ability to see how any table connects to any other table. Documentation complete. Understanding destroyed.", "effects": {"performance": -2, "sanity": 1}}]}, {"id": "dbt-count-check", "weeks": [3, 12], "weight": 2, "scene": "office", "speaker": "veronica", "text": "New rule: every dbt model must include COUNT(*) OVER (PARTITION BY id) to check for duplicates, 'because I cannot trust the data engineers'. Every model. All 212 of them. Including the ones that select from a single-row config table.", "choices": [{"label": "Add it to all 212 models", "result": "The nightly run goes from 40 minutes to 3 hours. The warehouse bill goes up 38%. Finance emails Gordon. Gordon emails the team one line: 'WHAT IS THE BIGGER PROBLEM HERE?'", "effects": {"performance": -4, "sanity": -5}}, {"label": "Propose a dbt unique test instead", "result": "You write a one-pager: same check, runs once, costs nearly nothing. 'Tests can be skipped. Window functions cannot.' Derek reads your one-pager and quietly forwards it to Gordon.", "effects": {"reputation": 3, "performance": 2, "sanity": -2}, "setFlags": ["derek-aware"]}, {"label": "Add it, with a comment in every model", "result": "212 models, each with '-- duplicate check added per V. Sharpe, see thread'. When Finance investigates the cost spike, every single query has her name on it.", "effects": {"sanity": 2, "reputation": 1}, "addEvidence": {"id": "cost-spike-thread", "label": "Email thread: her mandated checks behind the cost spike", "type": "written", "strength": 1}}]}, {"id": "ten-years-experience", "weeks": [1, 12], "weight": 3, "scene": "nebula", "speaker": "veronica", "text": "Sprint planning. Jordan suggests automating the weekly report instead of building it by hand in Excel. Veronica slams the table: 'IN MY 10 YEARS OF INDUSTRY EXPERIENCE, WE HAVE ALWAYS DONE IT THIS WAY.' Kai quietly adds a tally mark on the whiteboard. It's the fourth this week.", "choices": [{"label": "'What was the outcome, those 10 years?'", "result": "Silence. 'The outcome is that it WORKS.' The weekly report has been wrong since March. Nobody mentions March.", "effects": {"reputation": 3, "sanity": -3}}, {"label": "Add your own tally mark", "result": "Five. Kai draws the diagonal line through the bundle with great ceremony. Jordan coughs to hide a laugh. Veronica thinks the whiteboard is a sprint burndown chart.", "effects": {"sanity": 4, "reputation": 1}}, {"label": "Automate it quietly anyway", "result": "A scheduled query, 40 lines of SQL. The report now builds itself at 7am. You still 'send' it at 10am so nobody asks. Ten years of experience, eleven minutes of SQL.", "effects": {"performance": 5, "sanity": 2}}, {"label": "Nod respectfully", "result": "Three more hours of manual Excel every Monday, forever. In your 10 weeks of experience, this is how it has always been done.", "effects": {"sanity": -4, "performance": -2}}]}, {"id": "upward-management", "weeks": [2, 11], "weight": 2, "scene": "office", "speaker": "veronica", "text": "Veronica forwards your analysis to Margaret, the CFO, with one line added: 'Pulled this together over the weekend, thought it might help!' It is 9am Monday. You finished it Friday at 4pm. Margaret replies: 'Veronica, you're a star.'", "choices": [{"label": "Reply-all with 'Happy to walk through my analysis!'", "result": "Polite. Clear about whose analysis it is. Margaret's assistant books you a 15-minute slot. Veronica books herself into the same slot.", "effects": {"reputation": 3, "sanity": -3}, "addEvidence": {"id": "cfo-credit-thread", "label": "Email: your analysis forwarded to the CFO as hers", "type": "written", "strength": 2}}, {"label": "Save the original file with Friday's timestamp", "result": "File properties: created Friday 2:13pm, by you. Saved to your evidence folder, which is getting a bit full.", "addEvidence": {"id": "friday-file", "label": "File metadata: you built it on Friday", "type": "written", "strength": 2}}, {"label": "Let it go", "result": "Margaret now thinks Veronica works weekends. Veronica now thinks you won't object. Both are wrong, eventually.", "effects": {"sanity": -3}}]}, {"id": "lobby-warning", "weeks": [5, 11], "weight": 3, "scene": "office", "speaker": "marcus", "requires": {"flags": ["marcus-joined", "v-is-manager"]}, "text": "12:30pm. You're heading out for lunch. Marcus is just walking into the lobby after his WFH morning. Upstairs, Veronica has been asking 'where is Marcus' every ten minutes since 11.", "choices": [{"label": "'Bro, sit far away. You kena by her already. Faster run.'", "result": "Marcus doesn't break stride. He takes the far lift, sits behind the pillar on the other side of the floor, and is 'in a call' until 3pm. A strike dodged.", "effects": {"allies": 1, "strikes": -1, "sanity": 2}, "setFlags": ["helped-marcus"]}, {"label": "Give him a look and a tiny head shake", "result": "He reads it perfectly. Eyebrows up, mouth tight, a slow nod. Corporate sign language, fluently spoken.", "effects": {"strikes": -1}, "setFlags": ["helped-marcus"]}, {"label": "Wave and keep walking to lunch", "result": "Your chicken rice is excellent. At 1:15 you hear Veronica's voice carry across the floor: 'MARCUS. A word.'", "effects": {"strikes": 1, "sanity": -2}}]}, {"id": "secret-vent", "weeks": [5, 5], "scene": "nebula", "speaker": "marcus", "requires": {"flags": ["marcus-joined", "v-is-manager"]}, "text": "The 'fresh start' lasted a day. This morning Veronica flared at Marcus again, at his desk, in front of the whole floor. Ten minutes later you walk past. He's staring at a blank spreadsheet.", "choices": [{"label": "'You ok?' and nod toward an empty meeting room", "result": "Door closed, voices low. He vents for twenty minutes. Then, calmly: 'I gave her ten strikes. If she hits ten, I resign.' He doesn't say what number she's on. He doesn't need to.", "effects": {"allies": 1, "strikes": -1, "sanity": -2}, "addEvidence": {"id": "marcus-account", "label": "Marcus's account of the pattern, told to you", "type": "witnessed", "strength": 2}, "setFlags": ["knows-strikes", "helped-marcus"]}, {"label": "Slack him a coffee emoji", "result": "He replies with a coffee emoji and a skull. Small, but it's something.", "effects": {"strikes": 0, "sanity": -1}}, {"label": "Keep walking. Not your business.", "result": "You walk past. Then you walk past again on the way back. He's still staring at the same blank spreadsheet.", "effects": {"strikes": 1, "sanity": -3}}], "always": true, "order": 2}, {"id": "review-buddy", "weeks": [5, 11], "weight": 2, "scene": "office", "speaker": "marcus", "requires": {"flags": ["marcus-joined", "v-is-manager"]}, "text": "Marcus's work keeps coming back from Veronica covered in comments. 'Font inconsistent.' 'Why is this chart blue.' 'In my 10 years of industry experience, this is not how a deck flows.'", "choices": [{"label": "Offer to check his work before he submits", "result": "Every deck gets a second pair of eyes first: fonts, colours, the exact shade of blue she prefers. Her comments drop from 40 a deck to 6. She seems almost disappointed.", "effects": {"strikes": -1, "allies": 1, "sanity": -3, "performance": -2}, "setFlags": ["helped-marcus"]}, {"label": "Share her 'preferences' doc with him", "result": "You've kept a private list: font Calibri 11, no red, never start a slide with a number. Marcus reads it like a survival manual. It is a survival manual.", "effects": {"strikes": -1, "sanity": -1}, "setFlags": ["helped-marcus"]}, {"label": "Stay out of it", "result": "Next deck: 52 comments. One is just a question mark.", "effects": {"strikes": 1}}]}, {"id": "clear-the-air", "weeks": [5, 5], "scene": "office", "speaker": "marcus", "requires": {"flags": ["marcus-joined"]}, "text": "Marcus mostly keeps his head down and tries harder: earlier replies, cleaner decks, no complaints. Today he tells you he finally called Veronica to clear the air. 'She was totally fine. Said it was all a misunderstanding.' He looks genuinely relieved.", "choices": [{"label": "'Send her a recap email of the call'", "result": "He does: 'Thanks for the chat, glad we're aligned on...' Next morning she's back to normal. Normal meaning the old normal. But this time there's an email saying she agreed.", "effects": {"strikes": 0, "sanity": -1}, "addEvidence": {"id": "clear-air-recap", "label": "Marcus's recap: she agreed to reset, then reverted", "type": "written", "strength": 2}, "setFlags": ["helped-marcus"]}, {"label": "'That's great! Fresh start.'", "result": "It lasts until 10:04 the next morning. Marcus doesn't say anything. He just goes back to keeping quiet and trying harder.", "effects": {"strikes": 1, "sanity": -2}}, {"label": "'Be careful. Give it a week.'", "result": "It doesn't take a week. It takes a day. 'You called it,' he says, without smiling.", "effects": {"strikes": 0, "allies": 1}}], "always": true, "order": 1}, {"id": "derek-draws-line", "weeks": [6, 6], "scene": "nebula", "speaker": "manager", "requires": {"flags": ["marcus-joined"]}, "text": "Through the glass walls of Nebula you watch Derek and Veronica. She has a printout. It's her fifth complaint about Marcus this month. Derek, normally the most conflict-avoidant man on floor 23, stands up: 'Enough. From now on, you don't work with Marcus. You don't sit near Marcus. At all.'", "choices": [{"label": "Pretend to read your screen. Read lips instead.", "result": "You catch 'at all' and 'I'm serious'. Veronica walks out pale. Derek sits down and exhales like a man who just ran a marathon. Slow to act, but he acted.", "effects": {"strikes": -2, "sanity": 3}, "setFlags": ["derek-drew-line"]}, {"label": "Message Jordan: 'DEREK HAS A SPINE??'", "result": "Jordan: 'WHAT.' Kai: 'screenshot or it didn't happen.' Derek has a spine. It just takes five printouts to activate.", "effects": {"strikes": -2, "sanity": 4, "reputation": -1}, "setFlags": ["derek-drew-line", "group-chat"]}], "always": true, "order": 3}, {"id": "technically-not-near", "weeks": [7, 11], "weight": 2, "scene": "office", "speaker": "veronica", "requires": {"flags": ["derek-drew-line"]}, "text": "Veronica is obeying Derek's rule. Technically. She doesn't sit near Marcus. She just discusses his work in the leadership chat, cc's his stakeholders, and asks you, loudly, whether 'some people' have submitted their stats yet.", "choices": [{"label": "'I don't know, I'm not near him either'", "result": "Kai turns a laugh into a cough so violent that Jordan offers him water. Veronica narrows her eyes at all three of you.", "effects": {"sanity": 3, "reputation": 1}}, {"label": "Screenshot the leadership chat messages", "result": "Rule set by Derek. Rule bent in writing, timestamped, in a group chat with the CFO. Saved.", "addEvidence": {"id": "rule-bent", "label": "Chat: discussing Marcus after Derek's no-contact rule", "type": "written", "strength": 3}}, {"label": "Say nothing", "result": "She asks again, louder. Marcus, two rows away, heard it the first time.", "effects": {"strikes": 1, "sanity": -2}}]}, {"id": "smear-campaign", "weeks": [13, 13], "weight": 0, "epilogue": true, "scene": "office", "speaker": "veronica", "requires": {"flags": ["exposed"]}, "text": "Monday, 11am. Veronica walks out of a meeting with Derek, Gordon and HR. Garden leave, effective immediately. By 11:20 she's going desk to desk: 'Marcus did this to me. Be careful of him.' Marcus, who never filed a single complaint. Marcus, who kept quiet for months.", "choices": [{"label": "'Marcus never complained once. You did.'", "result": "Said quietly, to the person she was just whispering to. They blink. Then nod. The whisper campaign dies at that desk.", "effects": {"reputation": 3, "strikes": -1}}, {"label": "Message Marcus: 'Ignore whatever you hear today'", "result": "'Already heard. It's ok.' Then, a minute later: 'Thanks for being on my side.'", "effects": {"allies": 1, "strikes": -1}}, {"label": "Keep your head down until she's gone", "result": "You count the minutes until her access card stops working. 4 hours, 12 minutes.", "effects": {"sanity": -2}}]}, {"id": "farewell-one-on-one", "weeks": [13, 13], "weight": 0, "epilogue": true, "scene": "nebula", "speaker": "veronica", "requires": {"flags": ["exposed", "favourite"]}, "text": "Her last hour. She books Nebula with you, of course. 'I'm leaving today. I wanted you to hear it from me. Don't trust Marcus. And honestly? This company cannot survive without me.' She's looking at you the way she did on your first day.", "choices": [{"label": "'Thank you for onboarding me.'", "result": "True, and kind, and nothing more. She nods, satisfied, and doesn't notice what you didn't say. You'll think about this conversation for a long time.", "effects": {"sanity": 2}}, {"label": "'I think the team will be okay.'", "result": "She studies your face for a long second. 'We'll see.' The team, it turns out, will be more than okay.", "effects": {"sanity": 4, "reputation": 1}}, {"label": "Nod. Say nothing.", "result": "She hugs you. You let her. Then she walks out with a box and a plant, and that's the last time you see her in the office.", "effects": {"sanity": -1}}]}, {"id": "recruiter-ping", "weeks": [3, 9], "weight": 2, "scene": "night", "text": "11:40pm. A LinkedIn message: 'Hi! Exciting opportunity, Senior Analyst, great culture, no micromanagement 🙂'. You've been staring at Veronica's 10:30pm Slack for twenty minutes.", "choices": [{"label": "Reply: 'Happy to chat'", "result": "A call is booked for Thursday lunch. You'll take it from the car park, like a spy.", "effects": {"sanity": 4}, "setFlags": ["job-hunting"]}, {"label": "Leave it on read", "result": "Not now. The team needs you. Probably. You'll check again in a month.", "effects": {"sanity": -1}}]}, {"id": "the-offer", "weeks": [6, 11], "weight": 4, "scene": "office", "requires": {"flags": ["job-hunting"]}, "text": "The email arrives during the 2pm stats update: an offer. 18% more, a manager whose reviews say 'reasonable', and nobody who will ever say 'come, toilet'. Signing deadline: Friday.", "choices": [{"label": "Sign it. Resign today.", "result": "You hand Derek your letter. Then you go home and sleep for eleven hours.", "effects": {"sanity": 20}, "endsGame": "youResigned"}, {"label": "Decline. You're not leaving them with her.", "result": "You write 'thank you, but not right now' and close the laptop. Kai, Jordan, Marcus. Not yet.", "effects": {"sanity": -4, "reputation": 2, "allies": 1}, "setFlags": ["stayed-for-team"]}, {"label": "Ask for a later start date", "result": "They give you until the end of the quarter. A safety net. You'll decide later. Probably at 2am.", "effects": {"sanity": 5}, "setFlags": ["offer-in-pocket"]}]}, {"id": "kai-offer", "weeks": [6, 11], "weight": 3, "scene": "pantry", "speaker": "kai", "text": "Kai shows you his phone, unimpressed. A recruiter finally came through with an offer. It's... fine. 4% more, an office 20 minutes further from home, and a 'flexible' WFH policy that is one day a month. 'Is this worth leaving for?' he asks. Neither of you is sure what 'this' refers to.", "choices": [{"label": "'Negotiate. Ask for what you're worth.'", "result": "He asks for 15%. They come back with 5% and a free gym membership. Kai declines. 'Even Veronica is better than a gym membership.' He pauses. 'Almost.'", "effects": {"sanity": 2, "allies": 1}, "setFlags": ["kai-stayed", "kai-ally"]}, {"label": "'Not good enough. Stay, we need you.'", "result": "He declines it the same afternoon. 'Ok. But you're buying kopi until she's gone.' Deal.", "effects": {"allies": 1, "sanity": 2}, "setFlags": ["kai-stayed", "kai-ally"]}, {"label": "'Take it anyway. Get out while you can.'", "result": "He takes it, half-hearted. Two weeks later his desk is empty except for a sticky note: 'Nebula Survivors forever. Don't let her win.'", "effects": {"allies": -1, "sanity": -4}, "setFlags": ["kai-left"]}]}, {"id": "friday-before", "weeks": [12, 12], "always": true, "order": 1, "scene": "office", "speaker": "veronica", "text": "Friday. Something's off. Veronica is being... nice. She buys the whole team kaya toast. She compliments Marcus's deck, from a distance of exactly four desks. Derek's calendar for Monday 9am just says 'Meeting (private)'.", "choices": [{"label": "Eat the kaya toast. Say nothing.", "result": "It's very good kaya toast. It tastes like the last day of something.", "effects": {"sanity": 2}}, {"label": "Message the group chat: 'why is she being nice'", "result": "Kai: 'she knows.' Jordan: 'she doesn't know.' Marcus: 'eat the toast.' Wise words.", "effects": {"sanity": 3}, "setFlags": ["group-chat"]}, {"label": "Ask her if everything's ok", "result": "'Of course! Why wouldn't it be?' She smiles too long. You eat your toast very quickly.", "effects": {"sanity": -2}}]}, {"id": "the-pip", "weeks": [6, 12], "always": true, "order": 9, "scene": "nebula", "speaker": "veronica", "requires": {"stats": {"performance": [0, 35]}}, "text": "A calendar invite: 'Quick chat', with HR copied. Veronica slides a document across the table. Performance Improvement Plan. Section 1, 'Areas of concern': visibility, ownership, and 'attitude when asked to come to the toilet'.", "choices": [{"label": "Sign it. You're too tired to fight.", "result": "Six weeks of daily check-ins with the person who wrote the PIP. You don't make it to week four.", "effects": {"performance": -10}, "endsGame": "managedOut"}, {"label": "Refuse to sign. Ask HR for the evidence.", "result": "HR asks Veronica for the evidence. Veronica produces a spreadsheet with one row: 'vibes'. The PIP is 'paused for review'.", "effects": {"performance": 15, "sanity": -8, "reputation": 2}, "addEvidence": {"id": "pip-no-evidence", "label": "HR paused a PIP that had no evidence behind it", "type": "written", "strength": 2}}, {"label": "Bring your delivery log to the meeting", "result": "Twelve weeks of shipped work, dated and linked. The HR partner reads it, looks at Veronica, and says 'let's take this offline'. For once, you love that phrase.", "effects": {"performance": 20, "sanity": -4}}]}]};
+window.__ASSETS__ = {"assets/portraits/bigboss.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj4KICA8ZGVmcz48Y2xpcFBhdGggaWQ9ImMiPjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIi8+PC9jbGlwUGF0aD48L2RlZnM+CiAgPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iNjAiIGZpbGw9IiNmZmU4Y2MiLz4KICA8ZyBjbGlwLXBhdGg9InVybCgjYykiPgogICAgPHBhdGggZD0iTTE0IDEyMiBRMTggODggNjAgODQgUTEwMiA4OCAxMDYgMTIyWiIgZmlsbD0iIzQ5NTA1NyIvPgogICAgPHBhdGggZD0iTTUwIDg2IEw2MCAxMDAgTDcwIDg2WiIgZmlsbD0iI2RlZTJlNiIvPgogICAgPHJlY3QgeD0iNTMiIHk9IjcyIiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHJ4PSI0IiBmaWxsPSIjZWFiOThmIi8+CiAgICA8ZWxsaXBzZSBjeD0iNjAiIGN5PSI1NCIgcng9IjIyIiByeT0iMjQiIGZpbGw9IiNlYWI5OGYiLz4KICAgIDxwYXRoIGQ9Ik0zOCA1MCBRMzYgMjggNjAgMjYgUTg0IDI4IDgyIDUwIEw3OCAzOCBRNjAgMzAgNDIgMzhaIiBmaWxsPSIjNWM1ZjY2Ii8+CiAgICA8cGF0aCBkPSJNNDMgNDQgTDU2IDQ4IE03NyA0NCBMNjQgNDgiIHN0cm9rZT0iIzM0M2E0MCIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxjaXJjbGUgY3g9IjUxIiBjeT0iNTUiIHI9IjMiIGZpbGw9IiMxZDFkMWYiLz48Y2lyY2xlIGN4PSI2OSIgY3k9IjU1IiByPSIzIiBmaWxsPSIjMWQxZDFmIi8+CiAgICA8ZWxsaXBzZSBjeD0iNjAiIGN5PSI2OSIgcng9IjciIHJ5PSI1IiBmaWxsPSIjN2EyZTFlIi8+CiAgICA8dGV4dCB4PSI5OCIgeT0iMzAiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNiIgZm9udC13ZWlnaHQ9IjkwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2U4NTkwYyI+PzwvdGV4dD4KICA8L2c+Cjwvc3ZnPgo=", "assets/portraits/ceo.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj4KICA8ZGVmcz48Y2xpcFBhdGggaWQ9ImMiPjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIi8+PC9jbGlwUGF0aD48L2RlZnM+CiAgPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iNjAiIGZpbGw9IiNlOWVjZWYiLz4KICA8ZyBjbGlwLXBhdGg9InVybCgjYykiPgogICAgPHBhdGggZD0iTTE0IDEyMiBRMTggODggNjAgODQgUTEwMiA4OCAxMDYgMTIyWiIgZmlsbD0iIzIxMjUyOSIvPgogICAgPHBhdGggZD0iTTUwIDg2IEw2MCA5OCBMNzAgODZaIiBmaWxsPSIjZmZmIi8+CiAgICA8cmVjdCB4PSIxMDAiIHk9IjcwIiB3aWR0aD0iMCIgaGVpZ2h0PSIwIi8+CiAgICA8cmVjdCB4PSI1MyIgeT0iNzIiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgcng9IjQiIGZpbGw9IiNmMWM5YTUiLz4KICAgIDxlbGxpcHNlIGN4PSI2MCIgY3k9IjU0IiByeD0iMjEiIHJ5PSIyNCIgZmlsbD0iI2YxYzlhNSIvPgogICAgPHBhdGggZD0iTTM4IDQ4IFEzOCAyNCA2MiAyNCBRODQgMjYgODIgNDYgUTc2IDMwIDU2IDM0IFE0NiAzNCAzOCA0OFoiIGZpbGw9IiNhZGI1YmQiLz4KICAgIDxyZWN0IHg9IjQyIiB5PSI0OCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjEwIiByeD0iMiIgZmlsbD0iIzFkMWQxZiIvPgogICAgPHJlY3QgeD0iNjIiIHk9IjQ4IiB3aWR0aD0iMTYiIGhlaWdodD0iMTAiIHJ4PSIyIiBmaWxsPSIjMWQxZDFmIi8+CiAgICA8cGF0aCBkPSJNNTggNTIgSDYyIiBzdHJva2U9IiMxZDFkMWYiIHN0cm9rZS13aWR0aD0iMiIvPgogICAgPHBhdGggZD0iTTQ0IDUwIEw1MCA1MCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuNCIgb3BhY2l0eT0iMC42Ii8+CiAgICA8cGF0aCBkPSJNNjQgNTAgTDcwIDUwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMS40IiBvcGFjaXR5PSIwLjYiLz4KICAgIDxwYXRoIGQ9Ik00OCA2NiBRNjAgNzQgNzIgNjYiIHN0cm9rZT0iIzdhM2UyYiIgc3Ryb2tlLXdpZHRoPSIyLjYiIGZpbGw9IiNmZmYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDwvZz4KPC9zdmc+Cg==", "assets/portraits/hrbp.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj4KICA8ZGVmcz48Y2xpcFBhdGggaWQ9ImMiPjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIi8+PC9jbGlwUGF0aD48L2RlZnM+CiAgPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iNjAiIGZpbGw9IiNmZmYzYmYiLz4KICA8ZyBjbGlwLXBhdGg9InVybCgjYykiPgogICAgPHBhdGggZD0iTTE2IDEyMiBRMjAgODggNjAgODQgUTEwMCA4OCAxMDQgMTIyWiIgZmlsbD0iI2U1OTlmNyIvPgogICAgPHBhdGggZD0iTTUwIDg2IEw2MCA5OCBMNzAgODYiIGZpbGw9IiNmZmYiLz4KICAgIDxwYXRoIGQ9Ik01NiA5MiBMNTQgMTIyIE02NCA5MiBMNjYgMTIyIiBzdHJva2U9IiNlODU5MGMiIHN0cm9rZS13aWR0aD0iMi40Ii8+CiAgICA8cmVjdCB4PSI3MCIgeT0iOTgiIHdpZHRoPSIyMiIgaGVpZ2h0PSIyNiIgcng9IjMiIGZpbGw9IiNjZWQ0ZGEiIHN0cm9rZT0iIzg2OGU5NiIvPgogICAgPHJlY3QgeD0iNzYiIHk9Ijk1IiB3aWR0aD0iMTAiIGhlaWdodD0iNSIgcng9IjEiIGZpbGw9IiM4NjhlOTYiLz4KICAgIDxwYXRoIGQ9Ik03NCAxMDYgSDg4IE03NCAxMTEgSDg4IE03NCAxMTYgSDg0IiBzdHJva2U9IiM4NjhlOTYiIHN0cm9rZS13aWR0aD0iMS40Ii8+CiAgICA8cmVjdCB4PSI1MyIgeT0iNzIiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgcng9IjQiIGZpbGw9IiNmM2NmYjAiLz4KICAgIDxwYXRoIGQ9Ik03OCAzNCBROTggNDAgOTIgNzAgUTg2IDYwIDgyIDQ4WiIgZmlsbD0iIzhhNWEyYiIvPgogICAgPGVsbGlwc2UgY3g9IjYwIiBjeT0iNTQiIHJ4PSIyMSIgcnk9IjIzIiBmaWxsPSIjZjNjZmIwIi8+CiAgICA8cGF0aCBkPSJNMzggNTIgUTM2IDI2IDYwIDI2IFE4NCAyNiA4MiA1MiBRNzIgMzYgNTAgNDAgUTQyIDQ0IDM4IDUyWiIgZmlsbD0iIzhhNWEyYiIvPgogICAgPHBhdGggZD0iTTQ1IDU0IFE1MCA0OSA1NSA1NCBNNjUgNTQgUTcwIDQ5IDc1IDU0IiBzdHJva2U9IiMxZDFkMWYiIHN0cm9rZS13aWR0aD0iMi40IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik00NiA0NiBRNTAgNDMgNTUgNDUgTTY1IDQ1IFE3MCA0MyA3NCA0NiIgc3Ryb2tlPSIjOGE1YTJiIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTQ4IDYzIFE2MCA3NiA3MiA2M1oiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2MyMjU1YyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgICA8Y2lyY2xlIGN4PSI0NCIgY3k9IjYyIiByPSI0IiBmaWxsPSIjZmZhOGE4IiBvcGFjaXR5PSIwLjUiLz48Y2lyY2xlIGN4PSI3NiIgY3k9IjYyIiByPSI0IiBmaWxsPSIjZmZhOGE4IiBvcGFjaXR5PSIwLjUiLz4KICA8L2c+Cjwvc3ZnPgo=", "assets/portraits/it.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj4KICA8ZGVmcz48Y2xpcFBhdGggaWQ9ImMiPjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIi8+PC9jbGlwUGF0aD48L2RlZnM+CiAgPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iNjAiIGZpbGw9IiNlNWRiZmYiLz4KICA8ZyBjbGlwLXBhdGg9InVybCgjYykiPgogICAgPHBhdGggZD0iTTE0IDEyMiBRMTggODggNjAgODQgUTEwMiA4OCAxMDYgMTIyWiIgZmlsbD0iIzIxMjUyOSIvPgogICAgPHRleHQgeD0iNjAiIHk9IjExMiIgZm9udC1mYW1pbHk9InVpLW1vbm9zcGFjZSxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtd2VpZ2h0PSI3MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2OWRiN2MiPiZsdDsvJmd0OzwvdGV4dD4KICAgIDxyZWN0IHg9IjUzIiB5PSI3MiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiByeD0iNCIgZmlsbD0iI2E4Nzc0ZiIvPgogICAgPGVsbGlwc2UgY3g9IjYwIiBjeT0iNTQiIHJ4PSIyMSIgcnk9IjIzIiBmaWxsPSIjYTg3NzRmIi8+CiAgICA8cGF0aCBkPSJNMzggNDggUTM4IDI2IDYwIDI2IFE4MiAyNiA4MiA0OCBRNzIgMzQgNjAgMzYgUTQ4IDM0IDM4IDQ4WiIgZmlsbD0iIzFkMWQxZiIvPgogICAgPHBhdGggZD0iTTM2IDU0IFEzNiAyNiA2MCAyNCBRODQgMjYgODQgNTQiIHN0cm9rZT0iIzM0M2E0MCIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+CiAgICA8cmVjdCB4PSIzMiIgeT0iNTAiIHdpZHRoPSI4IiBoZWlnaHQ9IjE0IiByeD0iMyIgZmlsbD0iIzM0M2E0MCIvPgogICAgPHJlY3QgeD0iODAiIHk9IjUwIiB3aWR0aD0iOCIgaGVpZ2h0PSIxNCIgcng9IjMiIGZpbGw9IiMzNDNhNDAiLz4KICAgIDxwYXRoIGQ9Ik0zNiA2MiBRNDAgNzIgNTIgNzIiIHN0cm9rZT0iIzM0M2E0MCIgc3Ryb2tlLXdpZHRoPSIyLjQiIGZpbGw9Im5vbmUiLz4KICAgIDxjaXJjbGUgY3g9IjUzIiBjeT0iNzIiIHI9IjIuNCIgZmlsbD0iIzM0M2E0MCIvPgogICAgPHBhdGggZD0iTTQ2IDU1IEg1NiBNNjQgNTUgSDc0IiBzdHJva2U9IiMxZDFkMWYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik00NSA0OCBMNTUgNTAgTTY1IDUwIEw3NSA0OCIgc3Ryb2tlPSIjMWQxZDFmIiBzdHJva2Utd2lkdGg9IjIuMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNNTQgNjYgUTYyIDY5IDY4IDY0IiBzdHJva2U9IiM1YzJlMWUiIHN0cm9rZS13aWR0aD0iMi40IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8L2c+Cjwvc3ZnPgo=", "assets/portraits/kai.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj4KICA8ZGVmcz48Y2xpcFBhdGggaWQ9ImMiPjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIi8+PC9jbGlwUGF0aD48L2RlZnM+CiAgPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iNjAiIGZpbGw9IiNkM2Y5ZDgiLz4KICA8ZyBjbGlwLXBhdGg9InVybCgjYykiPgogICAgPHBhdGggZD0iTTE0IDEyMiBRMTggODggNjAgODQgUTEwMiA4OCAxMDYgMTIyWiIgZmlsbD0iIzVjN2NmYSIvPgogICAgPHBhdGggZD0iTTQ0IDg2IFE2MCAxMDAgNzYgODYiIHN0cm9rZT0iIzQyNjNlYiIgc3Ryb2tlLXdpZHRoPSI2IiBmaWxsPSJub25lIi8+CiAgICA8cGF0aCBkPSJNNTIgOTIgTDUwIDEyMiBNNjggOTIgTDcwIDEyMiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiLz4KICAgIDxyZWN0IHg9IjQ2IiB5PSIxMDQiIHdpZHRoPSIyOCIgaGVpZ2h0PSIxNCIgcng9IjIiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2FkYjViZCIvPgogICAgPHRleHQgeD0iNjAiIHk9IjExNCIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjciIGZvbnQtd2VpZ2h0PSI3MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMzNDNhNDAiPlNFTklPUjwvdGV4dD4KICAgIDxyZWN0IHg9IjUzIiB5PSI3MiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiByeD0iNCIgZmlsbD0iI2U4Yjg4ZiIvPgogICAgPGVsbGlwc2UgY3g9IjYwIiBjeT0iNTQiIHJ4PSIyMSIgcnk9IjIzIiBmaWxsPSIjZThiODhmIi8+CiAgICA8cGF0aCBkPSJNMzggNTAgUTM0IDI0IDU4IDI0IFE2NiAxOCA3MiAyNCBRODggMjYgODQgNTAgTDgwIDQwIEw3NCA0NCBMNzAgMzYgTDYyIDQyIEw1NiAzNCBMNTAgNDIgTDQ0IDM4WiIgZmlsbD0iIzNiMmExZSIvPgogICAgPHBhdGggZD0iTTM4IDUyIFEzNCA1NiAzOCA2MiIgc3Ryb2tlPSIjZjhmOWZhIiBzdHJva2Utd2lkdGg9IjQiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPGNpcmNsZSBjeD0iMzgiIGN5PSI2MyIgcj0iMyIgZmlsbD0iI2Y4ZjlmYSIvPgogICAgPGNpcmNsZSBjeD0iNTEiIGN5PSI1NCIgcj0iMyIgZmlsbD0iIzFkMWQxZiIvPjxjaXJjbGUgY3g9IjY5IiBjeT0iNTQiIHI9IjMiIGZpbGw9IiMxZDFkMWYiLz4KICAgIDxjaXJjbGUgY3g9IjUyIiBjeT0iNTMiIHI9IjEiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSI3MCIgY3k9IjUzIiByPSIxIiBmaWxsPSIjZmZmIi8+CiAgICA8cGF0aCBkPSJNNDYgNDcgTDU1IDQ2IE02NSA0NiBMNzQgNDciIHN0cm9rZT0iIzNiMmExZSIgc3Ryb2tlLXdpZHRoPSIyLjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTU1IDY2IEw2NiA2NiIgc3Ryb2tlPSIjN2EzZTJiIiBzdHJva2Utd2lkdGg9IjIuNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPC9nPgo8L3N2Zz4K", "assets/portraits/manager.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj4KICA8ZGVmcz48Y2xpcFBhdGggaWQ9ImMiPjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIi8+PC9jbGlwUGF0aD48L2RlZnM+CiAgPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iNjAiIGZpbGw9IiNlN2Y1ZmYiLz4KICA8ZyBjbGlwLXBhdGg9InVybCgjYykiPgogICAgPHBhdGggZD0iTTE0IDEyMiBRMTggODggNjAgODQgUTEwMiA4OCAxMDYgMTIyWiIgZmlsbD0iIzM2NGZjNyIvPgogICAgPHBhdGggZD0iTTUwIDg2IEw2MCAxMDAgTDcwIDg2WiIgZmlsbD0iI2ZmZiIvPgogICAgPHBhdGggZD0iTTU3IDkyIEw2MCAxMjAgTDYzIDkyIEw2MCA4OFoiIGZpbGw9IiNmYWIwMDUiLz4KICAgIDxyZWN0IHg9IjUzIiB5PSI3MiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiByeD0iNCIgZmlsbD0iI2YzY2ZiMCIvPgogICAgPGVsbGlwc2UgY3g9IjYwIiBjeT0iNTQiIHJ4PSIyMiIgcnk9IjI0IiBmaWxsPSIjZjNjZmIwIi8+CiAgICA8cGF0aCBkPSJNMzggNTIgUTM4IDQwIDQ0IDM2IEw0NiA0NiBaIE04MiA1MiBRODIgNDAgNzYgMzYgTDc0IDQ2WiIgZmlsbD0iIzZiNWI0YiIvPgogICAgPHBhdGggZD0iTTUyIDMyIFE2MCAyOCA2OCAzMiIgc3Ryb2tlPSIjNmI1YjRiIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz4KICAgIDxjaXJjbGUgY3g9IjUxIiBjeT0iNTUiIHI9IjMiIGZpbGw9IiMxZDFkMWYiLz48Y2lyY2xlIGN4PSI2OSIgY3k9IjU1IiByPSIzIiBmaWxsPSIjMWQxZDFmIi8+CiAgICA8cGF0aCBkPSJNNDUgNDYgUTUwIDQzIDU1IDQ3IE02NSA0NyBRNzAgNDMgNzUgNDYiIHN0cm9rZT0iIzZiNWI0YiIgc3Ryb2tlLXdpZHRoPSIyLjIiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTQ5IDY2IFE1NCA2MyA2MCA2NiBRNjYgNjkgNzEgNjYiIHN0cm9rZT0iIzdhM2UyYiIgc3Ryb2tlLXdpZHRoPSIyLjQiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTc5IDQwIHE0IDYgMCAxMCBxLTQgLTQgMCAtMTBaIiBmaWxsPSIjNzRjMGZjIi8+CiAgICA8cGF0aCBkPSJNODQgNTIgcTMgNSAwIDggcS0zIC0zIDAgLThaIiBmaWxsPSIjNzRjMGZjIi8+CiAgPC9nPgo8L3N2Zz4K", "assets/portraits/marcus.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj4KICA8ZGVmcz48Y2xpcFBhdGggaWQ9ImMiPjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIi8+PC9jbGlwUGF0aD48L2RlZnM+CiAgPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iNjAiIGZpbGw9IiNjM2ZhZTgiLz4KICA8ZyBjbGlwLXBhdGg9InVybCgjYykiPgogICAgPHBhdGggZD0iTTE0IDEyMiBRMTggODggNjAgODQgUTEwMiA4OCAxMDYgMTIyWiIgZmlsbD0iIzBjYTY3OCIvPgogICAgPHBhdGggZD0iTTQ4IDg2IEw2MCA5NiBMNzIgODYiIGZpbGw9IiNlNmZjZjUiLz4KICAgIDxwYXRoIGQ9Ik00OCA4NiBMNjAgOTYgTDcyIDg2IiBzdHJva2U9IiMwODdmNWIiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPgogICAgPHJlY3QgeD0iNTMiIHk9IjcyIiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHJ4PSI0IiBmaWxsPSIjZTNiNDhhIi8+CiAgICA8ZWxsaXBzZSBjeD0iNjAiIGN5PSI1NCIgcng9IjIxIiByeT0iMjQiIGZpbGw9IiNlM2I0OGEiLz4KICAgIDxwYXRoIGQ9Ik0zOCA1MCBRMzYgMjYgNjAgMjYgUTg0IDI2IDgyIDUwIFE4MCAzNiA2NiAzNCBRNTQgNDAgNDAgNDBaIiBmaWxsPSIjMWQxZDFmIi8+CiAgICA8cGF0aCBkPSJNNDYgNDcgUTUwIDQ1IDU1IDQ3IE02NSA0NyBRNzAgNDUgNzQgNDciIHN0cm9rZT0iIzFkMWQxZiIgc3Ryb2tlLXdpZHRoPSIyLjIiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTQ2IDU1IFE1MCA1MiA1NSA1NSBNNjUgNTUgUTcwIDUyIDc0IDU1IiBzdHJva2U9IiMxZDFkMWYiIHN0cm9rZS13aWR0aD0iMi40IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik00NyA1OSBxNCAyIDcgMCBNNjYgNTkgcTQgMiA3IDAiIHN0cm9rZT0iI2I1ODM1YSIgc3Ryb2tlLXdpZHRoPSIxLjIiIGZpbGw9Im5vbmUiLz4KICAgIDxwYXRoIGQ9Ik01MSA2NiBRNjAgNzIgNjkgNjYiIHN0cm9rZT0iIzdhM2UyYiIgc3Ryb2tlLXdpZHRoPSIyLjYiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTQwIDY0IFE2MCA4NCA4MCA2NCBRNzYgNzggNjAgODAgUTQ0IDc4IDQwIDY0WiIgZmlsbD0iIzFkMWQxZiIgb3BhY2l0eT0iMC4xNSIvPgogIDwvZz4KPC9zdmc+Cg==", "assets/portraits/veronica.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj4KICA8ZGVmcz48Y2xpcFBhdGggaWQ9ImMiPjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIi8+PC9jbGlwUGF0aD48L2RlZnM+CiAgPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iNjAiIGZpbGw9IiNmZmQ2ZDYiLz4KICA8ZyBjbGlwLXBhdGg9InVybCgjYykiPgogICAgPHBhdGggZD0iTTMwIDYwIFEyNiAyMCA2MCAxOCBROTQgMjAgOTAgNjAgTDkyIDgwIEwyOCA4MFoiIGZpbGw9IiMxNDE0MTQiLz4KICAgIDxwYXRoIGQ9Ik0xNiAxMjIgUTIwIDkwIDYwIDg2IFExMDAgOTAgMTA0IDEyMloiIGZpbGw9IiNjOTJhMmEiLz4KICAgIDxwYXRoIGQ9Ik00OSA4NyBMNjAgMTA4IEw3MSA4N1oiIGZpbGw9IiNmZmYiLz4KICAgIDxwYXRoIGQ9Ik00OSA4NyBMNTcgMTEyIEw0MyAxMDRaIiBmaWxsPSIjOWUxYzFjIi8+CiAgICA8cGF0aCBkPSJNNzEgODcgTDYzIDExMiBMNzcgMTA0WiIgZmlsbD0iIzllMWMxYyIvPgogICAgPHJlY3QgeD0iNTMiIHk9IjcyIiB3aWR0aD0iMTQiIGhlaWdodD0iMTYiIHJ4PSI0IiBmaWxsPSIjZjNjZmIwIi8+CiAgICA8ZyBmaWxsPSIjZmZmYWYwIiBzdHJva2U9IiNkOGNmYzAiIHN0cm9rZS13aWR0aD0iMC42Ij4KICAgICAgPGNpcmNsZSBjeD0iNTEiIGN5PSI4OCIgcj0iMi4yIi8+PGNpcmNsZSBjeD0iNTUiIGN5PSI5MSIgcj0iMi4yIi8+PGNpcmNsZSBjeD0iNjAiIGN5PSI5MiIgcj0iMi4yIi8+PGNpcmNsZSBjeD0iNjUiIGN5PSI5MSIgcj0iMi4yIi8+PGNpcmNsZSBjeD0iNjkiIGN5PSI4OCIgcj0iMi4yIi8+CiAgICA8L2c+CiAgICA8ZWxsaXBzZSBjeD0iNjAiIGN5PSI1MyIgcng9IjIxIiByeT0iMjQiIGZpbGw9IiNmM2NmYjAiLz4KICAgIDxwYXRoIGQ9Ik0zNyA1MiBRMzYgMjYgNjAgMjYgUTg2IDI2IDg0IDU0IFE3NiAzNCA1NiAzOCBRNDQgNDAgMzcgNTJaIiBmaWxsPSIjMTQxNDE0Ii8+CiAgICA8Y2lyY2xlIGN4PSIzOCIgY3k9IjYwIiByPSIyLjUiIGZpbGw9IiNmMGM0MTkiLz48Y2lyY2xlIGN4PSI4MiIgY3k9IjYwIiByPSIyLjUiIGZpbGw9IiNmMGM0MTkiLz4KICAgIDxwYXRoIGQ9Ik00NSA0NyBMNTYgNDgiIHN0cm9rZT0iIzE0MTQxNCIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTY0IDQ2IFE3MCA0MCA3NiA0NCIgc3Ryb2tlPSIjMTQxNDE0IiBzdHJva2Utd2lkdGg9IjIuNCIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNNDYgNTUgUTUxIDUyIDU2IDU1IiBzdHJva2U9IiMxNDE0MTQiIHN0cm9rZS13aWR0aD0iMi40IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik02NCA1NSBRNjkgNTEgNzQgNTUiIHN0cm9rZT0iIzE0MTQxNCIgc3Ryb2tlLXdpZHRoPSIyLjQiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTQ3IDU0IEw1NiA1NCBNNjQgNTQgTDc0IDU0IiBzdHJva2U9IiMxNDE0MTQiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iMC41Ii8+CiAgICA8cGF0aCBkPSJNNTEgNjcgUTU5IDcxIDY4IDY0IiBzdHJva2U9IiNiMzEyM2IiIHN0cm9rZS13aWR0aD0iMy4yIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxjaXJjbGUgY3g9IjQ3IiBjeT0iNjMiIHI9IjMiIGZpbGw9IiNmNGEzYTMiIG9wYWNpdHk9IjAuNSIvPjxjaXJjbGUgY3g9IjczIiBjeT0iNjMiIHI9IjMiIGZpbGw9IiNmNGEzYTMiIG9wYWNpdHk9IjAuNSIvPgogIDwvZz4KPC9zdmc+Cg==", "assets/portraits/whisper.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj4KICA8ZGVmcz48Y2xpcFBhdGggaWQ9ImMiPjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIi8+PC9jbGlwUGF0aD48L2RlZnM+CiAgPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iNjAiIGZpbGw9IiNkMGViZmYiLz4KICA8ZyBjbGlwLXBhdGg9InVybCgjYykiPgogICAgPHBhdGggZD0iTTE2IDEyMiBRMjAgODggNjAgODQgUTEwMCA4OCAxMDQgMTIyWiIgZmlsbD0iIzg2OGU5NiIvPgogICAgPHBhdGggZD0iTTQ2IDg2IFE2MCA5NiA3NCA4NiIgc3Ryb2tlPSIjNmM3NTdkIiBzdHJva2Utd2lkdGg9IjUiIGZpbGw9Im5vbmUiLz4KICAgIDxyZWN0IHg9IjUzIiB5PSI3MiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiByeD0iNCIgZmlsbD0iI2M5OWE2ZSIvPgogICAgPGVsbGlwc2UgY3g9IjYwIiBjeT0iNTQiIHJ4PSIyMSIgcnk9IjIzIiBmaWxsPSIjYzk5YTZlIi8+CiAgICA8cGF0aCBkPSJNMzggNTAgUTM4IDI2IDYwIDI2IFE4MiAyNiA4MiA1MCBRODAgMzggNzAgMzYgUTU4IDQwIDQ0IDM4IFE0MCA0MiAzOCA1MFoiIGZpbGw9IiMyYjIxMTgiLz4KICAgIDxyZWN0IHg9IjQzIiB5PSI0OSIgd2lkdGg9IjE0IiBoZWlnaHQ9IjExIiByeD0iMyIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjM1IiBzdHJva2U9IiMxZDFkMWYiIHN0cm9rZS13aWR0aD0iMiIvPgogICAgPHJlY3QgeD0iNjMiIHk9IjQ5IiB3aWR0aD0iMTQiIGhlaWdodD0iMTEiIHJ4PSIzIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMzUiIHN0cm9rZT0iIzFkMWQxZiIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgICA8cGF0aCBkPSJNNTcgNTQgSDYzIiBzdHJva2U9IiMxZDFkMWYiIHN0cm9rZS13aWR0aD0iMiIvPgogICAgPGNpcmNsZSBjeD0iNTMiIGN5PSI1NSIgcj0iMi40IiBmaWxsPSIjMWQxZDFmIi8+PGNpcmNsZSBjeD0iNzMiIGN5PSI1NSIgcj0iMi40IiBmaWxsPSIjMWQxZDFmIi8+CiAgICA8cGF0aCBkPSJNNDQgNDUgTDU1IDQ2IE02NSA0NiBMNzYgNDQiIHN0cm9rZT0iIzJiMjExOCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik01MyA2NyBRNjAgNjQgNjcgNjciIHN0cm9rZT0iIzZiM2EyYSIgc3Ryb2tlLXdpZHRoPSIyLjQiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTg0IDQ0IHEzIDUgMCA4IHEtMyAtMyAwIC04WiIgZmlsbD0iIzc0YzBmYyIvPgogIDwvZz4KPC9zdmc+Cg==", "assets/scenes/dinner.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgMjQwIj4KICA8cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iI2ZmZThjYyIvPgogIDxnIHN0cm9rZT0iI2U4NTkwYyIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNNjAgMCB2MzAgTTIwMCAwIHYyNCBNMzQwIDAgdjMwIE00ODAgMCB2MjQiLz48L2c+CiAgPGcgZmlsbD0iI2ZmOTIyYiI+PGNpcmNsZSBjeD0iNjAiIGN5PSI0MCIgcj0iMTQiLz48Y2lyY2xlIGN4PSIyMDAiIGN5PSIzNCIgcj0iMTIiLz48Y2lyY2xlIGN4PSIzNDAiIGN5PSI0MCIgcj0iMTQiLz48Y2lyY2xlIGN4PSI0ODAiIGN5PSIzNCIgcj0iMTIiLz48L2c+CiAgPGcgZmlsbD0iI2ZmZDQzYiIgb3BhY2l0eT0iMC41Ij48Y2lyY2xlIGN4PSI2MCIgY3k9IjQwIiByPSIyMiIvPjxjaXJjbGUgY3g9IjM0MCIgY3k9IjQwIiByPSIyMiIvPjwvZz4KICA8cmVjdCB4PSI0NDAiIHk9IjYwIiB3aWR0aD0iMTMwIiBoZWlnaHQ9IjcwIiByeD0iNCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZDk0ODBmIiBzdHJva2Utd2lkdGg9IjMiLz4KICA8dGV4dCB4PSI1MDUiIHk9IjgwIiBmb250LWZhbWlseT0ic3lzdGVtLXVpLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTAiIGZvbnQtd2VpZ2h0PSI4MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNkOTQ4MGYiPlRPREFZIFNQRUNJQUw8L3RleHQ+CiAgPHRleHQgeD0iNTA1IiB5PSI5OCIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM0OTUwNTciPkxvYnN0ZXIgLi4uLi4gJCQkPC90ZXh0PgogIDx0ZXh0IHg9IjUwNSIgeT0iMTE0IiBmb250LWZhbWlseT0ic3lzdGVtLXVpLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzQ5NTA1NyI+RmVlZGJhY2sgLi4uLiBmcmVlPC90ZXh0PgogIDxyZWN0IHg9IjAiIHk9IjE3MCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSI3MCIgZmlsbD0iI2MwODQ1NyIvPgogIDxlbGxpcHNlIGN4PSIyNzAiIGN5PSIxNjgiIHJ4PSIxOTAiIHJ5PSIyNiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZTllY2VmIiBzdHJva2Utd2lkdGg9IjMiLz4KICA8ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTYyIiByeD0iNDAiIHJ5PSIxMiIgZmlsbD0iI2Y4ZjlmYSIgc3Ryb2tlPSIjZGVlMmU2Ii8+CiAgPHBhdGggZD0iTTE3NiAxNTggcTI0IC0xOCA0OCAwIiBmaWxsPSIjZmY2YjZiIi8+CiAgPGVsbGlwc2UgY3g9IjMzMCIgY3k9IjE2NCIgcng9IjM0IiByeT0iMTAiIGZpbGw9IiNmOGY5ZmEiIHN0cm9rZT0iI2RlZTJlNiIvPgogIDxwYXRoIGQ9Ik0zMTIgMTYwIHExOCAtMTAgMzYgMCIgZmlsbD0iIzY5ZGI3YyIvPgogIDxwYXRoIGQ9Ik0yNjAgMTIwIHY0MCBNMjY2IDEyMCB2NDAiIHN0cm9rZT0iI2EwNTIyZCIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPHJlY3QgeD0iNDAwIiB5PSIxNzgiIHdpZHRoPSI0MCIgaGVpZ2h0PSIxNCIgcng9IjQiIGZpbGw9IiM0OTUwNTciLz4KICA8Y2lyY2xlIGN4PSI0MjAiIGN5PSIxNzIiIHI9IjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2FkYjViZCIgc3Ryb2tlLXdpZHRoPSIyLjQiLz4KPC9zdmc+Cg==", "assets/scenes/escape.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgMjQwIj4KICA8ZGVmcz48cGF0dGVybiBpZD0iYiIgd2lkdGg9IjQwIiBoZWlnaHQ9IjIwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iMjAiIGZpbGw9IiMzYjJmMmYiLz48cGF0aCBkPSJNMCAwIEg0MCBNMCAxMCBINDAgTTIwIDAgVjEwIE0wIDEwIFYyMCBNNDAgMTAgVjIwIiBzdHJva2U9IiMyYTIwMjAiIHN0cm9rZS13aWR0aD0iMiIvPjwvcGF0dGVybj48L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyNDAiIGZpbGw9InVybCgjYikiLz4KICA8cmVjdCB4PSIwIiB5PSIyMDAiIHdpZHRoPSI2MDAiIGhlaWdodD0iNDAiIGZpbGw9IiMxZTE3MTciLz4KICA8cmVjdCB4PSIyNDAiIHk9IjUwIiB3aWR0aD0iMTIwIiBoZWlnaHQ9IjE2MCIgcng9IjQiIGZpbGw9IiM2YjQyMjYiIHN0cm9rZT0iIzNkMjQxMiIgc3Ryb2tlLXdpZHRoPSI1Ii8+CiAgPGcgc3Ryb2tlPSIjM2QyNDEyIiBzdHJva2Utd2lkdGg9IjMiPjxwYXRoIGQ9Ik0yNjAgNzAgSDM0MCBWMTIwIEgyNjBaIE0yNjAgMTM1IEgzNDAgVjE5MCBIMjYwWiIvPjwvZz4KICA8Y2lyY2xlIGN4PSIzNDAiIGN5PSIxMzAiIHI9IjUiIGZpbGw9IiNmYWIwMDUiLz4KICA8cGF0aCBkPSJNMjkwIDExOCB2LTE0IGExMCAxMCAwIDAgMSAyMCAwIHYxNCIgc3Ryb2tlPSIjYWRiNWJkIiBzdHJva2Utd2lkdGg9IjUiIGZpbGw9Im5vbmUiLz4KICA8cmVjdCB4PSIyODQiIHk9IjExNiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjI2IiByeD0iNCIgZmlsbD0iI2ZhYjAwNSIvPgogIDxjaXJjbGUgY3g9IjMwMCIgY3k9IjEyNyIgcj0iMyIgZmlsbD0iIzNkMjQxMiIvPjxyZWN0IHg9IjI5OSIgeT0iMTI4IiB3aWR0aD0iMiIgaGVpZ2h0PSI3IiBmaWxsPSIjM2QyNDEyIi8+CiAgPHJlY3QgeD0iNDIwIiB5PSI0MCIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI1MCIgcng9IjYiIGZpbGw9IiMxMTEiLz4KICA8dGV4dCB4PSI0ODAiIHk9Ijc2IiBmb250LWZhbWlseT0idWktbW9ub3NwYWNlLG1vbm9zcGFjZSIgZm9udC1zaXplPSIzMiIgZm9udC13ZWlnaHQ9IjcwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmNGQ0ZCI+MDQ6MDA8L3RleHQ+CiAgPHJlY3QgeD0iNjAiIHk9IjYwIiB3aWR0aD0iMTEwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZTlkY2MwIiB0cmFuc2Zvcm09InJvdGF0ZSgtMyAxMTUgMTAwKSIvPgogIDx0ZXh0IHg9IjExNSIgeT0iOTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLHNlcmlmIiBmb250LXNpemU9IjExIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjM2IyZjJmIiB0cmFuc2Zvcm09InJvdGF0ZSgtMyAxMTUgMTAwKSI+Q0xVRSAjNDo8L3RleHQ+CiAgPHRleHQgeD0iMTE1IiB5PSIxMTIiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLHNlcmlmIiBmb250LXNpemU9IjkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMzYjJmMmYiIHRyYW5zZm9ybT0icm90YXRlKC0zIDExNSAxMDApIj5XaG8gcmVhbGx5PC90ZXh0PgogIDx0ZXh0IHg9IjExNSIgeT0iMTI0IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSI5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjM2IyZjJmIiB0cmFuc2Zvcm09InJvdGF0ZSgtMyAxMTUgMTAwKSI+ZGlkIHRoZSB3b3JrPzwvdGV4dD4KICA8Y2lyY2xlIGN4PSIxMTAiIGN5PSIyMCIgcj0iMCIgZmlsbD0ibm9uZSIvPgogIDxwYXRoIGQ9Ik0wIDAgTDEyMCAwIEw2MCAyNDBaIiBmaWxsPSIjZmZlMDY2IiBvcGFjaXR5PSIwLjA2Ii8+Cjwvc3ZnPgo=", "assets/scenes/garden.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgMjQwIj4KICA8cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iI2E1ZDhmZiIvPgogIDxjaXJjbGUgY3g9IjUyMCIgY3k9IjUwIiByPSIyOCIgZmlsbD0iI2ZmZDQzYiIvPgogIDxnIGZpbGw9IiNmZmYiPjxlbGxpcHNlIGN4PSIxMjAiIGN5PSI1MCIgcng9IjQwIiByeT0iMTQiLz48ZWxsaXBzZSBjeD0iMTUwIiBjeT0iNDIiIHJ4PSIyNiIgcnk9IjEyIi8+PGVsbGlwc2UgY3g9IjM2MCIgY3k9IjcwIiByeD0iMzYiIHJ5PSIxMiIvPjwvZz4KICA8cGF0aCBkPSJNMCAxNTAgUTE1MCAxMjAgMzAwIDE1MCBUNjAwIDE0MCBWMjQwIEgwWiIgZmlsbD0iIzY5ZGI3YyIvPgogIDxwYXRoIGQ9Ik0wIDE4MCBRMjAwIDE2MCA0MDAgMTg1IFQ2MDAgMTc4IFYyNDAgSDBaIiBmaWxsPSIjNTFjZjY2Ii8+CiAgPGcgc3Ryb2tlPSIjMmI4YTNlIiBzdHJva2Utd2lkdGg9IjIiPgogICAgPHBhdGggZD0iTTYwIDE5MCB2LTIwIE0xMDAgMjAwIHYtMjQgTTQ3MCAxOTYgdi0yMiBNNTIwIDE4OCB2LTIwIi8+CiAgPC9nPgogIDxnPjxjaXJjbGUgY3g9IjYwIiBjeT0iMTY4IiByPSI2IiBmaWxsPSIjZmY4Nzg3Ii8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTc0IiByPSI2IiBmaWxsPSIjZmZkNDNiIi8+PGNpcmNsZSBjeD0iNDcwIiBjeT0iMTcyIiByPSI2IiBmaWxsPSIjZGE3N2YyIi8+PGNpcmNsZSBjeD0iNTIwIiBjeT0iMTY2IiByPSI2IiBmaWxsPSIjZmY4Nzg3Ii8+PC9nPgogIDxyZWN0IHg9IjI1MCIgeT0iMTQwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwIiByeD0iMiIgZmlsbD0iI2EwNzg1MCIvPgogIDxyZWN0IHg9IjI1OCIgeT0iMTUwIiB3aWR0aD0iNiIgaGVpZ2h0PSI0MCIgZmlsbD0iIzhhNjQ0MCIvPjxyZWN0IHg9IjMzNiIgeT0iMTUwIiB3aWR0aD0iNiIgaGVpZ2h0PSI0MCIgZmlsbD0iIzhhNjQ0MCIvPgogIDxyZWN0IHg9IjI3MCIgeT0iMTE4IiB3aWR0aD0iNDAiIGhlaWdodD0iMjQiIHJ4PSIzIiBmaWxsPSIjNDk1MDU3Ii8+PHJlY3QgeD0iMjc0IiB5PSIxMjIiIHdpZHRoPSIzMiIgaGVpZ2h0PSIxNiIgZmlsbD0iI2U5ZWNlZiIvPgogIDx0ZXh0IHg9IjI5MCIgeT0iMTMzIiBmb250LWZhbWlseT0ic3lzdGVtLXVpLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNiIgZm9udC13ZWlnaHQ9IjcwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzg2OGU5NiI+QUNDRVNTIFJFVk9LRUQ8L3RleHQ+CiAgPHJlY3QgeD0iMzgwIiB5PSIxMjgiIHdpZHRoPSI4IiBoZWlnaHQ9IjcwIiBmaWxsPSIjOGE2NDQwIi8+CiAgPHJlY3QgeD0iMzUyIiB5PSI5NiIgd2lkdGg9IjcwIiBoZWlnaHQ9IjM0IiByeD0iMyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjOGE2NDQwIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8dGV4dCB4PSIzODciIHk9IjExMiIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjgiIGZvbnQtd2VpZ2h0PSI4MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMyYjhhM2UiPkdBUkRFTjwvdGV4dD4KICA8dGV4dCB4PSIzODciIHk9IjEyMyIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjgiIGZvbnQtd2VpZ2h0PSI4MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMyYjhhM2UiPkxFQVZFPC90ZXh0Pgo8L3N2Zz4K", "assets/scenes/nebula.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgMjQwIj4KICA8cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iI2U3ZWNmMyIvPgogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSI2MDAiIGhlaWdodD0iMTYwIiBmaWxsPSIjZDBkYmU4Ii8+CiAgPGcgc3Ryb2tlPSIjYTViNGM4IiBzdHJva2Utd2lkdGg9IjQiPjxwYXRoIGQ9Ik0xMjAgMCBWMTYwIE00ODAgMCBWMTYwIi8+PC9nPgogIDxyZWN0IHg9IjEyMCIgeT0iMCIgd2lkdGg9IjM2MCIgaGVpZ2h0PSIxNjAiIGZpbGw9IiNhNWQ4ZmYiIG9wYWNpdHk9IjAuMjUiLz4KICA8cmVjdCB4PSI0MDQiIHk9IjE2IiB3aWR0aD0iNjQiIGhlaWdodD0iMjAiIHJ4PSIzIiBmaWxsPSIjMjEyNTI5Ii8+CiAgPHRleHQgeD0iNDM2IiB5PSIzMCIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiBmb250LXdlaWdodD0iODAwIiBsZXR0ZXItc3BhY2luZz0iMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2Y4ZjlmYSI+TkVCVUxBPC90ZXh0PgogIDxjaXJjbGUgY3g9IjMwMCIgY3k9IjQ0IiByPSIxOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjNDk1MDU3IiBzdHJva2Utd2lkdGg9IjMiLz4KICA8cGF0aCBkPSJNMzAwIDQ0IFYzMiBNMzAwIDQ0IEwzMTAgNDQiIHN0cm9rZT0iIzIxMjUyOSIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxyZWN0IHg9IjE1MCIgeT0iNjAiIHdpZHRoPSIxMTAiIGhlaWdodD0iNzAiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2FkYjViZCIvPgogIDx0ZXh0IHg9IjIwNSIgeT0iODgiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9IjcwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzE5NzFjMiI+QUxJR05NRU5UPzwvdGV4dD4KICA8cGF0aCBkPSJNMTY4IDEwNCBxMjAgLTEwIDQwIDAgdDQwIDAiIHN0cm9rZT0iI2UwMzEzMSIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+CiAgPHJlY3QgeD0iNjAiIHk9IjE1MCIgd2lkdGg9IjQ4MCIgaGVpZ2h0PSIyMCIgcng9IjgiIGZpbGw9IiM1YzQwMzMiLz4KICA8cmVjdCB4PSI5MCIgeT0iMTcwIiB3aWR0aD0iMTAiIGhlaWdodD0iNjAiIGZpbGw9IiMzZTJhMjAiLz48cmVjdCB4PSI1MDAiIHk9IjE3MCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjM2UyYTIwIi8+CiAgPGcgZmlsbD0iIzM0M2E0MCI+PHJlY3QgeD0iMTMwIiB5PSIxMTgiIHdpZHRoPSI0MCIgaGVpZ2h0PSIzNCIgcng9IjYiLz48cmVjdCB4PSIyODAiIHk9IjExOCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjM0IiByeD0iNiIvPjxyZWN0IHg9IjQzMCIgeT0iMTE4IiB3aWR0aD0iNDAiIGhlaWdodD0iMzQiIHJ4PSI2Ii8+PC9nPgogIDxyZWN0IHg9IjM1MCIgeT0iMTMyIiB3aWR0aD0iMzQiIGhlaWdodD0iMjAiIHJ4PSIzIiBmaWxsPSIjZmZmIiBzdHJva2U9IiNjZWQ0ZGEiLz4KICA8cGF0aCBkPSJNMzYwIDEzMiBxNyAtMTIgMTQgMCIgZmlsbD0iI2Y4ZjlmYSIgc3Ryb2tlPSIjY2VkNGRhIi8+CiAgPHJlY3QgeD0iMjAwIiB5PSIxNDAiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxMiIgcng9IjIiIGZpbGw9IiNmZmYiLz4KPC9zdmc+Cg==", "assets/scenes/night.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgMjQwIj4KICA8cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iIzFiMWUzMyIvPgogIDxyZWN0IHg9IjQwIiB5PSIzMCIgd2lkdGg9IjE1MCIgaGVpZ2h0PSIxMTAiIHJ4PSI0IiBmaWxsPSIjMGYxMjI0IiBzdHJva2U9IiMzYjQwNjAiIHN0cm9rZS13aWR0aD0iNiIvPgogIDxwYXRoIGQ9Ik0xMTUgMzAgVjE0MCBNNDAgODUgSDE5MCIgc3Ryb2tlPSIjM2I0MDYwIiBzdHJva2Utd2lkdGg9IjQiLz4KICA8Y2lyY2xlIGN4PSIxNTAiIGN5PSI1OCIgcj0iMTQiIGZpbGw9IiNmZmYzYmYiLz48Y2lyY2xlIGN4PSIxNTYiIGN5PSI1NCIgcj0iMTIiIGZpbGw9IiMwZjEyMjQiLz4KICA8ZyBmaWxsPSIjZmZmIj48Y2lyY2xlIGN4PSI3MCIgY3k9IjUwIiByPSIxLjUiLz48Y2lyY2xlIGN4PSI5MCIgY3k9IjExMCIgcj0iMS4yIi8+PGNpcmNsZSBjeD0iMTcwIiBjeT0iMTIwIiByPSIxLjIiLz48L2c+CiAgPHJlY3QgeD0iMCIgeT0iMTcwIiB3aWR0aD0iNjAwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjMmIyZjRhIi8+CiAgPHJlY3QgeD0iMjIwIiB5PSIxNTAiIHdpZHRoPSIzODAiIGhlaWdodD0iNTAiIHJ4PSIxMCIgZmlsbD0iIzRjNTI4NSIvPgogIDxyZWN0IHg9IjIzNiIgeT0iMTMwIiB3aWR0aD0iOTAiIGhlaWdodD0iMzQiIHJ4PSIxNCIgZmlsbD0iI2U5ZWNlZiIvPgogIDxyZWN0IHg9IjIyMCIgeT0iMTc2IiB3aWR0aD0iMzgwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjM2I0MDcwIi8+CiAgPHJlY3QgeD0iNDIwIiB5PSIxNDAiIHdpZHRoPSI1NiIgaGVpZ2h0PSIyMiIgcng9IjMiIGZpbGw9IiMyYjJmNGEiLz4KICA8ZyB0cmFuc2Zvcm09InJvdGF0ZSgtMTIgNDQwIDExMikiPgogICAgPHJlY3QgeD0iNDE4IiB5PSI2MCIgd2lkdGg9IjQ2IiBoZWlnaHQ9Ijg0IiByeD0iOCIgZmlsbD0iIzIxMjUyOSIvPgogICAgPHJlY3QgeD0iNDIyIiB5PSI2OCIgd2lkdGg9IjM4IiBoZWlnaHQ9IjY2IiByeD0iMyIgZmlsbD0iIzc0YzBmYyIvPgogICAgPGNpcmNsZSBjeD0iNDQxIiBjeT0iOTIiIHI9IjEwIiBmaWxsPSIjZmZkNmQ2Ii8+CiAgICA8cGF0aCBkPSJNNDMzIDkyIHE4IC0xNCAxNiAwIiBmaWxsPSIjMTQxNDE0Ii8+CiAgICA8cmVjdCB4PSI0MjgiIHk9IjExMCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiByeD0iNiIgZmlsbD0iIzQwYzA1NyIvPjxyZWN0IHg9IjQ0MyIgeT0iMTEwIiB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHJ4PSI2IiBmaWxsPSIjZmE1MjUyIi8+CiAgPC9nPgogIDxnIHN0cm9rZT0iI2ZmZDQzYiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxwYXRoIGQ9Ik00MDQgNzAgbC0xMiAtOCBNNDAwIDg4IGwtMTQgMCBNNDg0IDcwIGwxMiAtOCBNNDg4IDg4IGwxNCAwIi8+PC9nPgogIDx0ZXh0IHg9IjU0MCIgeT0iNDAiIGZvbnQtZmFtaWx5PSJ1aS1tb25vc3BhY2UsbW9ub3NwYWNlIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iNzAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZmY2YjZiIj45OjQ3UE08L3RleHQ+Cjwvc3ZnPgo=", "assets/scenes/office.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgMjQwIj4KICA8cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iI2VjZTZkYSIvPgogIDxyZWN0IHg9IjAiIHk9IjIwIiB3aWR0aD0iNjAwIiBoZWlnaHQ9IjExMCIgZmlsbD0iI2JmZDdlYSIvPgogIDxnIGZpbGw9IiM4ZmIwY2MiPgogICAgPHJlY3QgeD0iMjAiIHk9IjcwIiB3aWR0aD0iNDAiIGhlaWdodD0iNjAiLz48cmVjdCB4PSI3MCIgeT0iNTAiIHdpZHRoPSIzMCIgaGVpZ2h0PSI4MCIvPjxyZWN0IHg9IjExMCIgeT0iODAiIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIvPgogICAgPHJlY3QgeD0iMzAwIiB5PSI0MCIgd2lkdGg9IjM2IiBoZWlnaHQ9IjkwIi8+PHJlY3QgeD0iMzQ2IiB5PSI2NiIgd2lkdGg9IjQ0IiBoZWlnaHQ9IjY0Ii8+PHJlY3QgeD0iNDcwIiB5PSI1NiIgd2lkdGg9IjM0IiBoZWlnaHQ9Ijc0Ii8+PHJlY3QgeD0iNTE0IiB5PSI4NCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjQ2Ii8+CiAgPC9nPgogIDxyZWN0IHg9IjIwMCIgeT0iMzAiIHdpZHRoPSI2MCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiM2ZjkzYjMiLz4KICA8cGF0aCBkPSJNMjMwIDE0IGw0IDkgMTAgMSAtOCA2IDMgMTAgLTkgLTYgLTkgNiAzIC0xMCAtOCAtNiAxMCAtMVoiIGZpbGw9IiNmYWIwMDUiLz4KICA8ZyBzdHJva2U9IiNlY2U2ZGEiIHN0cm9rZS13aWR0aD0iNiI+PHBhdGggZD0iTTE1MCAyMCBWMTMwIE0zMDAgMjAgVjEzMCBNNDUwIDIwIFYxMzAiLz48L2c+CiAgPHJlY3QgeD0iMCIgeT0iMTI2IiB3aWR0aD0iNjAwIiBoZWlnaHQ9IjgiIGZpbGw9IiNkNmNkYmQiLz4KICA8cmVjdCB4PSIwIiB5PSIxODAiIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAiIGZpbGw9IiNjZmM0YjAiLz4KICA8Zz4KICAgIDxyZWN0IHg9IjQwIiB5PSIxNTAiIHdpZHRoPSIyMDAiIGhlaWdodD0iMTIiIHJ4PSIyIiBmaWxsPSIjYTA3ODUwIi8+CiAgICA8cmVjdCB4PSI3MCIgeT0iMTEyIiB3aWR0aD0iNTYiIGhlaWdodD0iMzYiIHJ4PSIzIiBmaWxsPSIjMzQzYTQwIi8+PHJlY3QgeD0iNzQiIHk9IjExNiIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjI4IiBmaWxsPSIjNzRjMGZjIi8+CiAgICA8cmVjdCB4PSI5NCIgeT0iMTQ4IiB3aWR0aD0iOCIgaGVpZ2h0PSI0IiBmaWxsPSIjMzQzYTQwIi8+CiAgICA8cmVjdCB4PSIxNTAiIHk9IjExMiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjM2IiByeD0iMyIgZmlsbD0iIzM0M2E0MCIvPjxyZWN0IHg9IjE1NCIgeT0iMTE2IiB3aWR0aD0iNDgiIGhlaWdodD0iMjgiIGZpbGw9IiNmZmQ0M2IiLz4KICAgIDxyZWN0IHg9IjE3NCIgeT0iMTQ4IiB3aWR0aD0iOCIgaGVpZ2h0PSI0IiBmaWxsPSIjMzQzYTQwIi8+CiAgICA8cmVjdCB4PSI0OCIgeT0iMTYyIiB3aWR0aD0iNiIgaGVpZ2h0PSI0MCIgZmlsbD0iIzhhNjQ0MCIvPjxyZWN0IHg9IjIyNiIgeT0iMTYyIiB3aWR0aD0iNiIgaGVpZ2h0PSI0MCIgZmlsbD0iIzhhNjQ0MCIvPgogIDwvZz4KICA8Zz4KICAgIDxyZWN0IHg9IjMzMCIgeT0iMTUwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyIiByeD0iMiIgZmlsbD0iI2EwNzg1MCIvPgogICAgPHJlY3QgeD0iMzYwIiB5PSIxMTIiIHdpZHRoPSI1NiIgaGVpZ2h0PSIzNiIgcng9IjMiIGZpbGw9IiMzNDNhNDAiLz48cmVjdCB4PSIzNjQiIHk9IjExNiIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjI4IiBmaWxsPSIjYjJmMmJiIi8+CiAgICA8cmVjdCB4PSIzODQiIHk9IjE0OCIgd2lkdGg9IjgiIGhlaWdodD0iNCIgZmlsbD0iIzM0M2E0MCIvPgogICAgPHJlY3QgeD0iNDQwIiB5PSIxMTIiIHdpZHRoPSI1NiIgaGVpZ2h0PSIzNiIgcng9IjMiIGZpbGw9IiMzNDNhNDAiLz48cmVjdCB4PSI0NDQiIHk9IjExNiIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjI4IiBmaWxsPSIjZmZjOWM5Ii8+CiAgICA8cmVjdCB4PSI0NjQiIHk9IjE0OCIgd2lkdGg9IjgiIGhlaWdodD0iNCIgZmlsbD0iIzM0M2E0MCIvPgogICAgPHJlY3QgeD0iMzM4IiB5PSIxNjIiIHdpZHRoPSI2IiBoZWlnaHQ9IjQwIiBmaWxsPSIjOGE2NDQwIi8+PHJlY3QgeD0iNTE2IiB5PSIxNjIiIHdpZHRoPSI2IiBoZWlnaHQ9IjQwIiBmaWxsPSIjOGE2NDQwIi8+CiAgICA8cmVjdCB4PSI1MDAiIHk9IjEzNCIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE2IiByeD0iMiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik01MTQgMTM4IHE2IDIgMCA4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPgogIDwvZz4KICA8cmVjdCB4PSI1NjAiIHk9IjE0MCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjQwIiByeD0iMyIgZmlsbD0iI2MwODQ1NyIvPgogIDxjaXJjbGUgY3g9IjU3MiIgY3k9IjEyNCIgcj0iMjAiIGZpbGw9IiM1MWNmNjYiLz48Y2lyY2xlIGN4PSI1NjIiIGN5PSIxMTAiIHI9IjEyIiBmaWxsPSIjNDBjMDU3Ii8+PGNpcmNsZSBjeD0iNTg0IiBjeT0iMTE0IiByPSIxMiIgZmlsbD0iIzM3YjI0ZCIvPgogIDxyZWN0IHg9IjI2MiIgeT0iNjAiIHdpZHRoPSI1MCIgaGVpZ2h0PSIzNCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjY2VkNGRhIi8+CiAgPHRleHQgeD0iMjg3IiB5PSI3NSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjkiIGZvbnQtd2VpZ2h0PSI4MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNjOTJhMmEiPlNZTkVSR1k8L3RleHQ+CiAgPHRleHQgeD0iMjg3IiB5PSI4NyIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM0OTUwNTciPmlzIGEgdmVyYiBub3c8L3RleHQ+Cjwvc3ZnPgo=", "assets/scenes/pantry.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgMjQwIj4KICA8ZGVmcz48cGF0dGVybiBpZD0idCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cmVjdCB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIGZpbGw9IiNmMWYzZjUiLz48cGF0aCBkPSJNMzAgMCBWMzAgSDAiIHN0cm9rZT0iI2RlZTJlNiIgZmlsbD0ibm9uZSIvPjwvcGF0dGVybj48L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyNDAiIGZpbGw9InVybCgjdCkiLz4KICA8cmVjdCB4PSIwIiB5PSIxNTAiIHdpZHRoPSI2MDAiIGhlaWdodD0iOTAiIGZpbGw9IiNjNWI0OWEiLz4KICA8cmVjdCB4PSIwIiB5PSIxNDAiIHdpZHRoPSI2MDAiIGhlaWdodD0iMTQiIGZpbGw9IiM4NjhlOTYiLz4KICA8cmVjdCB4PSIzMCIgeT0iMzAiIHdpZHRoPSIxMTAiIGhlaWdodD0iMjAwIiByeD0iNiIgZmlsbD0iI2U5ZWNlZiIgc3Ryb2tlPSIjYWRiNWJkIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8cGF0aCBkPSJNMzAgMTAwIEgxNDAiIHN0cm9rZT0iI2FkYjViZCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHJlY3QgeD0iMTIyIiB5PSI1MCIgd2lkdGg9IjYiIGhlaWdodD0iMzAiIHJ4PSIyIiBmaWxsPSIjODY4ZTk2Ii8+PHJlY3QgeD0iMTIyIiB5PSIxMTIiIHdpZHRoPSI2IiBoZWlnaHQ9IjQwIiByeD0iMiIgZmlsbD0iIzg2OGU5NiIvPgogIDxyZWN0IHg9IjQ0IiB5PSI0MCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjQ0IiBmaWxsPSIjZmZmNTlkIiB0cmFuc2Zvcm09InJvdGF0ZSgtNCA3NCA2MikiLz4KICA8dGV4dCB4PSI3NCIgeT0iNTgiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksc2Fucy1zZXJpZiIgZm9udC1zaXplPSI4IiBmb250LXdlaWdodD0iODAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjYzkyYTJhIiB0cmFuc2Zvcm09InJvdGF0ZSgtNCA3NCA2MikiPkxBQkVMIFlPVVI8L3RleHQ+CiAgPHRleHQgeD0iNzQiIHk9IjcwIiBmb250LWZhbWlseT0ic3lzdGVtLXVpLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iOCIgZm9udC13ZWlnaHQ9IjgwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2M5MmEyYSIgdHJhbnNmb3JtPSJyb3RhdGUoLTQgNzQgNjIpIj5GT09EISEhPC90ZXh0PgogIDxyZWN0IHg9IjIwMCIgeT0iODAiIHdpZHRoPSI3MCIgaGVpZ2h0PSI2MCIgcng9IjYiIGZpbGw9IiMzNDNhNDAiLz4KICA8cmVjdCB4PSIyMTQiIHk9IjkyIiB3aWR0aD0iMzAiIGhlaWdodD0iMTYiIHJ4PSIyIiBmaWxsPSIjNDk1MDU3Ii8+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMTAwIiByPSI1IiBmaWxsPSIjZmE1MjUyIi8+CiAgPHJlY3QgeD0iMjIyIiB5PSIxMTgiIHdpZHRoPSIyNiIgaGVpZ2h0PSIyMiIgZmlsbD0iIzIxMjUyOSIvPgogIDxyZWN0IHg9IjIyOCIgeT0iMTI0IiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHJ4PSIyIiBmaWxsPSIjZmZmIi8+CiAgPHJlY3QgeD0iMzIwIiB5PSI5MCIgd2lkdGg9IjExMCIgaGVpZ2h0PSI1MCIgcng9IjQiIGZpbGw9IiNkZWUyZTYiIHN0cm9rZT0iIzg2OGU5NiIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHJlY3QgeD0iMzI4IiB5PSI5OCIgd2lkdGg9IjcwIiBoZWlnaHQ9IjM0IiByeD0iMyIgZmlsbD0iIzQ5NTA1NyIvPgogIDxnIHN0cm9rZT0iIzk0ZDgyZCIgc3Ryb2tlLXdpZHRoPSIyLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PHBhdGggZD0iTTM1MCA4NCBxLTYgLTEwIDAgLTIwIHQwIC0yMCIvPjxwYXRoIGQ9Ik0zNjYgODQgcS02IC0xMCAwIC0yMCB0MCAtMjAiLz48cGF0aCBkPSJNMzgyIDg0IHEtNiAtMTAgMCAtMjAgdDAgLTIwIi8+PC9nPgogIDx0ZXh0IHg9IjQxNCIgeT0iMTEyIiBmb250LWZhbWlseT0idWktbW9ub3NwYWNlLG1vbm9zcGFjZSIgZm9udC1zaXplPSI5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMjEyNTI5Ij4wOjQ3PC90ZXh0PgogIDxyZWN0IHg9IjQ3MCIgeT0iMTA0IiB3aWR0aD0iMzQiIGhlaWdodD0iMzgiIHJ4PSI0IiBmaWxsPSIjMmY5ZTQ0Ii8+CiAgPHRleHQgeD0iNDg3IiB5PSIxMjgiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksc2Fucy1zZXJpZiIgZm9udC1zaXplPSI5IiBmb250LXdlaWdodD0iOTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZmZmIj5NSUxPPC90ZXh0PgogIDxwYXRoIGQ9Ik01MjAgMTEwIEg1NDYgTDU0MiAxNDIgSDUyNFoiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2NlZDRkYSIvPgogIDxyZWN0IHg9IjUyMiIgeT0iMTEyIiB3aWR0aD0iMjIiIGhlaWdodD0iOCIgZmlsbD0iI2EwNTIyZCIvPgogIDxwYXRoIGQ9Ik01NDYgMTE2IHExMCAyIDAgMTQiIHN0cm9rZT0iI2NlZDRkYSIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIi8+Cjwvc3ZnPgo=", "assets/scenes/restroom.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgMjQwIj4KICA8ZGVmcz48cGF0dGVybiBpZD0idCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9IiNlM2ZhZmMiLz48cGF0aCBkPSJNMjQgMCBWMjQgSDAiIHN0cm9rZT0iI2M1ZjZmYSIgZmlsbD0ibm9uZSIvPjwvcGF0dGVybj48L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyNDAiIGZpbGw9InVybCgjdCkiLz4KICA8cmVjdCB4PSIwIiB5PSIyMDAiIHdpZHRoPSI2MDAiIGhlaWdodD0iNDAiIGZpbGw9IiM5OWU5ZjIiLz4KICA8ZyBmaWxsPSIjNjZkOWU4IiBzdHJva2U9IiMzYmM5ZGIiIHN0cm9rZS13aWR0aD0iMiI+CiAgICA8cmVjdCB4PSIzMCIgeT0iNDAiIHdpZHRoPSI4MCIgaGVpZ2h0PSIxNzAiLz48cmVjdCB4PSIxMjAiIHk9IjQwIiB3aWR0aD0iODAiIGhlaWdodD0iMTcwIi8+PHJlY3QgeD0iMjEwIiB5PSI0MCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjE3MCIvPgogIDwvZz4KICA8ZyBmaWxsPSIjM2JjOWRiIj48Y2lyY2xlIGN4PSI5OCIgY3k9IjEzMCIgcj0iNCIvPjxjaXJjbGUgY3g9IjE4OCIgY3k9IjEzMCIgcj0iNCIvPjxjaXJjbGUgY3g9IjI3OCIgY3k9IjEzMCIgcj0iNCIvPjwvZz4KICA8cmVjdCB4PSIxMTQiIHk9IjIwMCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEwIiBmaWxsPSIjZmE1MjUyIi8+CiAgPHRleHQgeD0iMTYwIiB5PSI3NiIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjkiIGZvbnQtd2VpZ2h0PSI3MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwYjcyODUiPk9DQ1VQSUVEPC90ZXh0PgogIDxyZWN0IHg9IjM0MCIgeT0iNDAiIHdpZHRoPSIyMjAiIGhlaWdodD0iOTAiIHJ4PSI0IiBmaWxsPSIjZDBlYmZmIiBzdHJva2U9IiNhZGI1YmQiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik0zNzAgNjAgbDQwIDUwIE00MjAgNTYgbDMwIDM2IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNSIgb3BhY2l0eT0iMC42Ii8+CiAgPHJlY3QgeD0iMzMwIiB5PSIxNTAiIHdpZHRoPSIyNDAiIGhlaWdodD0iMjAiIHJ4PSI0IiBmaWxsPSIjZjFmM2Y1IiBzdHJva2U9IiNjZWQ0ZGEiLz4KICA8ZWxsaXBzZSBjeD0iMzkwIiBjeT0iMTYwIiByeD0iMjYiIHJ5PSI2IiBmaWxsPSIjY2VkNGRhIi8+PGVsbGlwc2UgY3g9IjUwMCIgY3k9IjE2MCIgcng9IjI2IiByeT0iNiIgZmlsbD0iI2NlZDRkYSIvPgogIDxwYXRoIGQ9Ik0zOTAgMTUwIHYtMTIgaDEwIiBzdHJva2U9IiM4NjhlOTYiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik01MDAgMTUwIHYtMTIgaDEwIiBzdHJva2U9IiM4NjhlOTYiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPgogIDxyZWN0IHg9IjQzMCIgeT0iMTIiIHdpZHRoPSI4MCIgaGVpZ2h0PSIyMCIgcng9IjMiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2NlZDRkYSIvPgogIDx0ZXh0IHg9IjQ3MCIgeT0iMjYiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksc2Fucy1zZXJpZiIgZm9udC1zaXplPSI4IiBmb250LXdlaWdodD0iNzAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNDk1MDU3Ij5XQVNIIFlPVVIgSEFORFM8L3RleHQ+Cjwvc3ZnPgo=", "assets/scenes/townhall.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgMjQwIj4KICA8cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iIzFmMjEzMyIvPgogIDxwYXRoIGQ9Ik0zMDAgMCBMMTQwIDI0MCBINDYwWiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4wNSIvPgogIDxyZWN0IHg9IjE1MCIgeT0iMjAiIHdpZHRoPSIzMDAiIGhlaWdodD0iMTQwIiByeD0iNCIgZmlsbD0iI2Y4ZjlmYSIvPgogIDx0ZXh0IHg9IjMwMCIgeT0iNDYiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9IjgwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzIxMjUyOSI+UTMgV0lOUyE8L3RleHQ+CiAgPGcgZmlsbD0iIzRjNmVmNSI+PHJlY3QgeD0iMjAwIiB5PSIxMTAiIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIvPjxyZWN0IHg9IjI1MCIgeT0iOTAiIHdpZHRoPSIzMCIgaGVpZ2h0PSI1MCIvPjxyZWN0IHg9IjMwMCIgeT0iNzAiIHdpZHRoPSIzMCIgaGVpZ2h0PSI3MCIvPjxyZWN0IHg9IjM1MCIgeT0iNjAiIHdpZHRoPSIzMCIgaGVpZ2h0PSI4MCIvPjwvZz4KICA8dGV4dCB4PSIzMDAiIHk9IjE1NSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM4NjhlOTYiPlB1bGxlZCB0b2dldGhlciBieSBWLiBTaGFycGUsIEhlYWQgb2YgU3RyYXRlZ2ljIEFsaWdubWVudDwvdGV4dD4KICA8cmVjdCB4PSI0NzAiIHk9IjExMCIgd2lkdGg9IjUwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjNDk1MDU3Ii8+CiAgPHJlY3QgeD0iNDY0IiB5PSIxMDQiIHdpZHRoPSI2MiIgaGVpZ2h0PSIxMCIgZmlsbD0iIzZjNzU3ZCIvPgogIDxwYXRoIGQ9Ik00OTUgMTA0IGwwIC0xNCIgc3Ryb2tlPSIjYWRiNWJkIiBzdHJva2Utd2lkdGg9IjIiLz48Y2lyY2xlIGN4PSI0OTUiIGN5PSI4OCIgcj0iNCIgZmlsbD0iIzIxMjUyOSIvPgogIDxnIGZpbGw9IiMwZDBlMTgiPgogICAgPGNpcmNsZSBjeD0iNDAiIGN5PSIyMTQiIHI9IjE4Ii8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMjEwIiByPSIxOCIvPjxjaXJjbGUgY3g9IjE2MCIgY3k9IjIxNiIgcj0iMTgiLz48Y2lyY2xlIGN4PSIyMjAiIGN5PSIyMTAiIHI9IjE4Ii8+PGNpcmNsZSBjeD0iMjgwIiBjeT0iMjE0IiByPSIxOCIvPgogICAgPGNpcmNsZSBjeD0iMzQwIiBjeT0iMjEwIiByPSIxOCIvPjxjaXJjbGUgY3g9IjQwMCIgY3k9IjIxNiIgcj0iMTgiLz48Y2lyY2xlIGN4PSI0NjAiIGN5PSIyMTAiIHI9IjE4Ii8+PGNpcmNsZSBjeD0iNTIwIiBjeT0iMjE0IiByPSIxOCIvPjxjaXJjbGUgY3g9IjU4MCIgY3k9IjIxMCIgcj0iMTgiLz4KICAgIDxyZWN0IHg9IjAiIHk9IjIyMiIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIxOCIvPgogIDwvZz4KICA8ZyBmaWxsPSIjZmZkNDNiIj48Y2lyY2xlIGN4PSI3MCIgY3k9IjQwIiByPSIyIi8+PGNpcmNsZSBjeD0iNTMwIiBjeT0iMzAiIHI9IjIiLz48Y2lyY2xlIGN4PSI5MCIgY3k9IjEwMCIgcj0iMS41Ii8+PGNpcmNsZSBjeD0iNTYwIiBjeT0iODAiIHI9IjEuNSIvPjwvZz4KPC9zdmc+Cg==", "assets/title.svg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgMjYwIj4KICA8ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9InNreSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzFiMWYzYiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzRhM2Y3MyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPgogIDxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iMjYwIiBmaWxsPSJ1cmwoI3NreSkiLz4KICA8ZyBmaWxsPSIjZmZmIj48Y2lyY2xlIGN4PSI0MCIgY3k9IjMwIiByPSIxLjUiLz48Y2lyY2xlIGN4PSIxMjAiIGN5PSI2MCIgcj0iMSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjI0IiByPSIxLjUiLz48Y2lyY2xlIGN4PSI0MjAiIGN5PSI0MCIgcj0iMSIvPjxjaXJjbGUgY3g9IjUwMCIgY3k9IjIwIiByPSIxLjUiLz48Y2lyY2xlIGN4PSI1NjAiIGN5PSI3MCIgcj0iMSIvPjxjaXJjbGUgY3g9IjM1MCIgY3k9IjE2IiByPSIxIi8+PC9nPgogIDxnIGZpbGw9IiMyYTI4NTAiPgogICAgPHJlY3QgeD0iMTAiIHk9IjE1MCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjExMCIvPjxyZWN0IHg9IjgwIiB5PSIxMjAiIHdpZHRoPSI0NCIgaGVpZ2h0PSIxNDAiLz48cmVjdCB4PSIxMzIiIHk9IjE3MCIgd2lkdGg9IjcwIiBoZWlnaHQ9IjkwIi8+CiAgICA8cmVjdCB4PSIzOTAiIHk9IjE0MCIgd2lkdGg9IjU2IiBoZWlnaHQ9IjEyMCIvPjxyZWN0IHg9IjQ1NiIgeT0iMTEwIiB3aWR0aD0iNDAiIGhlaWdodD0iMTUwIi8+PHJlY3QgeD0iNTA2IiB5PSIxNjAiIHdpZHRoPSI4NCIgaGVpZ2h0PSIxMDAiLz4KICA8L2c+CiAgPHJlY3QgeD0iMjUwIiB5PSI2MCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMzYjM2NzAiLz4KICA8cGF0aCBkPSJNMjUwIDYwIEwzMDAgMzAgTDM1MCA2MFoiIGZpbGw9IiMzYjM2NzAiLz4KICA8ZyBmaWxsPSIjZmZkNDNiIiBvcGFjaXR5PSIwLjkiPgogICAgPHJlY3QgeD0iMjYyIiB5PSI4MCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEwIi8+PHJlY3QgeD0iMjk0IiB5PSI4MCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEwIi8+PHJlY3QgeD0iMzI2IiB5PSI4MCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEwIi8+CiAgICA8cmVjdCB4PSIyNjIiIHk9IjEwNCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEwIi8+PHJlY3QgeD0iMzI2IiB5PSIxMDQiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMCIvPgogICAgPHJlY3QgeD0iMjk0IiB5PSIxMjgiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMCIvPjxyZWN0IHg9IjI2MiIgeT0iMTUyIiB3aWR0aD0iMTIiIGhlaWdodD0iMTAiLz48cmVjdCB4PSIyOTQiIHk9IjE3NiIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEwIi8+CiAgICA8cmVjdCB4PSIzMjYiIHk9IjIwMCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEwIi8+PHJlY3QgeD0iMjYyIiB5PSIyMjQiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMCIvPgogIDwvZz4KICA8cmVjdCB4PSIzMjYiIHk9IjEyOCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEwIiBmaWxsPSIjZmY2YjZiIi8+CiAgPHBhdGggZD0iTTMwMCA0IGw1IDExIDEyIDEgLTkgOCAzIDEyIC0xMSAtNyAtMTEgNyAzIC0xMiAtOSAtOCAxMiAtMVoiIGZpbGw9IiNmZmQ0M2IiLz4KICA8ZyBmaWxsPSIjZmZkNDNiIiBvcGFjaXR5PSIwLjU1Ij4KICAgIDxyZWN0IHg9Ijk0IiB5PSIxNDAiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiLz48cmVjdCB4PSIxMDgiIHk9IjE3MCIgd2lkdGg9IjgiIGhlaWdodD0iOCIvPjxyZWN0IHg9IjQ3MCIgeT0iMTMwIiB3aWR0aD0iOCIgaGVpZ2h0PSI4Ii8+PHJlY3QgeD0iNDA0IiB5PSIxODAiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiLz4KICA8L2c+Cjwvc3ZnPgo="};</script>
+<script type="module">
+// Pure game logic. No DOM. Shared by the browser UI and tools/simulate.mjs (Node).
+// All functions mutate and/or return the plain-object game state, so it can be
+// saved to localStorage as JSON.
+//
+// Phases: week -> (case, opened mid-week by a choice with opensCase) -> week ... ->
+// after week 12: epilogue (only if exposed) -> ending.
+
+const STATS = ['sanity', 'performance', 'reputation', 'allies'];
+
+function newGame(balance) {
+  return {
+    week: 1,
+    phase: 'week', // week | case | epilogue | ending
+    stats: { ...balance.start },
+    evidence: [],
+    flags: [],
+    seen: [],
+    queue: [], // event ids forced into next draw (choice.next)
+    hand: null, // event ids drawn for the current week; null = not drawn yet
+    handIndex: 0,
+    history: [],
+    pending: null, // { event, choice } waiting on the case picker
+    notice: null, // one-off message for the UI (e.g. Marcus resigned)
+    score: null, // case score, set when you tell Derek (or at season end)
+    outcome: null,
+    ending: null,
+  };
+}
+
+const weightOf = (ev) => ev.weight ?? 1;
+const hasAll = (s, flags = []) => flags.every((f) => s.flags.includes(f));
+
+// Event text, overridden by the first variant whose flags all match.
+function eventText(ev, s) {
+  for (const v of ev.variants || []) if (hasAll(s, v.if?.flags)) return v.text;
+  return ev.text;
+}
+
+function isEligible(ev, s) {
+  const [lo, hi] = ev.weeks || [1, Infinity];
+  if (s.week < lo || s.week > hi) return false;
+  if (ev.once !== false && s.seen.includes(ev.id)) return false;
+  const r = ev.requires || {};
+  if (!hasAll(s, r.flags)) return false;
+  if (r.notFlags && r.notFlags.some((f) => s.flags.includes(f))) return false;
+  // Once Marcus resigns, nothing that needs him can happen.
+  if (s.flags.includes('marcus-resigned') && (r.flags || []).includes('marcus-joined')) return false;
+  if (r.stats) {
+    for (const [k, [min, max]] of Object.entries(r.stats)) {
+      if (s.stats[k] < min || s.stats[k] > max) return false;
+    }
+  }
+  return true;
+}
+
+// Draw this week's cards: queued follow-ups first, then story beats, then weighted picks.
+function drawWeek(s, events, balance, rng = Math.random) {
+  if (s.phase === 'epilogue') {
+    s.hand = events.filter((e) => e.epilogue && isEligible(e, s)).map((e) => e.id);
+    s.handIndex = 0;
+    return s.hand;
+  }
+  const byId = new Map(events.map((e) => [e.id, e]));
+  const [minN, maxN] = balance.eventsPerWeek;
+  const n = minN + Math.floor(rng() * (maxN - minN + 1));
+  const hand = [];
+  const leftover = [];
+  for (const id of s.queue) {
+    const ev = byId.get(id);
+    if (!ev || (ev.once !== false && s.seen.includes(id)) || hand.includes(id)) continue;
+    if (hand.length < n) hand.push(id);
+    else leftover.push(id);
+  }
+  // weight 0 = only reachable via choice.next (story chain), never drawn randomly.
+  const pool = events.filter(
+    (e) => !e.epilogue && !hand.includes(e.id) && isEligible(e, s) && (e.always || weightOf(e) > 0),
+  );
+  // Story beats (always: true) jump the queue whenever eligible.
+  for (const ev of pool.filter((e) => e.always).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))) {
+    hand.push(ev.id);
+    pool.splice(pool.indexOf(ev), 1);
+  }
+  while (hand.length < n && pool.length) {
+    let r = rng() * pool.reduce((t, e) => t + weightOf(e), 0);
+    let i = 0;
+    for (; i < pool.length - 1; i++) {
+      r -= weightOf(pool[i]);
+      if (r < 0) break;
+    }
+    hand.push(pool[i].id);
+    pool.splice(i, 1);
+  }
+  s.queue = leftover;
+  s.hand = hand;
+  s.handIndex = 0;
+  return hand;
+}
+
+// A minigame choice: base choice merged with its win or lose branch.
+function resolveChoice(c, won) {
+  if (!c.minigame) return c;
+  const branch = won ? c.minigame.win : c.minigame.lose;
+  const effects = { ...(c.effects || {}) };
+  for (const [k, d] of Object.entries(branch.effects || {})) effects[k] = (effects[k] || 0) + d;
+  return { ...c, ...branch, label: c.label, effects, minigame: undefined };
+}
+
+function applyChoice(s, ev, idx, balance, opts = {}) {
+  const c = resolveChoice(ev.choices[idx], opts.won);
+  for (const [k, d] of Object.entries(c.effects || {})) {
+    const v = (s.stats[k] ?? 0) + d;
+    s.stats[k] = k === 'allies' || k === 'strikes' ? Math.max(0, v) : Math.max(0, Math.min(100, v));
+  }
+  if (c.addEvidence && !s.evidence.some((e) => e.id === c.addEvidence.id)) {
+    s.evidence.push({ ...c.addEvidence, week: s.week });
+  }
+  if (c.removeEvidence) s.evidence = s.evidence.filter((e) => !c.removeEvidence.includes(e.id));
+  for (const f of c.setFlags || []) if (!s.flags.includes(f)) s.flags.push(f);
+  if (c.clearFlags) s.flags = s.flags.filter((f) => !c.clearFlags.includes(f));
+  if (c.next) s.queue.push(c.next);
+  if (!s.seen.includes(ev.id)) s.seen.push(ev.id);
+  s.history.push({ week: s.week, event: ev.id, choice: idx });
+  s.handIndex++;
+
+  const limit = balance?.marcus?.strikeLimit;
+  if (limit && (s.stats.strikes ?? 0) >= limit && !s.flags.includes('marcus-resigned')) {
+    s.flags.push('marcus-resigned');
+    s.notice = 'marcusResigned';
+  }
+  if (c.opensCase) {
+    s.phase = 'case';
+    s.pending = { event: ev.id, choice: idx };
+  }
+  if (c.endsGame) end(s, c.endsGame);
+  else if (s.stats.sanity <= 0) end(s, 'burnout');
+  else if (s.stats.performance <= 0) end(s, 'managedOut');
+  return c;
+}
+
+function end(s, ending) {
+  s.phase = 'ending';
+  s.ending = ending;
+}
+
+function caseScore(s, pickedIds, balance) {
+  const hr = balance.hr;
+  const picked = s.evidence.filter((e) => pickedIds.includes(e.id)).slice(0, hr.maxEvidence);
+  const evidence = picked.reduce((t, e) => t + e.strength, 0);
+  const allies = s.stats.allies * hr.allyWeight;
+  const reputation = s.stats.reputation >= hr.reputationBonus.above ? hr.reputationBonus.bonus : 0;
+  // Derek thought you were close to her, so your account carries extra weight.
+  const favourite = s.flags.includes('favourite') && s.flags.includes('testified') ? hr.favouriteBonus || 0 : 0;
+  return { evidence, allies, reputation, favourite, total: evidence + allies + reputation + favourite };
+}
+
+// The call with Derek: what you tell him is stored; the outcome lands after week 12.
+function submitCase(s, pickedIds, balance) {
+  s.score = caseScore(s, pickedIds, balance);
+  s.phase = 'week';
+  s.pending = null;
+  return s.score;
+}
+
+function outcomeFor(total, balance) {
+  const t = balance.hr.thresholds;
+  return total >= t.exposed ? 'exposed' : total >= t.gracefulExit ? 'gracefulExit' : 'failingUpward';
+}
+
+function finishSeason(s, balance) {
+  if (s.flags.includes('marcus-resigned')) return end(s, 'marcusResigned');
+  if (!s.score) s.score = caseScore(s, [], balance); // you never told Derek anything
+  s.outcome = outcomeFor(s.score.total, balance);
+  // You tipped her off at the sinks: she resigns before Monday's meeting can happen.
+  if (s.outcome !== 'failingUpward' && s.flags.includes('leaked')) s.outcome = 'sheResigned';
+  if (s.outcome !== 'exposed') return end(s, s.outcome);
+  s.flags.push('exposed');
+  s.phase = 'epilogue';
+  s.hand = null;
+  s.handIndex = 0;
+}
+
+function endWeek(s, balance) {
+  if (s.phase === 'ending') return;
+  if (s.phase === 'epilogue') return end(s, s.outcome);
+  s.week++;
+  s.hand = null;
+  s.handIndex = 0;
+  if (s.week > balance.weeks) finishSeason(s, balance);
+}
+
+// Extra ending sentences that depend on what happened (endings._lines).
+function endingLines(s, lines = []) {
+  return lines
+    .filter((l) => hasAll(s, l.if?.flags))
+    .filter((l) => !(l.notFlags || []).some((f) => s.flags.includes(f)))
+    .filter((l) => !l.onlyEndings || l.onlyEndings.includes(s.ending))
+    .map((l) => l.text);
+}
+
+// Strongest evidence ids, for simulations and as a UI hint.
+function bestPick(s, balance) {
+  return [...s.evidence]
+    .sort((a, b) => b.strength - a.strength)
+    .slice(0, balance.hr.maxEvidence)
+    .map((e) => e.id);
+}
+
+// Minigame: Escape to Nebula.
+// Veronica is coming to collect you for a toilet trip. Reach meeting room Nebula
+// (top left) before she sees you. Her sight cone is blocked by desks and pillars.
+// Contract shared by all minigames: play(root) -> Promise<{ won: boolean }>.
+
+function toiletDodge(root) {
+  return new Promise((resolve) => {
+    const W = 360, H = 480, TIME = 30;
+    root.innerHTML = `
+      <div class="mg">
+        <p class="card-meta">Minigame · Escape to Nebula</p>
+        <p class="mg-help">Reach <b>Nebula</b> (top left) before Veronica sees you. Hide behind desks and pillars. Arrow keys / WASD, or the pad.</p>
+        <canvas class="mg-canvas" width="${W}" height="${H}"></canvas>
+        <div class="mg-pad">
+          <button data-k="up" aria-label="Up">▲</button>
+          <button data-k="left" aria-label="Left">◀</button>
+          <button data-k="down" aria-label="Down">▼</button>
+          <button data-k="right" aria-label="Right">▶</button>
+        </div>
+        <p class="mg-status" aria-live="polite"></p>
+        <button class="btn" id="mg-skip">Skip (she finds you)</button>
+      </div>`;
+    const cv = root.querySelector('canvas');
+    const g = cv.getContext('2d');
+    const status = root.querySelector('.mg-status');
+
+    const goal = { x: 0, y: 0, w: 110, h: 84 };
+    const walls = [
+      { x: 150, y: 50, w: 150, h: 24, kind: 'desk' },
+      { x: 40, y: 150, w: 110, h: 24, kind: 'desk' }, { x: 210, y: 150, w: 110, h: 24, kind: 'desk' },
+      { x: 40, y: 240, w: 110, h: 24, kind: 'desk' }, { x: 210, y: 240, w: 110, h: 24, kind: 'desk' },
+      { x: 40, y: 330, w: 110, h: 24, kind: 'desk' }, { x: 210, y: 330, w: 110, h: 24, kind: 'desk' },
+      { x: 166, y: 196, w: 26, h: 26, kind: 'pillar' }, { x: 166, y: 286, w: 26, h: 26, kind: 'pillar' },
+      { x: 320, y: 410, w: 26, h: 26, kind: 'plant' }, { x: 120, y: 0, w: 14, h: 84, kind: 'wall' },
+    ];
+    const path = [[180, 207], [340, 207], [340, 120], [180, 120], [180, 207], [180, 297], [180, 387], [340, 387], [340, 297], [180, 297]];
+    const P = { x: 300, y: 455, r: 9 };
+    const V = { x: 180, y: 207, r: 11, dir: 0, i: 1, speed: 1.05, range: 135, fov: Math.PI / 2.6 };
+    const keys = {};
+    const KEYMAP = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right' };
+    const start = performance.now();
+    let raf = 0, done = false;
+
+    const inRect = (x, y, r) => x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
+    const blocked = (x, y) => x < 0 || y < 0 || x > W || y > H || walls.some((w) => inRect(x, y, w));
+    const hitsWall = (x, y, r) => walls.some((w) => x + r > w.x && x - r < w.x + w.w && y + r > w.y && y - r < w.y + w.h) || x < r || y < r || x > W - r || y > H - r;
+    const castRay = (a) => {
+      for (let d = 0; d < V.range; d += 4) if (blocked(V.x + Math.cos(a) * d, V.y + Math.sin(a) * d)) return d;
+      return V.range;
+    };
+    const sees = () => {
+      const dx = P.x - V.x, dy = P.y - V.y, dist = Math.hypot(dx, dy);
+      if (dist > V.range) return false;
+      let diff = Math.atan2(dy, dx) - V.dir;
+      diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+      if (Math.abs(diff) > V.fov / 2) return false;
+      return castRay(Math.atan2(dy, dx)) >= dist - P.r;
+    };
+
+    const onKey = (down) => (e) => { const k = KEYMAP[e.code]; if (k) { keys[k] = down; e.preventDefault(); } };
+    const kd = onKey(true), ku = onKey(false);
+    window.addEventListener('keydown', kd);
+    window.addEventListener('keyup', ku);
+    root.querySelectorAll('.mg-pad button').forEach((b) => {
+      const k = b.dataset.k;
+      const on = (e) => { keys[k] = true; e.preventDefault(); };
+      const off = () => { keys[k] = false; };
+      b.addEventListener('pointerdown', on);
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => b.addEventListener(ev, off));
+    });
+
+    function finish(won, msg) {
+      if (done) return;
+      done = true;
+      cancelAnimationFrame(raf);
+      window.removeEventListener('keydown', kd);
+      window.removeEventListener('keyup', ku);
+      status.textContent = msg;
+      status.className = `mg-status ${won ? 'won' : 'lost'}`;
+      draw(won ? null : true);
+      setTimeout(() => resolve({ won }), 1400);
+    }
+    root.querySelector('#mg-skip').onclick = () => finish(false, 'You stay at your desk. "Come, toilet."');
+
+    function step() {
+      const sp = 2.1;
+      const mx = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+      const my = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
+      const norm = mx && my ? Math.SQRT1_2 : 1;
+      if (!hitsWall(P.x + mx * sp * norm, P.y, P.r)) P.x += mx * sp * norm;
+      if (!hitsWall(P.x, P.y + my * sp * norm, P.r)) P.y += my * sp * norm;
+
+      const [tx, ty] = path[V.i];
+      const dx = tx - V.x, dy = ty - V.y, d = Math.hypot(dx, dy);
+      if (d < 2) V.i = (V.i + 1) % path.length;
+      else {
+        const want = Math.atan2(dy, dx);
+        let diff = Math.atan2(Math.sin(want - V.dir), Math.cos(want - V.dir));
+        V.dir += Math.max(-0.12, Math.min(0.12, diff));
+        V.x += (dx / d) * V.speed;
+        V.y += (dy / d) * V.speed;
+      }
+    }
+
+    function draw(caught) {
+      g.fillStyle = '#e9e2d4'; g.fillRect(0, 0, W, H);
+      g.fillStyle = '#a5d8ff'; g.fillRect(goal.x, goal.y, goal.w, goal.h);
+      g.fillStyle = '#1864ab'; g.font = 'bold 13px system-ui, sans-serif'; g.textAlign = 'center';
+      g.fillText('NEBULA', goal.x + goal.w / 2, goal.y + goal.h / 2 + 4);
+      // sight cone, clipped by obstacles
+      g.beginPath(); g.moveTo(V.x, V.y);
+      for (let i = 0; i <= 24; i++) {
+        const a = V.dir - V.fov / 2 + (V.fov * i) / 24, r = castRay(a);
+        g.lineTo(V.x + Math.cos(a) * r, V.y + Math.sin(a) * r);
+      }
+      g.closePath(); g.fillStyle = caught ? 'rgba(224,49,49,0.45)' : 'rgba(224,49,49,0.22)'; g.fill();
+      for (const w of walls) {
+        g.fillStyle = { desk: '#a07850', pillar: '#868e96', plant: '#40c057', wall: '#495057' }[w.kind];
+        g.fillRect(w.x, w.y, w.w, w.h);
+      }
+      g.fillStyle = '#3b5bdb'; g.beginPath(); g.arc(P.x, P.y, P.r, 0, 7); g.fill();
+      g.fillStyle = '#fff'; g.font = 'bold 9px system-ui'; g.fillText('YOU', P.x, P.y + 3);
+      g.fillStyle = '#c92a2a'; g.beginPath(); g.arc(V.x, V.y, V.r, 0, 7); g.fill();
+      g.fillStyle = '#fff'; g.fillText('V', V.x, V.y + 3);
+      const left = Math.max(0, TIME - (performance.now() - start) / 1000);
+      g.fillStyle = '#212529'; g.font = 'bold 14px ui-monospace, monospace'; g.textAlign = 'right';
+      g.fillText(`${left.toFixed(1)}s`, W - 8, 20);
+    }
+
+    function loop() {
+      step();
+      draw(false);
+      if (inRect(P.x, P.y, goal)) return finish(true, 'You slip into Nebula and lock the door. She walks right past. Freedom (for 30 minutes).');
+      if (sees()) return finish(false, '"THERE you are. Come, toilet."');
+      if ((performance.now() - start) / 1000 > TIME) return finish(false, 'Too slow. She finds you hiding behind the printer.');
+      raf = requestAnimationFrame(loop);
+    }
+    raf = requestAnimationFrame(loop);
+  });
+}
+
+// Minigame registry. A choice with { "minigame": { "id": "<key>", "win": {...}, "lose": {...} } }
+// runs the matching game, then applies win or lose effects/result on top of the choice.
+// To add one: write src/minigames/<name>.js exporting play(root) -> Promise<{ won }>,
+// register it here, and add the file to MODULES in tools/build_single.py.
+
+const MINIGAMES = {
+  'toilet-dodge': toiletDodge,
+};
+
+const E = { STATS, newGame, eventText, isEligible, drawWeek, resolveChoice, applyChoice, caseScore, submitCase, outcomeFor, endWeek, endingLines, bestPick };
+
+const SAVE_KEY = 'celestial-save-v2';
+const STAT_LABEL = { sanity: 'Sanity', performance: 'Performance', reputation: 'Reputation', allies: 'Allies', strikes: 'Marcus strikes' };
+const ENDINGS_KEY = 'celestial-endings-v1';
+const TYPE_LABEL = { written: 'Written · strong', witnessed: 'Witnessed · medium', recalled: 'Recalled · weak' };
+
+let D; // loaded data
+let S; // game state
+
+const $ = (sel) => document.querySelector(sel);
+const esc = (v) =>
+  String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+async function getJSON(path) {
+  const r = await fetch(path);
+  if (!r.ok) throw new Error(`${path}: ${r.status}`);
+  return r.json();
+}
+
+// Single-file build (tools/build_single.py) injects window.__GAME_DATA__ and window.__ASSETS__.
+const asset = (path) => (window.__ASSETS__ && window.__ASSETS__[path]) || path;
+
+async function loadData() {
+  if (window.__GAME_DATA__) {
+    const g = window.__GAME_DATA__;
+    D = { ...g, byId: new Map(g.events.map((e) => [e.id, e])) };
+    return;
+  }
+  const [balance, endings, flavor, cast, index] = await Promise.all(
+    ['balance', 'endings', 'flavor', 'cast', 'events/index'].map((p) => getJSON(`data/${p}.json`)),
+  );
+  const events = (await Promise.all(index.files.map((f) => getJSON(`data/events/${f}`)))).flat();
+  D = { balance, endings, flavor, cast, events, byId: new Map(events.map((e) => [e.id, e])) };
+}
+
+// ---------- save ----------
+function save() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch {}
+}
+function readSave() {
+  try { return JSON.parse(localStorage.getItem(SAVE_KEY)); } catch { return null; }
+}
+function clearSave() {
+  try { localStorage.removeItem(SAVE_KEY); } catch {}
+}
+
+function foundEndings() {
+  try { return JSON.parse(localStorage.getItem(ENDINGS_KEY)) || []; } catch { return []; }
+}
+function recordEnding(id) {
+  try {
+    const found = foundEndings();
+    if (!found.includes(id)) localStorage.setItem(ENDINGS_KEY, JSON.stringify([...found, id]));
+  } catch {}
+}
+
+// ---------- rendering helpers ----------
+function screen(html) {
+  const app = $('#app');
+  app.innerHTML = html;
+  app.focus();
+  window.scrollTo(0, 0);
+}
+
+function renderHud() {
+  const hud = $('#hud');
+  if (!S) { hud.hidden = true; return; }
+  hud.hidden = false;
+  const bar = (k) => `
+    <div class="stat stat-${k}">
+      <span class="stat-label">${STAT_LABEL[k]}</span>
+      <span class="meter"><span style="width:${S.stats[k]}%"></span></span>
+      <span class="stat-val">${S.stats[k]}</span>
+    </div>`;
+  const act = (D.flavor.acts || []).find((a) => S.week >= a.from && S.week <= a.to);
+  const week = {
+    week: `Week ${S.week} / ${D.balance.weeks}${act ? ` · ${act.title.split(' · ')[1]}` : ''}`,
+    case: 'Phone call · Derek',
+    epilogue: 'Monday',
+    ending: 'The end',
+  }[S.phase];
+  hud.innerHTML = `
+    <div class="hud-top">
+      <span class="week">${week}</span>
+      <span class="allies">Allies: <b>${S.stats.allies}</b></span>
+      <button class="link" id="open-evidence">Evidence (${S.evidence.length})</button>
+    </div>
+    <div class="stats">${bar('sanity')}${bar('performance')}${bar('reputation')}</div>
+    ${S.flags.includes('knows-strikes') && !S.flags.includes('marcus-resigned') ? strikeMeter() : ''}`;
+  $('#open-evidence').onclick = openEvidence;
+}
+
+function strikeMeter() {
+  const limit = D.balance.marcus.strikeLimit;
+  const n = Math.min(S.stats.strikes ?? 0, limit);
+  const dots = Array.from({ length: limit }, (_, i) => `<span class="strike ${i < n ? 'on' : ''}"></span>`).join('');
+  return `<div class="strikes" title="At ${limit}, Marcus resigns"><span class="stat-label">Marcus's strikes</span><span class="strike-dots">${dots}</span><span class="stat-val">${n}/${limit}</span></div>`;
+}
+
+function evidenceItem(e) {
+  return `<span class="ev-label">${esc(e.label)}</span>
+    <span class="ev-meta ev-${esc(e.type)}">${TYPE_LABEL[e.type] || esc(e.type)} · week ${e.week}</span>`;
+}
+
+function openEvidence() {
+  const dlg = $('#evidence');
+  const list = S.evidence.length
+    ? `<ul class="ev-list">${S.evidence.map((e) => `<li>${evidenceItem(e)}</li>`).join('')}</ul>`
+    : `<p class="muted">Empty. Your case is currently "trust me".</p>`;
+  dlg.innerHTML = `<h2>Evidence log</h2>${list}
+    <p class="muted small">Written beats witnessed beats recalled. When it counts, you'll only have time to tell ${D.balance.hr.maxEvidence} things.</p>
+    <button class="btn" id="close-evidence">Close</button>`;
+  $('#close-evidence').onclick = () => dlg.close();
+  dlg.showModal();
+}
+
+function effectChips(c) {
+  const chips = Object.entries(c.effects || {})
+    .filter(([k, d]) => d && (k !== 'strikes' || S.flags.includes('knows-strikes')))
+    .map(([k, d]) => `<span class="chip ${(k === 'strikes' ? -d : d) > 0 ? 'up' : 'down'}">${d > 0 ? '+' : ''}${d} ${STAT_LABEL[k]}</span>`);
+  if (c.addEvidence) chips.push(`<span class="chip ev">Evidence: ${esc(c.addEvidence.label)}</span>`);
+  return chips.join('');
+}
+
+// ---------- screens ----------
+function showTitle() {
+  S = null;
+  renderHud();
+  const saved = readSave();
+  screen(`
+    <section class="title">
+      <img class="hero" src="${asset('assets/title.svg')}" alt="Night skyline with the Celestial Pte Ltd tower">
+      <p class="company">${esc(D.flavor.company)}</p>
+      <p class="tagline">${esc(D.flavor.tagline)}</p>
+      <h1>Per My Last Email</h1>
+      <p class="pitch">Survive ${D.balance.weeks} weeks under a workplace bully. Keep receipts. Decide whether to speak up.</p>
+      <div class="actions">
+        ${saved && saved.phase !== 'ending' ? `<button class="btn primary" id="continue">Continue (week ${saved.week})</button>` : ''}
+        <button class="btn ${saved && saved.phase !== 'ending' ? '' : 'primary'}" id="new">New game</button>
+      </div>
+      ${gallery()}
+      <p class="muted small">A work of satire. All characters and companies are fictional.</p>
+    </section>`);
+  $('#new').onclick = () => { S = E.newGame(D.balance); save(); route(); };
+  if ($('#continue')) $('#continue').onclick = () => { S = saved; route(); };
+}
+
+function gallery() {
+  const ids = Object.keys(D.endings).filter((k) => !k.startsWith('_'));
+  const found = foundEndings();
+  if (!found.length) return '';
+  const items = ids.map((id) => `<li class="${found.includes(id) ? 'got' : ''}">${found.includes(id) ? esc(D.endings[id].title) : '???'}</li>`).join('');
+  return `<div class="gallery"><p class="card-meta">Endings found: ${found.filter((f) => ids.includes(f)).length} / ${ids.length}</p><ul>${items}</ul></div>`;
+}
+
+function route() {
+  renderHud();
+  if (S.phase === 'ending') return showEnding();
+  if (S.phase === 'case') return showCase();
+  if (S.hand === null) {
+    E.drawWeek(S, D.events, D.balance);
+    save();
+  }
+  const act = (D.flavor.acts || []).find((a) => a.from === S.week);
+  if (S.phase === 'week' && act && S.handIndex === 0 && S.actShown !== act.from) return showAct(act);
+  if (S.hand.length === 0) return showQuietWeek();
+  if (S.handIndex < S.hand.length) return showCard();
+  return showWeekEnd();
+}
+
+function sceneBanner(scene = 'office', speakers = []) {
+  const portraits = speakers
+    .filter((id) => D.cast[id])
+    .map((id) => `<img class="portrait" src="${asset(`assets/portraits/${id}.svg`)}" alt="${esc(D.cast[id].name)}">`)
+    .join('');
+  return `<div class="scene">
+    <img class="scene-bg" src="${asset(`assets/scenes/${scene}.svg`)}" alt="">
+    ${portraits ? `<div class="portraits">${portraits}</div>` : ''}
+  </div>`;
+}
+
+function speakerLine(ev) {
+  const p = ev.speaker && D.cast[ev.speaker];
+  return p ? `<p class="from"><b>${esc(p.name)}</b> · ${esc(p.title)}</p>` : '';
+}
+
+function showCard() {
+  const ev = D.byId.get(S.hand[S.handIndex]);
+  screen(`
+    <article class="card has-scene">
+      ${sceneBanner(ev.scene, ev.speaker ? [ev.speaker] : [])}
+      <p class="card-meta">${S.phase === 'epilogue' ? 'Monday' : `Week ${S.week}`} · ${S.handIndex + 1} of ${S.hand.length}</p>
+      ${speakerLine(ev)}
+      <p class="card-text">${esc(E.eventText(ev, S))}</p>
+      <div class="choices">
+        ${ev.choices.map((c, i) => `<button class="btn choice" data-i="${i}">${esc(c.label)}</button>`).join('')}
+      </div>
+    </article>`);
+  document.querySelectorAll('.choice').forEach((b) => {
+    b.onclick = async () => {
+      const i = Number(b.dataset.i);
+      const mg = ev.choices[i].minigame;
+      let won;
+      if (mg && MINIGAMES[mg.id]) {
+        const app = $('#app');
+        app.innerHTML = '<article class="card mg-card"></article>';
+        ({ won } = await MINIGAMES[mg.id](app.firstElementChild));
+      }
+      const c = E.applyChoice(S, ev, i, D.balance, { won });
+      save();
+      renderHud();
+      if (S.phase === 'case') showCase();
+      else showResult(c);
+    };
+  });
+}
+
+function showResult(c) {
+  const notice = S.notice === 'marcusResigned'
+    ? `<p class="notice">${esc(D.flavor.marcusResignedNotice)}</p>`
+    : '';
+  S.notice = null;
+  save();
+  screen(`
+    <article class="card result">
+      <p class="card-meta">You chose: ${esc(c.label)}</p>
+      <p class="card-text">${esc(c.result)}</p>
+      <div class="chips">${effectChips(c)}</div>
+      ${notice}
+      <button class="btn primary" id="next">Continue</button>
+    </article>`);
+  $('#next').onclick = route;
+}
+
+function showAct(act) {
+  const [num, name] = act.title.split(' · ');
+  screen(`
+    <section class="act">
+      <p class="card-meta">${esc(num)} · Weeks ${act.from}-${act.to}</p>
+      <h2>${esc(name)}</h2>
+      <button class="btn primary" id="next">Begin</button>
+    </section>`);
+  $('#next').onclick = () => { S.actShown = act.from; save(); route(); };
+}
+
+function showQuietWeek() {
+  screen(`
+    <article class="card">
+      <p class="card-meta">Week ${S.week}</p>
+      <p class="card-text">${esc(pick(D.flavor.quietWeek))}</p>
+      <button class="btn primary" id="next">Next week</button>
+    </article>`);
+  $('#next').onclick = nextWeek;
+}
+
+function showWeekEnd() {
+  if (S.phase === 'epilogue') {
+    screen(`
+      <article class="card">
+        <p class="card-meta">Monday, 3:12pm</p>
+        <p class="card-text">${esc(D.flavor.epilogueEnd)}</p>
+        <button class="btn primary" id="next">See how it ends</button>
+      </article>`);
+    $('#next').onclick = nextWeek;
+    return;
+  }
+  const msg = pick(D.flavor.slack);
+  screen(`
+    <article class="card weekend">
+      <p class="card-meta">End of week ${S.week}</p>
+      <div class="slack">
+        <p class="slack-from"><b>${esc(msg.from)}</b> <span class="muted">in #${esc(msg.channel)}</span></p>
+        <p>${esc(msg.text)}</p>
+      </div>
+      <button class="btn primary" id="next">${S.week >= D.balance.weeks ? 'Monday morning' : 'Next week'}</button>
+    </article>`);
+  $('#next').onclick = nextWeek;
+}
+
+function nextWeek() {
+  E.endWeek(S, D.balance);
+  save();
+  route();
+}
+
+// The confirmation call: pick what you tell Derek. Opened by a choice with opensCase.
+function showCase() {
+  const max = D.balance.hr.maxEvidence;
+  const best = new Set(E.bestPick(S, D.balance));
+  const items = S.evidence.length
+    ? S.evidence.map((e) => `
+        <li><label class="ev-pick">
+          <input type="checkbox" value="${esc(e.id)}" ${best.has(e.id) ? 'checked' : ''}>
+          <span>${evidenceItem(e)}</span>
+        </label></li>`).join('')
+    : `<li class="muted">You kept nothing. No notes, no dates. Just "trust me".</li>`;
+  const close = S.flags.includes('favourite')
+    ? `<p class="muted small">Derek thinks you and Veronica are close. Coming from you, this will land hard.</p>`
+    : '';
+  screen(`
+    <article class="card hr has-scene">
+      ${sceneBanner('office', ['manager'])}
+      <p class="card-meta">Phone call · Derek</p>
+      <p class="card-text">${esc(D.flavor.hrIntro)}</p>
+      <p><b>Pick up to ${max} things to tell him.</b> ${S.stats.allies} ${S.stats.allies === 1 ? 'colleague is' : 'colleagues are'} willing to back you up.</p>
+      ${close}
+      <ul class="ev-list">${items}</ul>
+      <button class="btn primary" id="present">Tell Derek</button>
+    </article>`);
+  const boxes = [...document.querySelectorAll('.ev-pick input')];
+  const sync = () => {
+    const n = boxes.filter((b) => b.checked).length;
+    boxes.forEach((b) => { b.disabled = !b.checked && n >= max; });
+  };
+  boxes.forEach((b) => (b.onchange = sync));
+  sync();
+  $('#present').onclick = () => {
+    const { event, choice } = S.pending;
+    E.submitCase(S, boxes.filter((b) => b.checked).map((b) => b.value), D.balance);
+    save();
+    renderHud();
+    showResult(D.byId.get(event).choices[choice]);
+  };
+}
+
+function showEnding() {
+  const end = D.endings[S.ending];
+  recordEnding(S.ending);
+  const sc = S.score && S.ending !== 'marcusResigned'
+    ? `<p class="score">Your account: evidence ${S.score.evidence} + allies ${S.score.allies} + reputation ${S.score.reputation}${S.score.favourite ? ` + "her favourite" ${S.score.favourite}` : ''} = <b>${S.score.total}</b></p>`
+    : '';
+  screen(`
+    <article class="card ending ending-${esc(S.ending)} has-scene">
+      ${sceneBanner(end.scene)}
+      <p class="card-meta">Ending</p>
+      <h2>${esc(end.title)}</h2>
+      <p class="card-text">${esc(end.text)}</p>
+      ${E.endingLines(S, D.endings._lines).map((t) => `<p class="card-text">${esc(t)}</p>`).join('')}
+      ${sc}
+      <button class="btn primary" id="again">Play again</button>
+    </article>`);
+  $('#again').onclick = () => { clearSave(); showTitle(); };
+}
+
+loadData()
+  .then(showTitle)
+  .catch((err) => {
+    screen(`<p class="card">Could not load game data (${esc(err.message)}). Serve this folder over HTTP, e.g. <code>python3 -m http.server</code>.</p>`);
+  });
+
+</script>
+</body>
+</html>

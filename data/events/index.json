@@ -1,0 +1,7 @@
+{
+  "_note": "Event files loaded by the game. _example.json is a schema reference only, not loaded.",
+  "files": [
+    "slice.json",
+    "story.json"
+  ]
+}

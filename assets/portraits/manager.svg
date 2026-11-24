@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs><clipPath id="c"><circle cx="60" cy="60" r="60"/></clipPath></defs>
+  <circle cx="60" cy="60" r="60" fill="#e7f5ff"/>
+  <g clip-path="url(#c)">
+    <path d="M14 122 Q18 88 60 84 Q102 88 106 122Z" fill="#364fc7"/>
+    <path d="M50 86 L60 100 L70 86Z" fill="#fff"/>
+    <path d="M57 92 L60 120 L63 92 L60 88Z" fill="#fab005"/>
+    <rect x="53" y="72" width="14" height="14" rx="4" fill="#f3cfb0"/>
+    <ellipse cx="60" cy="54" rx="22" ry="24" fill="#f3cfb0"/>
+    <path d="M38 52 Q38 40 44 36 L46 46 Z M82 52 Q82 40 76 36 L74 46Z" fill="#6b5b4b"/>
+    <path d="M52 32 Q60 28 68 32" stroke="#6b5b4b" stroke-width="2" fill="none"/>
+    <circle cx="51" cy="55" r="3" fill="#1d1d1f"/><circle cx="69" cy="55" r="3" fill="#1d1d1f"/>
+    <path d="M45 46 Q50 43 55 47 M65 47 Q70 43 75 46" stroke="#6b5b4b" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M49 66 Q54 63 60 66 Q66 69 71 66" stroke="#7a3e2b" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <path d="M79 40 q4 6 0 10 q-4 -4 0 -10Z" fill="#74c0fc"/>
+    <path d="M84 52 q3 5 0 8 q-3 -3 0 -8Z" fill="#74c0fc"/>
+  </g>
+</svg>

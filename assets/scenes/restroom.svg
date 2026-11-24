@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240">
+  <defs><pattern id="t" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="#e3fafc"/><path d="M24 0 V24 H0" stroke="#c5f6fa" fill="none"/></pattern></defs>
+  <rect width="600" height="240" fill="url(#t)"/>
+  <rect x="0" y="200" width="600" height="40" fill="#99e9f2"/>
+  <g fill="#66d9e8" stroke="#3bc9db" stroke-width="2">
+    <rect x="30" y="40" width="80" height="170"/><rect x="120" y="40" width="80" height="170"/><rect x="210" y="40" width="80" height="170"/>
+  </g>
+  <g fill="#3bc9db"><circle cx="98" cy="130" r="4"/><circle cx="188" cy="130" r="4"/><circle cx="278" cy="130" r="4"/></g>
+  <rect x="114" y="200" width="12" height="10" fill="#fa5252"/>
+  <text x="160" y="76" font-family="system-ui,sans-serif" font-size="9" font-weight="700" text-anchor="middle" fill="#0b7285">OCCUPIED</text>
+  <rect x="340" y="40" width="220" height="90" rx="4" fill="#d0ebff" stroke="#adb5bd" stroke-width="4"/>
+  <path d="M370 60 l40 50 M420 56 l30 36" stroke="#fff" stroke-width="5" opacity="0.6"/>
+  <rect x="330" y="150" width="240" height="20" rx="4" fill="#f1f3f5" stroke="#ced4da"/>
+  <ellipse cx="390" cy="160" rx="26" ry="6" fill="#ced4da"/><ellipse cx="500" cy="160" rx="26" ry="6" fill="#ced4da"/>
+  <path d="M390 150 v-12 h10" stroke="#868e96" stroke-width="4" fill="none"/><path d="M500 150 v-12 h10" stroke="#868e96" stroke-width="4" fill="none"/>
+  <rect x="430" y="12" width="80" height="20" rx="3" fill="#fff" stroke="#ced4da"/>
+  <text x="470" y="26" font-family="system-ui,sans-serif" font-size="8" font-weight="700" text-anchor="middle" fill="#495057">WASH YOUR HANDS</text>
+</svg>

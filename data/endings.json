@@ -1,0 +1,110 @@
+{
+  "exposed": {
+    "title": "Exposed",
+    "text": "By Monday afternoon, Veronica's calendar shows one event: 'Garden Leave'. Her access card stops working at 3:12pm. A month later, an all-staff email thanks her for her contributions and wishes her well in her future endeavours. Then the irony lands: Derek promotes Marcus to lead the team. Your new manager says 'good morning' and means nothing else by it. He never calls after 7pm. He goes to the toilet alone. Within a year he's one of the best-liked leaders on floor 23. Someone orders a cake. Nobody says why. Everybody knows why.",
+    "scene": "garden"
+  },
+  "gracefulExit": {
+    "title": "The Graceful Exit",
+    "text": "HR 'takes your concerns seriously' and 'will monitor the situation'. You don't wait to find out. Your new offer is 20% higher and has no after-hours calls. On your last day, Marcus shakes your hand: 'Thanks for having my back.' Your farewell card has 31 signatures. Veronica's is not one of them. The team group chat survives the resignation. It survives the next three resignations too.",
+    "scene": "office"
+  },
+  "burnout": {
+    "title": "Burnout",
+    "text": "You wake up on a Tuesday and cannot open Outlook. Your doctor writes 'two weeks MC'. Veronica forwards your project to someone else with the note 'they had capacity issues'. Rest. Then keep receipts next time.",
+    "scene": "office"
+  },
+  "managedOut": {
+    "title": "Managed Out",
+    "text": "A calendar invite appears: 'Quick chat', with HR. It's a Performance Improvement Plan. The 'improvement' is 'visibility'. You were removed from every meeting where visibility happens. Funny how that works.",
+    "scene": "nebula"
+  },
+  "failingUpward": {
+    "title": "Failing Upward",
+    "text": "HR finds 'no clear evidence of misconduct, just a clash of working styles'. The following quarter, Veronica is promoted to VP of Strategic Alignment. Her first initiative is a 'Culture & Kindness' task force. You are not invited.",
+    "scene": "townhall"
+  },
+  "marcusResigned": {
+    "title": "Strike Ten",
+    "scene": "office",
+    "text": "Marcus's farewell email is short and kind. He thanks everyone by name. Veronica replies-all: 'All the best! 🙏' Weeks later she's gone too, but the best manager this team never had is already thriving somewhere else. You still have his number. You still think about strike ten."
+  },
+  "sheResigned": {
+    "title": "Pre-emptive Strike",
+    "scene": "office",
+    "text": "Friday, 4:58pm, before Monday's meeting can happen, Veronica resigns. By 6pm her LinkedIn reads: 'After 10 incredible years of industry experience, I'm excited to pursue my next chapter! Grateful to my amazing team.' 200 likes, mostly from people she has screamed at. The meeting is cancelled. There's no garden leave, no reckoning, just a farewell lunch she organises for herself. Aircon only. Marcus leads the team a month later anyway."
+  },
+  "youResigned": {
+    "title": "The Lift Goes Down",
+    "scene": "office",
+    "text": "Your last day. The lift goes down, exactly as the CEO promised. Your new job has a manager who says 'take your time' and means it. Some nights you still check the old team chat to see what she's done now."
+  },
+  "_lines": [
+    {
+      "if": {
+        "flags": [
+          "exposed"
+        ]
+      },
+      "notFlags": [
+        "marcus-resigned"
+      ],
+      "text": "Months later, over kopi, Marcus tells you about his ten strikes. She never reached ten."
+    },
+    {
+      "if": {
+        "flags": [
+          "kai-left"
+        ]
+      },
+      "text": "Kai left weeks before any of this. He hears the news in the group chat and replies with a single, perfect GIF."
+    },
+    {
+      "if": {
+        "flags": [
+          "kai-stayed"
+        ]
+      },
+      "notFlags": [
+        "kai-left"
+      ],
+      "text": "Kai turned down a better offer to stay. He still says it was the best bad decision he ever made."
+    },
+    {
+      "if": {
+        "flags": [
+          "helped-marcus"
+        ]
+      },
+      "onlyEndings": [
+        "youResigned"
+      ],
+      "text": "Before you leave, Marcus shakes your hand: 'Thanks for having my back.' You hope it was enough."
+    },
+    {
+      "if": {
+        "flags": [
+          "favourite",
+          "testified"
+        ]
+      },
+      "text": "She never found out it was her favourite who told Derek. Or maybe she did, and that's why she hugged you."
+    },
+    {
+      "if": {
+        "flags": [
+          "denied"
+        ]
+      },
+      "text": "You never told Derek what you saw. You think about that more than you'd like."
+    },
+    {
+      "if": {
+        "flags": [
+          "group-chat"
+        ]
+      },
+      "text": "Years later, everyone on that team has moved on. The group chat is still going, and it's still called 'Nebula Survivors'."
+    }
+  ]
+}

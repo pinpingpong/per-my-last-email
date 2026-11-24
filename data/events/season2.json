@@ -1,0 +1,85 @@
+[
+  {
+    "id": "rto-townhall",
+    "weeks": [
+      3,
+      11
+    ],
+    "weight": 2,
+    "scene": "townhall",
+    "speaker": "ceo",
+    "text": "Town hall announcement: five days a week in the office, effective next month. 'For collaboration.' Someone asks about people who live far away. The CEO smiles warmly: 'Have you considered living closer to the office?' Applause from the leadership row, all of whom have drivers.",
+    "choices": [
+      {
+        "label": "Check room rentals near the office",
+        "result": "$3,800 a month for a 'cosy common room'. The photos show a storeroom with a window. The window faces another wall. Commute it is.",
+        "effects": {
+          "sanity": -4
+        }
+      },
+      {
+        "label": "Post an anonymous Slido question",
+        "result": "'Will there be a rent subsidy for moving closer?' 312 upvotes in ninety seconds. The host scrolls past it with the speed of a professional. 'Great questions, everyone!'",
+        "effects": {
+          "reputation": 2,
+          "sanity": 2
+        }
+      },
+      {
+        "label": "Build a dashboard of everyone's commute",
+        "result": "You're the data team, after all. Average commute: 68 minutes each way. 11 hours a week, per person, 'for collaboration'. Gordon sees it: 'NOW this is a bigger problem.' It never leaves his inbox.",
+        "effects": {
+          "performance": 3,
+          "reputation": 3,
+          "sanity": -2
+        }
+      },
+      {
+        "label": "Laugh along with the leadership row",
+        "result": "Nobody else is laughing. You're laughing alone, in a hall of 400 people. You stop. You stop very slowly.",
+        "effects": {
+          "reputation": -3,
+          "sanity": -2
+        }
+      }
+    ]
+  },
+  {
+    "id": "ceo-townhall",
+    "weeks": [
+      3,
+      10
+    ],
+    "weight": 2,
+    "scene": "townhall",
+    "speaker": "ceo",
+    "text": "At the town hall Q&A, someone asks about employee morale. The CEO smiles: 'If you're not happy here, the lift goes down as well as up.' Applause from the leadership row only.",
+    "choices": [
+      {
+        "label": "Laugh nervously with everyone",
+        "result": "The laugh echoes. Somebody's resignation letter autosaves.",
+        "effects": {
+          "sanity": -3
+        }
+      },
+      {
+        "label": "Post 'interesting session!' on the internal forum",
+        "result": "14 likes. Every single one is a sarcastic like. Everyone knows. Nobody says.",
+        "effects": {
+          "reputation": 2,
+          "sanity": 2
+        }
+      },
+      {
+        "label": "Check how fast the lift actually goes down",
+        "result": "23 seconds, floor 23 to lobby. You time it. You're not planning anything. Just curious.",
+        "effects": {
+          "sanity": 3
+        },
+        "setFlags": [
+          "job-hunting"
+        ]
+      }
+    ]
+  }
+]

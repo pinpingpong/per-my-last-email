@@ -1,0 +1,306 @@
+[
+  {
+    "id": "credit-stolen-townhall",
+    "weeks": [
+      1,
+      4
+    ],
+    "weight": 3,
+    "scene": "townhall",
+    "speaker": "veronica",
+    "text": "At the town hall, Veronica presents your dashboard as 'a little something my team pulled together under my direction'. Your name is not on the slide. The CEO calls it 'game-changing'.",
+    "choices": [
+      {
+        "label": "Email her a 'quick recap' afterwards",
+        "result": "'Great to see the dashboard I built land so well! Attaching v1 from 3 March for reference.' Timestamped. Polite. Lethal.",
+        "effects": {
+          "sanity": -2,
+          "reputation": 2
+        },
+        "addEvidence": {
+          "id": "dashboard-recap-email",
+          "label": "Recap email proving you built the dashboard",
+          "type": "written",
+          "strength": 3
+        },
+        "setFlags": [
+          "credit-stolen"
+        ]
+      },
+      {
+        "label": "Interrupt: 'Actually, I built that'",
+        "result": "Forty faces turn. Veronica smiles. 'Love the energy! Let's take this offline.' You are now 'not a team player'.",
+        "effects": {
+          "sanity": 5,
+          "reputation": -8
+        },
+        "setFlags": [
+          "credit-stolen",
+          "public-clash"
+        ]
+      },
+      {
+        "label": "Say nothing, eat the free croissant",
+        "result": "The croissant is stale. So is your career.",
+        "effects": {
+          "sanity": -6
+        },
+        "addEvidence": {
+          "id": "townhall-memory",
+          "label": "You remember the town hall slide",
+          "type": "recalled",
+          "strength": 1
+        },
+        "setFlags": [
+          "credit-stolen"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "calendar-ghosting",
+    "weeks": [
+      1,
+      6
+    ],
+    "weight": 2,
+    "scene": "office",
+    "text": "You notice the recurring 'Project Orion Sync' has vanished from your calendar. It is still on everyone else's. The meeting is about your project.",
+    "choices": [
+      {
+        "label": "Ask in writing why you were removed",
+        "result": "'Hi Veronica, noticed I'm no longer on Orion Sync. Could you confirm if that's intended?' She replies: 'Must be an Outlook glitch!' You screenshot the glitch.",
+        "effects": {
+          "sanity": -2,
+          "reputation": 1
+        },
+        "addEvidence": {
+          "id": "orion-removal-email",
+          "label": "Email thread: removed from your own project meeting",
+          "type": "written",
+          "strength": 3
+        }
+      },
+      {
+        "label": "Show up anyway with a laptop and a smile",
+        "result": "Veronica: 'Oh! Didn't think you'd need to be here.' Three people saw her face do the thing.",
+        "effects": {
+          "sanity": 2,
+          "reputation": -2,
+          "performance": 3
+        },
+        "addEvidence": {
+          "id": "orion-crash-witnessed",
+          "label": "Colleagues saw her surprise you joined",
+          "type": "witnessed",
+          "strength": 2
+        }
+      },
+      {
+        "label": "Let it go. Fewer meetings, right?",
+        "result": "You gain 30 minutes a week and lose all context on your own project. Decisions are made. You learn about them from the intern.",
+        "effects": {
+          "performance": -8,
+          "sanity": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": "one-on-one-rewrite",
+    "weeks": [
+      5,
+      12
+    ],
+    "weight": 2,
+    "scene": "nebula",
+    "speaker": "veronica",
+    "text": "In your 1:1, Veronica frowns. 'I never asked you to build the Q3 deck. Why are you working on things nobody asked for?' She asked you on Monday. In this room.",
+    "choices": [
+      {
+        "label": "Send a recap email right after",
+        "result": "'Thanks for the chat! To confirm: pausing the Q3 deck you requested on Monday.' She leaves it on read. The server does not.",
+        "effects": {
+          "sanity": -3
+        },
+        "addEvidence": {
+          "id": "q3-recap-email",
+          "label": "1:1 recap email about the Q3 deck",
+          "type": "written",
+          "strength": 3
+        }
+      },
+      {
+        "label": "Dig up Monday's Slack message and save it",
+        "result": "Found it: 'can u do the Q3 deck pls'. Archived to a personal folder. Took 20 minutes of scrolling past cat photos.",
+        "effects": {
+          "performance": -3
+        },
+        "addEvidence": {
+          "id": "q3-slack-request",
+          "label": "Saved Slack: Veronica requesting the Q3 deck",
+          "type": "written",
+          "strength": 3
+        }
+      },
+      {
+        "label": "Argue. You know what she said.",
+        "result": "'I think you're misremembering.' 'I think YOU are.' Nobody wins. You replay it in the shower for a week.",
+        "effects": {
+          "sanity": -10
+        },
+        "addEvidence": {
+          "id": "q3-memory",
+          "label": "You remember her asking for the deck",
+          "type": "recalled",
+          "strength": 1
+        }
+      }
+    ],
+    "requires": {
+      "flags": [
+        "v-is-manager"
+      ]
+    }
+  },
+  {
+    "id": "intern-saw-it",
+    "weeks": [
+      2,
+      6
+    ],
+    "weight": 3,
+    "scene": "office",
+    "speaker": "kai",
+    "requires": {
+      "flags": [
+        "credit-stolen"
+      ]
+    },
+    "text": "Kai slides over to your desk. 'Hey. That thing at the town hall was messed up. Everyone on the team knows you built the dashboard.'",
+    "choices": [
+      {
+        "label": "Ask if Kai would put that in writing",
+        "result": "Kai nods. 'Of course. If she does it to you, she'll do it to anyone.' Seniors with a spine: rarer than a working office printer.",
+        "effects": {
+          "allies": 1,
+          "reputation": 2
+        },
+        "addEvidence": {
+          "id": "kai-statement",
+          "label": "Kai confirms you built the dashboard",
+          "type": "witnessed",
+          "strength": 2
+        },
+        "setFlags": [
+          "kai-ally"
+        ]
+      },
+      {
+        "label": "Vent together over kopi",
+        "result": "Forty-five glorious minutes. Someone from Veronica's team was at the next table.",
+        "effects": {
+          "sanity": 8,
+          "reputation": -4
+        }
+      },
+      {
+        "label": "Thank Kai and change the subject",
+        "result": "Kai looks a little disappointed. You both pretend to read a spreadsheet.",
+        "effects": {
+          "sanity": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "mandatory-fun",
+    "weeks": [
+      4,
+      9
+    ],
+    "weight": 2,
+    "scene": "escape",
+    "speaker": "veronica",
+    "text": "Team building: escape room. Veronica appoints herself 'Room Captain'. The team fails with 4 minutes left. She announces, to everyone, that you 'held the group back'.",
+    "choices": [
+      {
+        "label": "Laugh it off, buy everyone bubble tea",
+        "result": "$47 well spent. The team likes you more. Veronica does not like that the team likes you more.",
+        "effects": {
+          "sanity": -3,
+          "reputation": 5
+        }
+      },
+      {
+        "label": "Note down who heard it",
+        "result": "Five witnesses, one public blame, zero clues solved by Veronica. Logged in your notes app with today's date.",
+        "effects": {
+          "sanity": -2
+        },
+        "addEvidence": {
+          "id": "escape-room-blame",
+          "label": "Public blame at team building, 5 witnesses",
+          "type": "witnessed",
+          "strength": 2
+        }
+      },
+      {
+        "label": "Skip the drinks after. 'Client call.'",
+        "result": "There is no client. There is only your sofa. It is wonderful.",
+        "effects": {
+          "sanity": 5,
+          "reputation": -3
+        }
+      }
+    ]
+  },
+  {
+    "id": "perf-review-surprise",
+    "weeks": [
+      8,
+      12
+    ],
+    "weight": 3,
+    "scene": "nebula",
+    "speaker": "veronica",
+    "text": "Mid-year review. Veronica rates you 'Needs Improvement'. Reason: 'low visibility'. You were removed from the meetings where visibility happens.",
+    "choices": [
+      {
+        "label": "Reply in writing with everything you delivered",
+        "result": "Bullet points. Dates. Links. Derek is cc'd. The rating is 'under review'.",
+        "effects": {
+          "performance": 8,
+          "sanity": -3
+        },
+        "addEvidence": {
+          "id": "review-rebuttal",
+          "label": "Written rebuttal to unfair performance rating",
+          "type": "written",
+          "strength": 3
+        }
+      },
+      {
+        "label": "Accept it. Pick your battles.",
+        "result": "The rating goes on your file. Your bonus goes on Veronica's holiday.",
+        "effects": {
+          "performance": -20,
+          "sanity": -5
+        }
+      },
+      {
+        "label": "Cry in the pantry",
+        "result": "The pantry has seen things. A colleague hands you a tissue and a Milo. Cathartic, at least.",
+        "effects": {
+          "sanity": 6,
+          "reputation": -2
+        }
+      }
+    ],
+    "requires": {
+      "flags": [
+        "v-is-manager"
+      ]
+    }
+  }
+]

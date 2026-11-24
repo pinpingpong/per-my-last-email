@@ -1,0 +1,42 @@
+{
+  "veronica": {
+    "name": "Veronica Sharpe",
+    "title": "Head of Strategic Alignment"
+  },
+  "kai": {
+    "name": "Kai",
+    "title": "Senior Analyst. Referred Marcus for the job"
+  },
+  "hrbp": {
+    "name": "Melissa",
+    "title": "HR Business Partner"
+  },
+  "whisper": {
+    "name": "Jordan",
+    "title": "Senior Analyst, quietly supportive"
+  },
+  "manager": {
+    "name": "Derek",
+    "title": "Head of Department. Slow to act, but listens"
+  },
+  "it": {
+    "name": "Raj",
+    "title": "IT, knows where the logs are"
+  },
+  "marcus": {
+    "name": "Marcus",
+    "title": "Lead, new joiner. Keeps quiet, tries harder"
+  },
+  "ceo": {
+    "name": "The CEO",
+    "title": "Chief Executive, Celestial Pte Ltd"
+  },
+  "bigboss": {
+    "name": "Gordon",
+    "title": "VP, Data & Analytics. Derek's boss"
+  },
+  "cfo": {
+    "name": "Margaret",
+    "title": "CFO"
+  }
+}

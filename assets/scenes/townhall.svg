@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240">
+  <rect width="600" height="240" fill="#1f2133"/>
+  <path d="M300 0 L140 240 H460Z" fill="#fff" opacity="0.05"/>
+  <rect x="150" y="20" width="300" height="140" rx="4" fill="#f8f9fa"/>
+  <text x="300" y="46" font-family="system-ui,sans-serif" font-size="16" font-weight="800" text-anchor="middle" fill="#212529">Q3 WINS!</text>
+  <g fill="#4c6ef5"><rect x="200" y="110" width="30" height="30"/><rect x="250" y="90" width="30" height="50"/><rect x="300" y="70" width="30" height="70"/><rect x="350" y="60" width="30" height="80"/></g>
+  <text x="300" y="155" font-family="system-ui,sans-serif" font-size="9" text-anchor="middle" fill="#868e96">Pulled together by V. Sharpe, Head of Strategic Alignment</text>
+  <rect x="470" y="110" width="50" height="70" fill="#495057"/>
+  <rect x="464" y="104" width="62" height="10" fill="#6c757d"/>
+  <path d="M495 104 l0 -14" stroke="#adb5bd" stroke-width="2"/><circle cx="495" cy="88" r="4" fill="#212529"/>
+  <g fill="#0d0e18">
+    <circle cx="40" cy="214" r="18"/><circle cx="100" cy="210" r="18"/><circle cx="160" cy="216" r="18"/><circle cx="220" cy="210" r="18"/><circle cx="280" cy="214" r="18"/>
+    <circle cx="340" cy="210" r="18"/><circle cx="400" cy="216" r="18"/><circle cx="460" cy="210" r="18"/><circle cx="520" cy="214" r="18"/><circle cx="580" cy="210" r="18"/>
+    <rect x="0" y="222" width="600" height="18"/>
+  </g>
+  <g fill="#ffd43b"><circle cx="70" cy="40" r="2"/><circle cx="530" cy="30" r="2"/><circle cx="90" cy="100" r="1.5"/><circle cx="560" cy="80" r="1.5"/></g>
+</svg>

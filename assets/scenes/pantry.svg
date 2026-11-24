@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240">
+  <defs><pattern id="t" width="30" height="30" patternUnits="userSpaceOnUse"><rect width="30" height="30" fill="#f1f3f5"/><path d="M30 0 V30 H0" stroke="#dee2e6" fill="none"/></pattern></defs>
+  <rect width="600" height="240" fill="url(#t)"/>
+  <rect x="0" y="150" width="600" height="90" fill="#c5b49a"/>
+  <rect x="0" y="140" width="600" height="14" fill="#868e96"/>
+  <rect x="30" y="30" width="110" height="200" rx="6" fill="#e9ecef" stroke="#adb5bd" stroke-width="2"/>
+  <path d="M30 100 H140" stroke="#adb5bd" stroke-width="2"/>
+  <rect x="122" y="50" width="6" height="30" rx="2" fill="#868e96"/><rect x="122" y="112" width="6" height="40" rx="2" fill="#868e96"/>
+  <rect x="44" y="40" width="60" height="44" fill="#fff59d" transform="rotate(-4 74 62)"/>
+  <text x="74" y="58" font-family="system-ui,sans-serif" font-size="8" font-weight="800" text-anchor="middle" fill="#c92a2a" transform="rotate(-4 74 62)">LABEL YOUR</text>
+  <text x="74" y="70" font-family="system-ui,sans-serif" font-size="8" font-weight="800" text-anchor="middle" fill="#c92a2a" transform="rotate(-4 74 62)">FOOD!!!</text>
+  <rect x="200" y="80" width="70" height="60" rx="6" fill="#343a40"/>
+  <rect x="214" y="92" width="30" height="16" rx="2" fill="#495057"/><circle cx="256" cy="100" r="5" fill="#fa5252"/>
+  <rect x="222" y="118" width="26" height="22" fill="#212529"/>
+  <rect x="228" y="124" width="14" height="14" rx="2" fill="#fff"/>
+  <rect x="320" y="90" width="110" height="50" rx="4" fill="#dee2e6" stroke="#868e96" stroke-width="2"/>
+  <rect x="328" y="98" width="70" height="34" rx="3" fill="#495057"/>
+  <g stroke="#94d82d" stroke-width="2.5" fill="none" stroke-linecap="round"><path d="M350 84 q-6 -10 0 -20 t0 -20"/><path d="M366 84 q-6 -10 0 -20 t0 -20"/><path d="M382 84 q-6 -10 0 -20 t0 -20"/></g>
+  <text x="414" y="112" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle" fill="#212529">0:47</text>
+  <rect x="470" y="104" width="34" height="38" rx="4" fill="#2f9e44"/>
+  <text x="487" y="128" font-family="system-ui,sans-serif" font-size="9" font-weight="900" text-anchor="middle" fill="#fff">MILO</text>
+  <path d="M520 110 H546 L542 142 H524Z" fill="#fff" stroke="#ced4da"/>
+  <rect x="522" y="112" width="22" height="8" fill="#a0522d"/>
+  <path d="M546 116 q10 2 0 14" stroke="#ced4da" stroke-width="3" fill="none"/>
+</svg>

@@ -1,0 +1,119 @@
+{
+  "company": "Celestial Pte Ltd",
+  "tagline": "Reaching for the stars, one escalation at a time.",
+  "hrIntro": "Derek: 'Walk me through it. What did you see?' You won't be in Monday's meeting with Gordon and HR. What you say now is what Derek carries into that room. Pick what you can tell him with confidence.",
+  "quietWeek": [
+    "Quiet week. Veronica is at a leadership offsite in Bali, 'aligning on alignment'.",
+    "Quiet week. The only drama is someone microwaving fish in the pantry.",
+    "Quiet week. The office aircon breaks. Everyone bonds over suffering."
+  ],
+  "slack": [
+    {
+      "from": "Veronica Sharpe",
+      "channel": "general",
+      "text": "Huge shoutout to MY team for crushing it this week!! 🚀 (details to follow)"
+    },
+    {
+      "from": "Derek",
+      "channel": "team-celestial",
+      "text": "Reminder: our values are Ownership, Candour and Synergy. Please stop asking which one applies to Veronica."
+    },
+    {
+      "from": "Kai",
+      "channel": "random",
+      "text": "reminder that i referred marcus and i have zero regrets. also does anyone know if the 4th floor printer is haunted"
+    },
+    {
+      "from": "Melissa",
+      "channel": "people-and-culture",
+      "text": "Friendly reminder that our Speak Up survey is 100% anonymous! Please include your employee ID."
+    },
+    {
+      "from": "IT Helpdesk",
+      "channel": "it-announcements",
+      "text": "All Slack messages are retained for 7 years. Unrelated, but thought you'd like to know."
+    },
+    {
+      "from": "Veronica Sharpe",
+      "channel": "general",
+      "text": "Per my last email, per my last Slack, per my last meeting: let's align."
+    },
+    {
+      "from": "Office Bot",
+      "channel": "general",
+      "text": "Free cake in the pantry! (Cake has been claimed.)"
+    },
+    {
+      "from": "Kai",
+      "channel": "random",
+      "text": "client just emailed 'Dear Celestia team' again. third time this week. are we a pony now"
+    },
+    {
+      "from": "Jordan",
+      "channel": "random",
+      "text": "Delivery guy asked for 'Celestical'. I said yes. We are Celestical now."
+    },
+    {
+      "from": "Marcus",
+      "channel": "veronica-and-team",
+      "text": "Morning all, WFH till 1pm as per approved arrangement, reachable on Slack. Back in office after lunch."
+    },
+    {
+      "from": "Gordon",
+      "channel": "data-and-analytics",
+      "text": "Before anyone builds anything this sprint: WHAT IS THE BIGGER PROBLEM?"
+    },
+    {
+      "from": "Stakeholder",
+      "channel": "data-requests",
+      "text": "hi can u pull the numbers real quick, no rush (need by 3pm today)"
+    },
+    {
+      "from": "Veronica Sharpe",
+      "channel": "veronica-and-team",
+      "text": "In my 10 years of industry experience, a dashboard needs at least 14 metrics. Pls revise."
+    },
+    {
+      "from": "Kai",
+      "channel": "nebula-survivors",
+      "text": "10-years counter this week: 7. new record. jordan owes me kopi"
+    },
+    {
+      "from": "Jordan",
+      "channel": "nebula-survivors",
+      "text": "considered living closer to the office. considered my bank account. stopped considering."
+    }
+  ],
+  "catchphrases": {
+    "veronica": "IN MY 10 YEARS OF INDUSTRY EXPERIENCE, WE HAVE ALWAYS DONE IT THIS WAY.",
+    "gordon": "WHAT IS THE BIGGER PROBLEM WE ARE TRYING TO SOLVE HERE?",
+    "ceo": [
+      "If you're not happy here, the lift goes down as well as up.",
+      "Have you considered living closer to the office?"
+    ]
+  },
+  "marcusResignedNotice": "Marcus has resigned. His farewell email is short and kind. Strike ten.",
+  "epilogueEnd": "Her access card stops working at 3:12pm. Her desk is empty by 3:30. The floor is very, very quiet. Then someone in the group chat sends a single cake emoji.",
+  "acts": [
+    {
+      "from": 1,
+      "to": 3,
+      "title": "Act 1 · The Favourite"
+    },
+    {
+      "from": 4,
+      "to": 6,
+      "title": "Act 2 · The Target"
+    },
+    {
+      "from": 7,
+      "to": 9,
+      "title": "Act 3 · The Meeting"
+    },
+    {
+      "from": 10,
+      "to": 12,
+      "title": "Act 4 · The Call"
+    }
+  ]
+}
