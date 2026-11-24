@@ -33,6 +33,7 @@ True ending: Veronica on garden leave, then out. Marcus becomes your manager and
 Running gags: everyone misnames the company (Celestia, Celestical); Gordon's "What is the bigger problem?"; the CEO's "the lift goes down as well as up".
 
 ## Roadmap (future expansions)
+- **v2 (agreed 2026-11-25):** make 'Come, toilet' a fixed week-1 beat so every player meets Escape to Nebula; add a 'Minigames' button on the title screen for direct replay.
 - **Season 2: "After Veronica"** (`data/events/season2.json`, not in `index.json` yet): Marcus is the manager, the team thrives, and company-level absurdity takes over: return-to-office mandate ('Have you considered living closer?'), reorg, layoffs, resignations, the group chat outliving the company.
 - Office politics: alliances, credit wars, skip-level lunches.
 - Performance review season: calibration meetings, bell curve, rating negotiations.
